@@ -30,7 +30,7 @@
 }
 * { box-sizing: border-box; }
 html { color-scheme: light dark; }
-:root[data-tema="claro"] { color-scheme: light; }
+:root[data-tema="claro"] { color-scheme: only light; }
 :root[data-tema="escuro"] { color-scheme: dark; }
 body { margin: 0; background: var(--bg); color: var(--tx); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
 svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }

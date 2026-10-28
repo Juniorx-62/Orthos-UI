@@ -1,0 +1,12 @@
+# pasta de trabalho local (extração do mvp-validacao.html, rascunhos e capturas): não vai para o git
+work/
+
+# gerados por ferramentas locais
+.playwright-mcp/
+.vercel/
+__pycache__/
+*.pyc
+
+# sistema
+Thumbs.db
+.DS_Store

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Testes — Orthos UI</title>
+<link rel="icon" href="../brand/orthos-mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../src/orthos.css">
 <style>
   body { margin: 0; padding: 24px; background: var(--ac-bg); color: var(--ac-text); font: 14px/1.5 var(--ac-font); }
@@ -23,6 +24,7 @@
 <script>window.DEMO_HOOKS = {};</script>
 <script src="../site/demos.js"></script>
 <script src="../site/demos-novos.js"></script>
+<script src="../site/demos-referencias.js"></script>
 <script src="../site/guia.js"></script>
 <script>
 /* Abra no navegador (python -m http.server na raiz e /tests/componentes.html). O resultado também fica em window.RESULTADO. */
@@ -74,7 +76,135 @@
   await t('sidebar: teclado muda a largura e recolhe abaixo de 180', async () => { try { localStorage.removeItem('orthos.sidebar.w'); } catch (_) {} mount('sidebar'); const s = $('.ac-sidebar', palco), h = $('[data-ac-resize]', s); ok(h.getAttribute('role') === 'separator', 'papel'); key(h, 'ArrowRight', { shiftKey: true }); await w(400); ok(h.getAttribute('aria-valuenow') === '272', 'largura ' + h.getAttribute('aria-valuenow')); key(h, 'Home'); for (let k = 0; k < 4; k++) key(h, 'ArrowLeft', { shiftKey: true }); ok(s.dataset.collapsed === 'true', 'não recolheu'); key(h, 'ArrowRight'); ok(s.dataset.collapsed === 'false', 'não reabriu'); try { localStorage.removeItem('orthos.sidebar.w'); } catch (_) {} });
   await t('rolagem: lista acompanha o teclado sem rolar a página (sem scrollIntoView)', async () => { mount('combobox'); const i = $('input', palco); i.focus(); i.dispatchEvent(new Event('input')); await w(20); const y0 = scrollY; key(i, 'ArrowUp'); await w(260); const lb = $('body > .ac-pop .ac-listbox'), act = $('[aria-selected="true"]', lb); ok(lb.scrollTop > 0, 'lista não rolou'); const a = act.getBoundingClientRect(), b = lb.getBoundingClientRect(); ok(a.top >= b.top - 1 && a.bottom <= b.bottom + 1, 'opção ativa fora da vista'); ok(scrollY === y0, 'a página rolou'); ok(!/scrollIntoView\(/.test(String(Orthos.components.combo)), 'ainda usa scrollIntoView'); key(document, 'Escape'); });
   await t('tokens novos definidos', () => { const s = getComputedStyle(document.documentElement); ['--ac-dur-fast', '--ac-dur-base', '--ac-ease-standard', '--ac-btn-radius'].forEach(v => ok(s.getPropertyValue(v).trim(), v)); });
-  await t('API pública antiga preservada', () => { ['init', 'toast', 'command', 'open', 'close', 'skeleton', 'icon', 'place'].forEach(k => ok(typeof Orthos[k] === 'function', k)); ok(window.Acervo === Orthos && window.Seleta === Orthos, 'aliases'); });
+  /* levantamento de 28/10/2026: carrossel, tabela em cartões, senha, conversa, copiável, faixas, cartões, sheet, confirm, OTP */
+  const until = async (fn, ms = 1600) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { if (fn()) return true; await w(30); } return fn(); };
+  const within = (p, ms = 2500) => Promise.race([p, w(ms).then(() => { throw new Error('tempo esgotado'); })]);
+  // página de 390 px num iframe (fixo e invisível, para o navegador não pausar o rAF de um quadro fora da tela)
+  const frame = (body, wd = 390, ht = 720) => new Promise(r => { const f = document.createElement('iframe'); f.style.cssText = `position:fixed;left:0;top:0;width:${wd}px;height:${ht}px;border:0;opacity:0;pointer-events:none;z-index:-1`; f.srcdoc = `<!doctype html><html lang="pt-BR"><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../src/orthos.css"></head><body class="ac" style="margin:0">${body}<script src="../src/orthos.js"><\/script></body></html>`; f.onload = () => r(f); document.body.appendChild(f); });
+  await t('carrossel: papéis, bolinhas, inert e setas nos controles', async () => {
+    mount('carousel'); const c = $('[data-ac="carousel"]', palco), sl = $$('.ac-carousel__slide', c), dots = $$('.ac-carousel__dot', c);
+    ok(c.getAttribute('role') === 'region' && c.getAttribute('aria-roledescription') === 'carrossel' && c.getAttribute('aria-label'), 'região');
+    ok(sl[1].getAttribute('role') === 'group' && sl[1].getAttribute('aria-roledescription') === 'slide' && sl[1].getAttribute('aria-label') === '2 de 4', 'slide');
+    ok(dots[0].getAttribute('aria-current') === 'true' && dots[0].tabIndex === 0 && dots[1].tabIndex === -1 && !sl[0].inert && sl[1].inert, 'estado inicial');
+    dots[0].focus(); key(dots[0], 'ArrowRight'); await until(() => dots[1].getAttribute('aria-current') === 'true');
+    ok(dots[1].getAttribute('aria-current') === 'true' && document.activeElement === dots[1], '→ não andou'); ok(sl[0].inert && !sl[1].inert, 'inert');
+    key(dots[1], 'End'); await until(() => dots[3].getAttribute('aria-current') === 'true'); ok(dots[3].getAttribute('aria-current') === 'true', 'End');
+    const pl = $$('[data-ac="carousel"]', palco)[1], ps = $$('.ac-carousel__slide', pl); ok(!ps[1].inert && ps[2].inert, 'cartão espiando deveria ficar inerte');
+  });
+  await t('carrossel: Pausar troca o rótulo; sem autoplay não há pausa', () => { mount('carousel'); const [a, b] = $$('[data-ac="carousel"]', palco), p = $('[data-car="pause"]', a); ok(p && p.getAttribute('aria-label') === 'Pausar a troca automática', 'sem botão'); p.click(); ok(p.dataset.paused === 'true' && /Retomar/.test(p.getAttribute('aria-label')), 'não pausou'); ok($('.ac-carousel__track', a).getAttribute('aria-live') === 'polite', 'aria-live'); ok(!$('[data-car="pause"]', b), 'pausa sem autoplay'); });
+  await t('tabela: Data table põe data-label, modo cartão e papéis', () => { mount('table'); const tb = $('table', palco), tds = $$('tbody tr:first-child td', tb); ok(tb.classList.contains('ac-table--stack'), 'classe'); ok(tds[0].classList.contains('ac-table__select') && !tds[1].dataset.label && tds[2].dataset.label === 'Função', 'rótulos'); ok(tb.getAttribute('role') === 'table' && tds[2].getAttribute('role') === 'cell', 'papéis'); });
+  await t('tabela no celular (390 px): cartões, título, ações no fim e sem rolagem lateral', async () => {
+    const f = await frame(DEMOS.find(x => x.id === 'table-stack').html), doc = f.contentDocument, cs = x => f.contentWindow.getComputedStyle(x), tds = [...doc.querySelector('tbody tr').children];
+    try {
+      ok(cs(doc.querySelector('thead')).position === 'absolute' && doc.querySelector('table').getAttribute('role') === 'table', 'cabeçalho');
+      ok(cs(tds[1]).display === 'grid' && cs(tds[0]).display === 'block', 'célula ' + cs(tds[1]).display);
+      const last = Math.max(...tds.map(x => x.getBoundingClientRect().bottom)); ok(Math.abs(tds[6].getBoundingClientRect().bottom - last) < 1 && cs(tds[6]).justifyContent === 'flex-end', 'ações');
+      ok(doc.documentElement.scrollWidth <= 390, 'rolagem lateral ' + doc.documentElement.scrollWidth);
+    } finally { f.remove(); }
+  });
+  await t('senha: Mostrar/Esconder, regras e envio barrado', async () => {
+    mount('password'); const f = $('#pw-form', palco), i = $('#pw-nova', palco), c = $('#pw-conf', palco), b = $('.ac-password__toggle', palco), ul = $('.ac-password__rules', palco);
+    const type = (el, v) => { el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); };
+    ok(ul.hidden && (i.getAttribute('aria-describedby') || '').includes(ul.id), 'regras com campo vazio');
+    b.click(); ok(i.type === 'text' && b.getAttribute('aria-pressed') === 'true', 'não mostrou'); b.click(); ok(i.type === 'password' && b.getAttribute('aria-pressed') === 'false', 'não escondeu');
+    type(i, 'abc'); ok(!ul.hidden && i.validity.customError && $$('li[data-ok="true"]', ul).length === 1, 'fraca');
+    let enviou = false; f.addEventListener('ac:valid', () => { enviou = true; }); f.requestSubmit();
+    ok(!enviou && i.getAttribute('aria-invalid') === 'true' && /precisa de/.test(f.querySelector('.ac-error').textContent), 'enviou senha fraca');
+    type(i, 'Cafe#2026'); ok(!i.validity.customError, 'forte inválida'); type(c, 'Cafe#2025'); ok(c.validity.customError, 'diferentes passaram');
+    type(c, 'Cafe#2026'); ok(i.validity.valid && c.validity.valid && !$('li[data-ok="false"]', ul), 'iguais não passaram');
+    await w(450); const live = ul.nextElementSibling; ok(/requisitos atendidos/i.test(live.textContent), 'anúncio: ' + live.textContent);
+    ok($('[data-secret] input', palco).autocomplete === 'new-password' && $('[data-secret] input', palco).hasAttribute('data-1p-ignore'), 'segredo');
+  });
+  await t('conversa: Ctrl+Enter envia, toque mostra a hora e botão de descer', async () => {
+    mount('chat'); const c = $('[data-ac="chat"]', palco), log = $('.ac-chat__log', c), ta = $('textarea', c), down = $('.ac-chat__down', c), gap = () => log.scrollHeight - log.scrollTop - log.clientHeight;
+    ok(log.getAttribute('role') === 'log' && log.getAttribute('aria-live') === 'polite', 'role'); await w(60); ok(!down.classList.contains('is-on') && gap() < 2, 'começa no fim');
+    let got = ''; c.addEventListener('ac:send', e => { got = e.detail.text; }); const n0 = $$('.ac-msg', log).length;
+    ta.value = 'Chegou certinho, obrigada'; key(ta, 'Enter', { ctrlKey: true }); await w(60);
+    ok(got === 'Chegou certinho, obrigada' && ta.value === '' && $$('.ac-msg', log).length === n0 + 1, 'não enviou'); ok(gap() < 2, 'não desceu com a mensagem nova');
+    const m = $$('.ac-msg', log)[1]; $('.ac-msg__bubble', m).click(); ok(m.hasAttribute('data-open') && $('time', m), 'hora não abriu'); await w(260);
+    log.scrollTop = 0; await until(() => down.classList.contains('is-on'), 600); ok(down.classList.contains('is-on'), 'botão não apareceu');
+    down.click(); await until(() => gap() < 2); ok(gap() < 2 && document.activeElement === log, 'não desceu: ' + gap() + ' ' + document.activeElement.className);
+    await w(150); $('.ac-msg__bubble', $$('.ac-msg', log).pop()).click(); await w(320); ok(gap() < 2, 'a hora do último balão abriu fora da vista: ' + gap());
+  });
+  await t('campo copiável: copia data-copy e avisa; falha deixa o texto selecionado', async () => {
+    mount('copyfield'); const el = $$('[data-ac="copyfield"]', palco)[1], b = $('.ac-copyfield__btn', el); let copied = null;
+    navigator.clipboard.writeText = async x => { copied = x; };
+    try { b.click(); await w(30); } finally { delete navigator.clipboard.writeText; }
+    ok(copied === 'chv_live_4f8a1c9e0b7d2a6f7Q2x', 'copiou ' + copied); ok(el.dataset.state === 'copied' && b.getAttribute('aria-label') === 'Copiado' && $('[aria-live]', el).textContent === 'Copiado', 'sem aviso');
+    navigator.clipboard.writeText = async () => { throw new Error('negado'); }; document.execCommand = () => false;
+    try { b.click(); await w(30); } finally { delete navigator.clipboard.writeText; delete document.execCommand; }
+    ok(el.dataset.state === 'manual' && String(getSelection()) === 'chv_live_4f8a1c9e0b7d2a6f7Q2x', 'seleção: ' + getSelection()); ok(!el.nextElementSibling.hidden && /Ctrl|⌘/.test(el.nextElementSibling.textContent), 'sem dica');
+    getSelection().removeAllRanges();
+  });
+  await t('faixas: crítico primeiro, setas anunciam, X dispensa', () => {
+    mount('banners'); const el = $('[data-ac="banners"]', palco), vis = () => $$('.ac-banners__item', el).filter(x => !x.hidden);
+    ok(vis().length === 1 && vis()[0].id === 'bn-pagamento' && el.dataset.tone === 'critico', 'ordem: ' + vis()[0].id);
+    $('[data-bn="1"]', el).click(); ok(vis()[0].id === 'bn-insta' && /^Aviso 2 de 4/.test($(':scope > [aria-live]', el).textContent), 'próximo');
+    $('.ac-banners__close', vis()[0]).click(); ok(!$('#bn-insta', el) && $$('.ac-banners__item', el).length === 3 && /Aviso 2 de 3/.test(vis()[0].textContent), 'dispensar');
+    $('[data-bn="-1"]', el).click(); ok(vis()[0].id === 'bn-pagamento', 'anterior');
+  });
+  await t('escolha em cartões: rádio nativo por baixo, desabilitado não escolhe', () => { mount('choice-cards'); const cards = $$('.ac-choice-card', palco); cards[1].click(); ok($('input[name=formato]:checked', palco).value === 'stories', 'não escolheu'); cards[2].click(); ok($('input[name=formato]:checked', palco).value === 'stories', 'escolheu desabilitado'); ok($$('input[type=radio]', palco).length === 5, 'rádios'); });
+  await t('diálogo no computador continua no centro', async () => { mount('dialog'); const d = $('#dlg-edit'); Orthos.open(d); await w(400); const r = d.getBoundingClientRect(); ok(Math.abs((r.top + r.bottom) / 2 - innerHeight / 2) < 2 && r.width <= 441, 'posição ' + [r.top, r.bottom, r.width]); Orthos.close(d); await until(() => !d.open, 800); ok(!d.open, 'não fechou'); });
+  await t('diálogo no celular (390 px): bottom sheet, ações à vista e teclado', async () => {
+    const f = await frame(DEMOS.find(x => x.id === 'sheet-mobile').html, 390, 600), W = f.contentWindow, doc = f.contentDocument, d = doc.querySelector('#bs-end'), h = doc.documentElement;
+    try {
+      W.Orthos.open(d); await w(550); let r = d.getBoundingClientRect();
+      ok(Math.abs(r.bottom - W.innerHeight) < 1.5 && Math.abs(r.width - 390) < 1.5, 'posição ' + [r.bottom, W.innerHeight, r.width]);
+      ok(W.getComputedStyle(d).borderTopLeftRadius === '16px' && W.getComputedStyle(d).borderBottomLeftRadius === '0px', 'cantos');
+      const a = doc.querySelector('.ac-dialog__actions').getBoundingClientRect(); ok(d.scrollHeight > d.clientHeight && a.bottom <= r.bottom + 1 && a.top >= r.top, 'ações fora da vista');
+      h.style.setProperty('--ac-keyboard-h', '250px'); h.style.setProperty('--ac-visible-h', '350px'); h.setAttribute('data-ac-keyboard', ''); await w(30);
+      r = d.getBoundingClientRect(); ok(Math.abs(r.bottom - (W.innerHeight - 250)) < 1.5 && r.height <= 327, 'teclado ' + [r.bottom, r.height]);
+      doc.body.dispatchEvent(new W.FocusEvent('focusout', { bubbles: true })); await until(() => !h.hasAttribute('data-ac-keyboard'), 600);
+      ok(!h.hasAttribute('data-ac-keyboard') && !h.style.getPropertyValue('--ac-keyboard-h'), 'não soltou o teclado');
+      W.Orthos.close(d); await until(() => !d.open, 800); ok(!d.open, 'não fechou');
+    } finally { f.remove(); }
+  });
+  await t('Orthos.confirm: foco em Cancelar, Esc devolve false e o foco', async () => {
+    const b = document.createElement('button'); b.textContent = 'abrir'; palco.appendChild(b); b.focus();
+    const p = Orthos.confirm({ title: 'Excluir 3 arquivos?', text: 'Some para sempre.', confirmLabel: 'Excluir 3 arquivos', danger: true }); await w(30);
+    const d = $('dialog.ac-ask'); ok(d && d.open && d.getAttribute('role') === 'alertdialog' && $('.ac-dialog__icon', d), 'não abriu'); ok(document.activeElement.textContent === 'Cancelar', 'foco ' + document.activeElement.textContent);
+    ok($('.ac-btn--danger', d).textContent === 'Excluir 3 arquivos', 'rótulo'); d.dispatchEvent(new Event('cancel', { cancelable: true }));
+    ok(await within(p) === false && document.activeElement === b && !d.isConnected, 'resultado');
+  });
+  await t('Orthos.confirm: promessa carrega, erro fica no diálogo, sucesso resolve true', async () => {
+    let falha = true; const p = Orthos.confirm({ title: 'Publicar?', confirmLabel: 'Publicar', onConfirm: () => new Promise((s, n) => setTimeout(() => falha ? n(new Error('Sem conexão')) : s(), 80)) }); await w(30);
+    const d = $('dialog.ac-ask'), yes = $('[data-ask="1"]', d); yes.click(); await w(20);
+    ok(yes.dataset.loading === 'true' && d.getAttribute('aria-busy') === 'true' && $('[data-ask="0"]', d).disabled, 'não carregou');
+    d.dispatchEvent(new Event('cancel', { cancelable: true })); await w(20); ok(d.open, 'fechou ocupado');
+    await w(120); ok(d.open && /Sem conexão/.test($('.ac-ask__error', d).textContent) && yes.dataset.loading === 'false' && !d.hasAttribute('aria-busy'), 'sem erro');
+    falha = false; yes.click(); ok(await within(p) === true && !d.isConnected, 'não resolveu');
+  });
+  await t('Orthos.alert: um OK só, que fecha e resolve', async () => { const p = Orthos.alert('A sessão vai terminar.'); await w(30); const d = $('dialog.ac-ask'); ok($$('button', d).length === 1 && $('.ac-dialog__title', d).textContent === 'Atenção' && document.activeElement.textContent === 'OK', 'formato'); $('button', d).click(); await within(p); ok(!d.isConnected, 'não fechou'); });
+  await t('OTP: colar a mensagem inteira acha o código; dígitos arábicos', async () => {
+    const paste = (x, txt) => { const e = new Event('paste', { bubbles: true, cancelable: true }); e.clipboardData = { getData: () => txt }; x.dispatchEvent(e); };
+    let el, s, got; const fresh = () => { mount('otp'); el = $('[data-ac="otp"]', palco); s = $$('.ac-otp__slot', el); got = null; el.addEventListener('ac:complete', e => { got = e.detail; }); };
+    fresh(); paste(s[3], 'Seu código Orthos: 888 813. Válido por 10 min'); ok(got && got.value === '888813' && got.valid, 'texto: ' + (got && got.value));
+    fresh(); paste(s[0], 'código ٨٨٨-٨١٣'); ok(got && got.value === '888813', 'arábico: ' + (got && got.value));
+    fresh(); paste(s[0], '12'); ok(s.map(x => x.value).join('') === '12' && !got && document.activeElement === s[2], 'colar parcial mudou');
+  });
+  // correções de 28/10/2026 (auditoria e navegadores)
+  await t('validate: com erro barra o envio; válido emite ac:valid', async () => {
+    const f = document.createElement('form'); f.dataset.ac = 'validate'; f.innerHTML = '<label class="ac-field">Nome <input name="n" required></label><button type="submit">Enviar</button>'; palco.innerHTML = ''; palco.appendChild(f); Orthos.init(palco);
+    let valid = 0, enviado = 0; f.addEventListener('ac:valid', e => { valid++; e.preventDefault(); }); f.addEventListener('submit', e => { if (!e.defaultPrevented) enviado++; e.preventDefault(); });
+    f.requestSubmit(); await w(10); ok(valid === 0 && $('input', f).getAttribute('aria-invalid') === 'true', 'não barrou');
+    $('input', f).value = 'Ana'; f.requestSubmit(); await w(10); ok(valid === 1, 'sem ac:valid'); ok(enviado === 0, 'preventDefault em ac:valid não segurou o envio');
+  });
+  await t('init: a própria raiz com data-ac também é ativada', async () => { palco.innerHTML = ''; const d = document.createElement('div'); d.className = 'ac-segmented'; d.dataset.ac = 'segmented'; d.innerHTML = '<button type="button" aria-pressed="true">A</button><button type="button" aria-pressed="false">B</button>'; palco.appendChild(d); Orthos.init(d); ok(d.dataset.acInitsegmented === '1', 'raiz ignorada'); });
+  await t('toast: com foco não some sozinho', async () => { const k = Orthos.toast({ title: 'Foco', duration: 120 }); await w(20); const el = $$('.ac-toast').pop(); el.focus(); await w(250); ok(el.isConnected && !el.classList.contains('is-leaving'), 'sumiu com foco'); k(); await w(300); });
+  await t('tabela: o foco fica no checkbox depois de redesenhar', async () => { mount('table'); const c = $('tbody input[type=checkbox]', palco); c.focus(); c.click(); await w(20); ok(document.activeElement && document.activeElement.dataset.id === c.dataset.id, 'foco perdido'); });
+  await t('pop dentro de diálogo aberto fica no diálogo', async () => { palco.innerHTML = '<dialog class="ac ac-dialog" id="t-dlg"><div class="ac-dialog__in"><select class="ac-select" data-ac="select" aria-label="Cidade"><option>Recife</option><option>Natal</option></select></div></dialog>'; Orthos.init(palco); scrollTo(0, 0); await w(60); const d = $('#t-dlg'); Orthos.open(d); await w(400); /* espera a animação de entrada: com transform, o diálogo vira contêiner do pop fixo */ const b = $('.ac-select__trigger', d); key(b, 'ArrowDown'); await w(20); const pop = $('.ac-pop:not([hidden])', d); ok(pop, 'pop fora do diálogo'); key(document, 'Escape'); d.close(); });
+  await t('tema claro escolhido usa color-scheme "only light"', () => { const r = document.documentElement, old = r.dataset.theme; r.dataset.theme = 'light'; const cs = getComputedStyle(r).colorScheme; old ? r.dataset.theme = old : delete r.dataset.theme; ok(/only/.test(cs) && /light/.test(cs), cs); });
+  await t('fontes: nenhum texto das demos abaixo de 12px', async () => {
+    const ruins = [];
+    for (const d of DEMOS) {
+      mount(d.id); await w(10);
+      const tw = document.createTreeWalker(palco, NodeFilter.SHOW_TEXT);
+      while (tw.nextNode()) { const e = tw.currentNode.parentElement; if (!tw.currentNode.nodeValue.trim() || !e || e.closest('.ac-sr, [hidden]') || !e.getClientRects().length) continue; const fs = parseFloat(getComputedStyle(e).fontSize); if (fs < 12) ruins.push(`${d.id}: ${fs}px "${tw.currentNode.nodeValue.trim().slice(0, 20)}"`); }
+    }
+    ok(!ruins.length, ruins.slice(0, 5).join('; '));
+  });
+  await t('fontes: escala --ac-fs-* definida e texto do iPhone sem inflar', () => { const cs = getComputedStyle(document.documentElement); ['xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl', '3xl', 'touch'].forEach(k => ok(cs.getPropertyValue('--ac-fs-' + k).trim(), '--ac-fs-' + k)); ok(parseFloat(cs.getPropertyValue('--ac-fs-touch')) >= 16, 'touch < 16px'); });
+  await t('API pública antiga preservada', () => { ['init', 'toast', 'command', 'open', 'close', 'skeleton', 'icon', 'place', 'confirm', 'alert'].forEach(k => ok(typeof Orthos[k] === 'function', k)); ok(window.Acervo === Orthos && window.Seleta === Orthos, 'aliases'); });
 
   palco.innerHTML = '';
   const passou = res.filter(r => r[1]).length;

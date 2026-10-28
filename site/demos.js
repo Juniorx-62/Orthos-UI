@@ -138,7 +138,7 @@
 
     { id: 'choice', grupo: 'Formulários', nome: 'Checkbox, Radio e Switch', desc: 'Controles nativos estilizados, com estado indeterminado e animação de mola.',
       ref: { nome: 'Radix · Switch', url: 'https://www.radix-ui.com/primitives/docs/components/switch' },
-      html: `<div style="display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));width:100%">
+      html: `<div style="display:grid;gap:22px 56px;grid-template-columns:repeat(auto-fit,minmax(180px,max-content));justify-content:center;width:100%">
   <fieldset style="border:0;padding:0;margin:0;display:grid;gap:12px"><legend class="ac-label" style="margin-bottom:10px">Notificações</legend>
     <label class="ac-check"><input type="checkbox" checked><span>Comentários<small>Quando alguém responder</small></span></label>
     <label class="ac-check"><input type="checkbox"><span>Menções</span></label>
@@ -405,6 +405,12 @@
 
   /* comportamentos extras só das demonstrações */
   window.DEMO_HOOKS = {
+    // a biblioteca só valida; a demo simula o envio e o retorno de sucesso
+    form: root => { const f = root.querySelector('[data-ac="validate"]'); f && f.addEventListener('ac:valid', e => {
+      e.preventDefault();
+      const btn = f.querySelector('[type="submit"]'); if (btn) btn.dataset.loading = 'true';
+      setTimeout(() => { if (btn) btn.dataset.loading = 'false'; Orthos.toast({ type: 'success', title: 'Conta criada', desc: 'Enviamos um link de confirmação para o seu e-mail.' }); f.reset(); }, 1100);
+    }); },
     toast: root => root.addEventListener('click', e => {
       const b = e.target.closest('[data-demo-toast]'); if (!b) return;
       const t = b.dataset.demoToast;

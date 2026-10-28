@@ -139,7 +139,7 @@
     h += `<a href="#/recentes"${cur('recentes')}>Adicionadas recentemente <span class="n">${recentes().length}</span></a>`;
     h += '<h2>Fontes</h2>';
     h += `<a href="#/fontes"${cur('fontes')}>Fontes e verificação <span class="n">${META.fontes.length}</span></a>`;
-    h += `<div class="nav__rodape"><button class="btn btn--sec btn--sm" id="btn-exp" type="button">Exportar dados pessoais</button><button class="btn btn--sec btn--sm" id="btn-imp" type="button">Importar dados pessoais</button><input type="file" id="file-imp" accept="application/json,.json" hidden><small>Favoritos, notas, tags e referências adicionadas ficam salvos neste navegador.</small></div>`;
+    h += `<div class="nav__rodape"><button class="btn btn--sec btn--sm" id="btn-exp" type="button">Exportar dados pessoais</button><button class="btn btn--sec btn--sm" id="btn-imp" type="button">Importar dados pessoais</button><input type="file" id="file-imp" accept="application/json,.json" hidden><small>Favoritos, notas, tags e referências adicionadas ficam salvos neste navegador.</small><a class="btn btn--sec btn--sm" href="../">Orthos UI: componentes</a></div>`;
     $('#nav').innerHTML = h;
     $('#btn-exp').onclick = exportar; $('#btn-imp').onclick = () => $('#file-imp').click();
     $('#file-imp').onchange = e => importar(e.target.files[0]);

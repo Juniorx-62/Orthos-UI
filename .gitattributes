@@ -1,0 +1,4 @@
+# cópia fiel do arquivo original (mvp-validacao.html): sem conversão de fim de linha, para o hash bater
+biblioteca-ui/legacy/*.html -text
+*.jpg binary
+*.png binary
