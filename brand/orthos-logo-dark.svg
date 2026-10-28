@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 236 64" width="236" height="64" role="img" aria-label="Orthos UI">
+<g transform="translate(-6 0)"><rect x="15.25" y="15.25" width="13.5" height="13.5" rx="2.25" fill="none" stroke="#f4f4f5" stroke-width="2.5"/><rect x="34" y="14" width="16" height="16" rx="3.5" fill="#f4f4f5"/><rect x="15.25" y="35.25" width="13.5" height="13.5" rx="2.25" fill="none" stroke="#f4f4f5" stroke-width="2.5"/><rect x="35.25" y="35.25" width="13.5" height="13.5" rx="2.25" fill="none" stroke="#f4f4f5" stroke-width="2.5"/></g>
+<text x="62" y="41.5" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-size="27" font-weight="600" letter-spacing="-0.6" fill="#f4f4f5">Orthos</text>
+<rect x="160" y="22" width="1.2" height="22" fill="#3a3a40"/>
+<text x="171" y="41.5" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-size="27" font-weight="400" letter-spacing="-0.3" fill="#9a9ba1">UI</text>
+</svg>
