@@ -1,0 +1,33 @@
+﻿{
+  "ok": true,
+  "file": "dist\\orthos-ui.html",
+  "failOn": "none",
+  "counts": {
+    "p0": 0,
+    "p1": 2,
+    "p2": 1
+  },
+  "findings": [
+    {
+      "severity": "P1",
+      "id": "all-caps-no-tracking",
+      "message": "Selector `.ac-cal__head span::first-letter` sets text-transform: uppercase without sufficient letter-spacing (≥0.06em).",
+      "fix": "Add `letter-spacing: 0.08em` (typical) to the same rule. ALL CAPS without tracking looks cramped — Refero's typography rules call this out as a top-tier amateur tell.",
+      "snippet": ".ac-cal__head span::first-letter { text-transform: uppercase; }"
+    },
+    {
+      "severity": "P1",
+      "id": "raw-hex",
+      "message": "75 raw hex values found outside :root — design tokens probably not honoured.",
+      "fix": "Move every color into the :root token block (--bg / --surface / --fg / --muted / --border / --accent) and reference via var(). Use color-mix() for derived tones.",
+      "snippet": "#0a0a0b #121214 #19191c #222226 #232327 #33333a"
+    },
+    {
+      "severity": "P2",
+      "id": "missing-section-anchor",
+      "message": "5 of 5 <section>s lack data-od-id (or data-screen-label).",
+      "fix": "Add data-od-id=\"kebab-slug\" (or data-screen-label=\"01 Cover\" for slides) to every top-level <section> so comment mode can target it."
+    }
+  ],
+  "agentMessage": "<artifact-lint>\nThe artifact you just produced has the following anti-slop / design-token issues.\n0 P0 (must fix), 2 P1 (should fix), 1 P2 (nice to have).\nRe-emit a corrected `<artifact>` in your next turn — do not write a separate explanation; the user has the previous version already.\n\n**[P1] all-caps-no-tracking** — Selector `.ac-cal__head span::first-letter` sets text-transform: uppercase without sufficient letter-spacing (≥0.06em).\n  Fix: Add `letter-spacing: 0.08em` (typical) to the same rule. ALL CAPS without tracking looks cramped — Refero's typography rules call this out as a top-tier amateur tell.\n  Snippet: `.ac-cal__head span::first-letter { text-transform: uppercase; }`\n\n**[P1] raw-hex** — 75 raw hex values found outside :root — design tokens probably not honoured.\n  Fix: Move every color into the :root token block (--bg / --surface / --fg / --muted / --border / --accent) and reference via var(). Use color-mix() for derived tones.\n  Snippet: `#0a0a0b #121214 #19191c #222226 #232327 #33333a`\n\n**[P2] missing-section-anchor** — 5 of 5 <section>s lack data-od-id (or data-screen-label).\n  Fix: Add data-od-id=\"kebab-slug\" (or data-screen-label=\"01 Cover\" for slides) to every top-level <section> so comment mode can target it.\n\n</artifact-lint>"
+}

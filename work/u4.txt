@@ -1,0 +1,7 @@
+https://ui.shadcn.com/docs/components/button
+https://m3.material.io/components/buttons/overview
+https://www.carbondesignsystem.com/building-blocks/core/patterns/common-actions
+https://m3.material.io/components/common-buttons/overview
+https://atlassian.design/components/button/
+https://primer.style/product/components/button/
+https://design.gitlab.com/components/button/

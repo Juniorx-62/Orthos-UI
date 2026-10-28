@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "open-design": {
+      "type": "stdio",
+      "command": "C:\\Users\\4Selet\\AppData\\Local\\Programs\\Open Design\\Open Design.exe",
+      "args": [
+        "C:\\Users\\4Selet\\AppData\\Local\\Programs\\Open Design\\resources\\app\\prebundled\\daemon\\daemon-cli.mjs",
+        "mcp"
+      ],
+      "env": {
+        "OD_DATA_DIR": "C:\\Users\\4Selet\\AppData\\Roaming\\Open Design\\namespaces\\release-stable-win\\data",
+        "OD_SIDECAR_CLIENT_ENDPOINT": "\\\\.\\pipe\\open-design-sidecar-aec3c29c94f7115e629ed6168b6057f6",
+        "OD_MCP_BOOTSTRAP_COMMAND": "C:\\Users\\4Selet\\AppData\\Local\\Programs\\Open Design\\Open Design.exe",
+        "OD_MCP_BOOTSTRAP_ARGS": "[\"--headless\"]",
+        "ELECTRON_RUN_AS_NODE": "1"
+      }
+    }
+  }
+}

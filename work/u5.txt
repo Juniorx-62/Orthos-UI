@@ -1,0 +1,9 @@
+https://kobra.systems/components/avatar
+https://kobra.systems/components/toggle-group
+https://kobra.systems/components/magnetic-dropzone
+https://magicui.design/docs/components/marquee
+https://motion-primitives.com/docs/magnetic
+https://motion-primitives.com/docs/accordion
+https://motion-primitives.com/docs/text-shimmer
+https://motion-primitives.com/docs/text-scramble
+https://kobra.systems/zz-bogus
