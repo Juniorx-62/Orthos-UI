@@ -1,3 +1,5 @@
+Atualização de teste do Git — 27/10/2026.
+
 # Orthos UI
 
 Biblioteca de componentes em HTML, CSS e JavaScript puro, sem dependências, com site de documentação.
