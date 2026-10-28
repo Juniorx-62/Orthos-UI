@@ -67,9 +67,7 @@
         <nav class="pn" aria-label="Anterior e próximo">${prev ? `<a href="#/${prev.id}"><small>Anterior</small>${esc(prev.nome)}</a>` : '<span></span>'}${next ? `<a href="#/${next.id}"><small>Próximo</small>${esc(next.nome)}</a>` : ''}</nav>
       </aside></div>`;
     const mount = () => {
-      // remove flutuantes órfãos de uma demo anterior
-      document.querySelectorAll('body > .ac-pop, body > .ac-tip').forEach(n => n.remove());
-      document.querySelectorAll('body > dialog.ac-dialog:not(#ac-command), body > dialog.ac-sheet').forEach(n => n.remove());
+      cleanup();
       const demo = $('#demo'); demo.innerHTML = d.html; A.init(demo); H[d.id] && H[d.id](demo);
     };
     mount();
@@ -78,6 +76,12 @@
     $('#replay').onclick = mount;
     $('#md-open').onclick = () => showMarkdown(d);
     $('#copy-code').onclick = async () => { try { await navigator.clipboard.writeText(d.html); A.toast({ type: 'success', title: 'Código copiado' }); } catch (_) { A.toast({ type: 'danger', title: 'Não foi possível copiar' }); } };
+  }
+
+  // remove flutuantes órfãos da página anterior (pops, dicas e diálogos movidos para o <body>)
+  function cleanup() {
+    document.querySelectorAll('body > .ac-pop, body > .ac-tip').forEach(n => n.remove());
+    document.querySelectorAll('body > dialog.ac-dialog:not(#ac-command):not(#md-dlg), body > dialog.ac-sheet').forEach(n => n.remove());
   }
 
   /* ---------- guia de uso e Markdown ---------- */
@@ -136,9 +140,9 @@
         <div class="code"><div class="code__bar"><span>index.html</span></div><pre><code>${highlight(`<link rel="stylesheet" href="orthos.css">\n\n<button class="ac-btn" data-ac-open="#confirm">Excluir</button>\n\n<dialog class="ac ac-dialog" id="confirm">\n  <div class="ac-dialog__in">\n    <h2 class="ac-dialog__title">Excluir projeto?</h2>\n    <button class="ac-btn" data-ac-close>Cancelar</button>\n  </div>\n</dialog>\n\n<script src="orthos.js"></script>`)}</code></pre></div>
         <div class="code"><div class="code__bar"><span>app.js</span></div><pre><code>${highlight(`// componentes declarativos: data-ac="tabs", "otp", "table"…\nOrthos.init(document);\n\n// APIs\nOrthos.toast({ type: 'success', title: 'Salvo' });\nOrthos.command({ items: [{ label: 'Abrir', run() {} }] });\nOrthos.skeleton(card, true);\n\n// eventos\notp.addEventListener('ac:complete', e => e.detail.valid);`)}</code></pre></div>
       </section>
-      <footer class="foot"><span>Orthos UI · HTML, CSS e JS sem dependências</span><span>Referências: shadcn/ui, Radix, Kobra, Motion-Primitives, boneyard, Magic UI, GOV.UK, Carbon</span></footer>
+      <footer class="foot"><span>Orthos UI · HTML, CSS e JS sem dependências</span><span>Referências: shadcn/ui, Radix, Kobra, Motion-Primitives, boneyard, Magic UI, GOV.UK, Carbon · <a href="biblioteca-ui/">Biblioteca de referências UI/UX</a></span></footer>
     </div>`;
-    A.init(main); H.toast(main);
+    A.init(main); H.toast($('.home', main));
     $('#hero-cmd').onclick = openSiteCommand;
   }
 
@@ -158,9 +162,12 @@
   document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openSiteCommand(); } });
 
   /* ---------- menu mobile ---------- */
-  const side = $('#side'), veil = $('#veil'), so = $('#side-open');
-  const openSide = () => { side.classList.add('is-open'); veil.hidden = false; so.setAttribute('aria-expanded', 'true'); $('#side-close').focus(); };
-  function closeSide() { side.classList.remove('is-open'); veil.hidden = true; so.setAttribute('aria-expanded', 'false'); }
+  const side = $('#side'), veil = $('#veil'), so = $('#side-open'), narrow = matchMedia('(max-width: 860px)');
+  // fechado no celular, o menu sai da tela e também da ordem do Tab
+  const syncSide = () => { side.inert = narrow.matches && !side.classList.contains('is-open'); };
+  const openSide = () => { side.classList.add('is-open'); veil.hidden = false; so.setAttribute('aria-expanded', 'true'); syncSide(); $('#side-close').focus(); };
+  function closeSide() { side.classList.remove('is-open'); veil.hidden = true; so.setAttribute('aria-expanded', 'false'); syncSide(); }
+  narrow.addEventListener('change', syncSide);
   so.onclick = openSide; $('#side-close').onclick = () => { closeSide(); so.focus(); }; veil.onclick = closeSide;
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && side.classList.contains('is-open')) { closeSide(); so.focus(); } });
 
@@ -169,6 +176,7 @@
     const id = location.hash.replace(/^#\/?/, '');
     const d = D.find(x => x.id === id);
     renderNav(d && d.id);
+    if (!d) cleanup();
     if (d) { renderDoc(d); document.title = `${d.nome} — Orthos UI`; }
     else if (id === 'padroes') { renderNav('padroes'); main.innerHTML = `<div class="home prose">${window.PADROES || ''}</div>`; document.title = 'Padrões — Orthos UI'; }
     else { renderHome(); document.title = 'Orthos UI — biblioteca de componentes'; }

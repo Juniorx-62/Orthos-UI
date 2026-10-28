@@ -2,7 +2,7 @@
    Orthos UI — comportamentos (JS sem dependências)
    Os componentes são ativados por atributos data-ac="nome".
    Orthos.init(raiz) ativa tudo dentro de "raiz" (chamado automaticamente no carregamento).
-   APIs: Orthos.toast(), Orthos.command(), Orthos.skeleton(), Orthos.open(), Orthos.close()
+   APIs: Orthos.toast(), Orthos.command(), Orthos.skeleton(), Orthos.open(), Orthos.close(), Orthos.confirm(), Orthos.alert()
    ===================================================================== */
 (function (global) {
   'use strict';
@@ -30,7 +30,8 @@
 
   /* ---------------- posicionamento de flutuantes ---------------- */
   function place(pop, anchor, side = 'bottom', align = 'start', gap = 8) {
-    const a = anchor.getBoundingClientRect(), p = pop.getBoundingClientRect();
+    // tamanho de layout do pop: o getBoundingClientRect pegaria a escala .95 da animação de abertura e o pop vazaria da tela
+    const a = anchor.getBoundingClientRect(), p = { width: pop.offsetWidth, height: pop.offsetHeight };
     const vw = innerWidth, vh = innerHeight;
     let top, left;
     if (side === 'top') top = a.top - p.height - gap; else if (side === 'bottom') top = a.bottom + gap; else top = a.top + a.height / 2 - p.height / 2;
@@ -67,17 +68,21 @@
   function openPop(pop, anchor, opts = {}) {
     closeAllPops(pop);
     pop.hidden = false;
-    if (pop.parentElement !== document.body) { pop._home = pop.parentElement; document.body.appendChild(pop); }
+    // dentro de um <dialog> aberto o pop fica no próprio diálogo: no <body> ficaria inerte, atrás da camada do modal
+    const host = (anchor.closest && anchor.closest('dialog[open]')) || document.body;
+    if (pop.parentElement !== host) { if (!pop._home) pop._home = pop.parentElement; host.appendChild(pop); }
     pop.classList.add('ac');
     place(pop, anchor, opts.side, opts.align);
-    pop._anchor = anchor; anchor.setAttribute('aria-expanded', 'true');
+    // owner: quem anuncia aria-expanded quando a âncora de posição é outro elemento (ex.: o campo do seletor de pessoas)
+    pop._anchor = anchor; pop._owner = opts.owner || anchor; pop._owner.setAttribute('aria-expanded', 'true');
     openPops.add(pop);
     pop._onClose = opts.onClose;
   }
   function closePop(pop, focusBack) {
     if (!pop || pop.hidden) return;
     pop.hidden = true; openPops.delete(pop);
-    if (pop._anchor) { pop._anchor.setAttribute('aria-expanded', 'false'); if (focusBack) pop._anchor.focus(); }
+    const owner = pop._owner || pop._anchor;
+    if (owner) { owner.setAttribute('aria-expanded', 'false'); if (focusBack) owner.focus(); }
     pop._onClose && pop._onClose();
   }
   function closeAllPops(except) { openPops.forEach(p => { if (p !== except) closePop(p); }); }
@@ -87,12 +92,22 @@
   addEventListener('scroll', e => { openPops.forEach(p => { if (!p.contains(e.target)) closePop(p); }); }, true);
 
   /* ---------------- diálogos (dialog nativo + animação de saída) ---------------- */
-  function open(dlg) { if (typeof dlg === 'string') dlg = $(dlg); if (!dlg || dlg.open) return; dlg.classList.remove('is-closing'); dlg.showModal(); }
+  function open(dlg) {
+    if (typeof dlg === 'string') dlg = $(dlg); if (!dlg) return;
+    if (dlg._closing) { dlg._closing(); return; } // reabriu durante a animação de saída: cancela o fechamento
+    if (dlg.open) return; dlg.showModal();
+  }
+  // aria-busy="true" segura o diálogo aberto (Esc, clique fora e data-ac-close) enquanto uma ação está em andamento
   function close(dlg, value) {
-    if (typeof dlg === 'string') dlg = $(dlg); if (!dlg || !dlg.open) return;
+    if (typeof dlg === 'string') dlg = $(dlg); if (!dlg || !dlg.open || dlg._closing || dlg.getAttribute('aria-busy') === 'true') return;
     if (reduce()) { dlg.close(value); return; }
     dlg.classList.add('is-closing');
-    setTimeout(() => { dlg.classList.remove('is-closing'); dlg.close(value); }, 200);
+    let t;
+    const done = keep => { clearTimeout(t); dlg.removeEventListener('animationend', end); dlg._closing = null; dlg.classList.remove('is-closing'); if (keep !== true) dlg.close(value); };
+    const end = e => { if (e.target === dlg) done(); };
+    dlg._closing = () => done(true);
+    dlg.addEventListener('animationend', end);
+    t = setTimeout(done, 400); // reserva, caso a animação não rode
   }
   document.addEventListener('click', e => {
     const o = e.target.closest('[data-ac-open]'); if (o) { e.preventDefault(); open(o.getAttribute('data-ac-open')); return; }
@@ -115,8 +130,9 @@
     return host;
   }
   const restack = host => { const ts = $$('.ac-toast:not(.is-leaving)', host); ts.forEach((t, i) => t.style.setProperty('--k', ts.length - 1 - i)); };
+  let toastReturn = null;
   document.addEventListener('keydown', e => {
-    if (e.altKey && !e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 't') { const h = $('.ac-toaster'); const last = h && $$('.ac-toast', h).pop(); if (last) { e.preventDefault(); last.focus(); } }
+    if (e.altKey && !e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 't') { const h = $('.ac-toaster'); const last = h && $$('.ac-toast', h).pop(); if (last) { e.preventDefault(); if (!h.contains(document.activeElement)) toastReturn = document.activeElement; last.focus(); } }
   });
   function toast(o) {
     if (typeof o === 'string') o = { title: o };
@@ -133,14 +149,21 @@
       if (o.action) t.querySelector('.ac-toast__action').onclick = () => { o.action.onClick && o.action.onClick(); kill(); };
     };
     let timer;
-    const kill = () => { if (t.classList.contains('is-leaving')) return; clearTimeout(timer); t.classList.add('is-leaving'); restack(host); setTimeout(() => { t.remove(); restack(host); }, 250); };
+    const kill = () => {
+      if (t.classList.contains('is-leaving')) return; clearTimeout(timer); t.classList.add('is-leaving'); restack(host);
+      // o foco estava no aviso: passa para o aviso seguinte ou volta para onde estava antes do Alt+T
+      if (t.contains(document.activeElement)) { const next = $$('.ac-toast:not(.is-leaving)', host).pop(); if (next) next.focus(); else if (toastReturn && toastReturn.isConnected) toastReturn.focus(); else host.focus(); }
+      setTimeout(() => { t.remove(); restack(host); }, 250);
+    };
     const arm = (ms) => { clearTimeout(timer); if (ms !== Infinity) timer = setTimeout(kill, ms); };
     paint(o); host.appendChild(t);
     while ($$('.ac-toast', host).length > 5) host.firstElementChild.remove();
     restack(host);
     arm(o.type === 'loading' ? Infinity : (o.duration || 4200));
     t.addEventListener('mouseenter', () => clearTimeout(timer));
-    t.addEventListener('mouseleave', () => { if (t.getAttribute('aria-busy') !== 'true') arm(1800); });
+    t.addEventListener('mouseleave', () => { if (t.getAttribute('aria-busy') !== 'true' && !t.contains(document.activeElement)) arm(1800); });
+    t.addEventListener('focusin', () => clearTimeout(timer));
+    t.addEventListener('focusout', e => { if (!t.contains(e.relatedTarget) && !t.matches(':hover') && t.getAttribute('aria-busy') !== 'true' && !t.classList.contains('is-leaving')) arm(1800); });
     t.addEventListener('keydown', e => { if (e.key === 'Escape' || e.key === 'Delete') { e.preventDefault(); kill(); } });
     // arrastar para dispensar
     let x0 = null;
@@ -226,6 +249,8 @@
   document.addEventListener('focusout', hideTip);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
 
+  // dígitos arábicos (٠-٩) e persas (۰-۹) viram 0-9: teclados e SMS nesses idiomas mandam o código assim
+  const otpDigits = s => String(s || '').replace(/[٠-٩۰-۹]/g, c => String(c.charCodeAt(0) & 15));
   C.otp = el => {
     const len = +el.dataset.length || 6, half = Math.ceil(len / 2), valid = el.dataset.valid;
     el.setAttribute('role', 'group'); el.setAttribute('aria-label', el.dataset.label || 'Código de verificação');
@@ -242,15 +267,16 @@
         if (!ok) setTimeout(() => { if (el.dataset.state === 'error') { s.forEach(x => { x.value = ''; x.classList.remove('is-filled'); }); s[0].focus(); } }, 900);
       }
     };
-    const fill = (from, txt) => { [...txt.replace(/\D/g, '')].forEach((c, k) => { const x = s[from + k]; if (x) { x.value = c; x.classList.add('is-filled'); } }); const nx = s[Math.min(from + txt.length, len - 1)]; nx.focus(); check(); };
+    const fill = (from, txt) => { const d = otpDigits(txt).replace(/\D/g, ''); [...d].forEach((c, k) => { const x = s[from + k]; if (x) { x.value = c; x.classList.add('is-filled'); } }); const nx = s[Math.min(from + d.length, len - 1)]; nx.focus(); check(); };
     s.forEach((x, i) => {
-      x.addEventListener('input', () => { const d = x.value.replace(/\D/g, ''); x.value = ''; if (d) fill(i, d); else x.classList.remove('is-filled'); });
+      x.addEventListener('input', () => { const d = otpDigits(x.value).replace(/\D/g, ''); x.value = ''; if (d) fill(i, d); else x.classList.remove('is-filled'); });
       x.addEventListener('keydown', e => {
         if (e.key === 'Backspace' && !x.value && i > 0) { e.preventDefault(); s[i - 1].value = ''; s[i - 1].classList.remove('is-filled'); s[i - 1].focus(); el.dataset.state = ''; }
         if (e.key === 'ArrowLeft' && i > 0) s[i - 1].focus();
         if (e.key === 'ArrowRight' && i < len - 1) s[i + 1].focus();
       });
-      x.addEventListener('paste', e => { e.preventDefault(); fill(i, (e.clipboardData || window.clipboardData).getData('text')); });
+      // colar a mensagem inteira ("Seu código: 482 913. Válido por 10 min") acha o código; sem um trecho de N dígitos, cola como antes
+      x.addEventListener('paste', e => { e.preventDefault(); const t = otpDigits((e.clipboardData || window.clipboardData).getData('text')); const code = (t.match(/\d(?:[ -]?\d)*/g) || []).map(r => r.replace(/\D/g, '')).find(r => r.length === len); code ? fill(0, code) : fill(i, t); });
       x.addEventListener('focus', () => x.select());
     });
   };
@@ -273,7 +299,13 @@
       if (v.valueMissing) return f.type === 'checkbox' ? 'Marque esta opção para continuar.' : `Informe ${lab.toLowerCase()}.`;
       if (v.typeMismatch && f.type === 'email') return 'Use um e-mail válido, como nome@empresa.com.';
       if (v.tooShort) return `Use pelo menos ${f.minLength} caracteres (faltam ${f.minLength - f.value.length}).`;
+      if (v.tooLong) return `Use no máximo ${f.maxLength} caracteres.`;
+      if (v.rangeUnderflow) return `Use um valor a partir de ${f.min}.`;
+      if (v.rangeOverflow) return `Use um valor até ${f.max}.`;
+      if (v.stepMismatch) return 'Use um valor válido para este campo.';
       if (v.patternMismatch) return f.dataset.patternMsg || 'Formato inválido.';
+      if (v.badInput || v.typeMismatch) return 'Formato inválido.';
+      if (v.customError) return f.validationMessage;
       return '';
     };
     const show = (f, live) => {
@@ -281,7 +313,8 @@
       let er = box ? box.querySelector('.ac-error') : (lab && lab.nextElementSibling && lab.nextElementSibling.matches('.ac-error') ? lab.nextElementSibling : null);
       const m = msg(f);
       if (!er && m) { er = document.createElement('p'); er.className = 'ac-error'; er.id = id('err'); if (box) box.appendChild(er); else (lab || f).after(er); }
-      if (er) { er.innerHTML = m ? icon('alert') + esc(m) : ''; f.setAttribute('aria-describedby', er.id); }
+      // mantém a dica que já descrevia o campo e acrescenta o erro
+      if (er) { er.innerHTML = m ? icon('alert') + esc(m) : ''; const ids = (f.getAttribute('aria-describedby') || '').split(/\s+/).filter(x => x && x !== er.id); f.setAttribute('aria-describedby', [...ids, er.id].join(' ')); }
       f.setAttribute('aria-invalid', !!m);
       return !m;
     };
@@ -289,14 +322,15 @@
       f.addEventListener('blur', () => { if (f.value || f.dataset.touched) { f.dataset.touched = 1; show(f); } });
       f.addEventListener('input', () => { if (f.getAttribute('aria-invalid') === 'true') show(f); });
     });
+    // Só barra o envio quando há erro. Válido, emite "ac:valid" (cancelável) e o formulário segue o caminho normal;
+    // quem quiser enviar por fetch chama preventDefault() nesse evento.
     form.addEventListener('submit', e => {
-      e.preventDefault();
       const fields = $$('input, textarea, select', form).filter(f => f.willValidate);
       const bad = fields.filter(f => !show(f));
-      if (bad.length) { bad[0].focus(); return; }
-      const btn = form.querySelector('[type="submit"]'); btn.dataset.loading = 'true';
-      setTimeout(() => { btn.dataset.loading = 'false'; toast({ type: 'success', title: 'Conta criada', desc: 'Enviamos um link de confirmação para o seu e-mail.' }); form.reset(); fields.forEach(f => { f.removeAttribute('aria-invalid'); delete f.dataset.touched; }); $$('.ac-error', form).forEach(x => x.innerHTML = ''); }, 1100);
+      if (bad.length) { e.preventDefault(); bad[0].focus(); return; }
+      if (!form.dispatchEvent(new CustomEvent('ac:valid', { bubbles: true, cancelable: true, detail: { submitter: e.submitter || null } }))) e.preventDefault();
     });
+    form.addEventListener('reset', () => setTimeout(() => { $$('input, textarea, select', form).forEach(f => { f.removeAttribute('aria-invalid'); delete f.dataset.touched; }); $$('.ac-error', form).forEach(x => x.innerHTML = ''); }));
   };
 
   C.combo = el => {
@@ -400,7 +434,7 @@
     const cols = JSON.parse(el.dataset.columns), rows = JSON.parse(el.dataset.rows);
     const per = +el.dataset.perPage || 5; let q = '', sortK = null, dir = 1, page = 0, status = ''; const sel = new Set();
     const statuses = [...new Set(rows.map(r => r.status))];
-    el.innerHTML = `<div class="ac-table-wrap"><div class="ac-table-tools"><div class="ac-input-wrap">${icon('search')}<input class="ac-input" type="search" placeholder="Filtrar por nome ou e-mail" aria-label="Filtrar tabela"></div><select class="ac-select" style="width:auto;height:34px" aria-label="Status"><option value="">Todos os status</option>${statuses.map(s => `<option>${esc(s)}</option>`).join('')}</select><div class="ac-bulk" role="status"><span class="n"></span><button class="ac-btn ac-btn--sm" type="button" data-bulk="del">${icon('trash')}Excluir</button></div></div><div class="ac-table-scroll"><table class="ac-table"><thead></thead><tbody></tbody></table></div><div class="ac-table-foot"><span class="info" aria-live="polite"></span><div class="ac-pager"></div></div></div>`;
+    el.innerHTML = `<div class="ac-table-wrap"><div class="ac-table-tools"><div class="ac-input-wrap">${icon('search')}<input class="ac-input" type="search" placeholder="Filtrar por nome ou e-mail" aria-label="Filtrar tabela"></div><select class="ac-select" style="width:auto;height:34px" aria-label="Status"><option value="">Todos os status</option>${statuses.map(s => `<option>${esc(s)}</option>`).join('')}</select><div class="ac-bulk" role="status"><span class="n"></span><button class="ac-btn ac-btn--sm" type="button" data-bulk="del">${icon('trash')}Excluir</button></div></div><div class="ac-table-scroll"><table class="ac-table ac-table--stack"><thead></thead><tbody></tbody></table></div><div class="ac-table-foot"><span class="info" aria-live="polite"></span><div class="ac-pager"></div></div></div>`;
     const [search, filt, bulk, thead, tbody, info, pager] = [$('input', el), $('select', el), $('.ac-bulk', el), $('thead', el), $('tbody', el), $('.info', el), $('.ac-pager', el)];
     const view = () => { const n = s => String(s).toLowerCase(); let r = rows.filter(x => (!status || x.status === status) && (!q || n(x.name + ' ' + x.email).includes(n(q)))); if (sortK) r = r.slice().sort((a, b) => (a[sortK] > b[sortK] ? 1 : a[sortK] < b[sortK] ? -1 : 0) * dir); return r; };
     const cell = (c, r) => {
@@ -409,17 +443,23 @@
       if (c.money) return 'R$ ' + Number(r[c.k]).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
       return esc(r[c.k]);
     };
+    // guarda qual controle tinha o foco para devolver depois que thead/tbody/paginador forem refeitos
+    const focusKey = () => { const a = document.activeElement; if (!a || !el.contains(a)) return null; if (a.dataset.id) return `input[data-id="${a.dataset.id}"]`; if (a.closest('thead') && a.type === 'checkbox') return 'thead input'; if (a.dataset.p) return a.getAttribute('aria-label') ? `[data-p][aria-label="${a.getAttribute('aria-label')}"]` : '[aria-current="page"]'; return null; };
     const render = () => {
+      const fk = focusKey();
       const all = view(), pages = Math.max(1, Math.ceil(all.length / per)); page = Math.min(page, pages - 1);
       const slice = all.slice(page * per, page * per + per), allSel = slice.length && slice.every(r => sel.has(r.id)), some = slice.some(r => sel.has(r.id));
-      thead.innerHTML = `<tr><th style="width:44px"><label class="ac-check"><input type="checkbox" aria-label="Selecionar página" ${allSel ? 'checked' : ''}></label></th>${cols.map(c => `<th class="${c.num ? 'num' : ''}" ${sortK === c.k ? `aria-sort="${dir > 0 ? 'ascending' : 'descending'}"` : ''}>${c.sort ? `<button class="ac-sort" type="button" data-k="${c.k}">${esc(c.label)}${icon('sort')}</button>` : esc(c.label)}</th>`).join('')}</tr>`;
+      thead.innerHTML = `<tr><th class="ac-table__select" style="width:44px"><label class="ac-check"><input type="checkbox" aria-label="Selecionar página" ${allSel ? 'checked' : ''}></label></th>${cols.map(c => `<th class="${c.num ? 'num' : ''}" ${sortK === c.k ? `aria-sort="${dir > 0 ? 'ascending' : 'descending'}"` : ''}>${c.sort ? `<button class="ac-sort" type="button" data-k="${c.k}">${esc(c.label)}${icon('sort')}</button>` : esc(c.label)}</th>`).join('')}</tr>`;
       $('thead input', el).indeterminate = !allSel && some;
-      tbody.innerHTML = slice.length ? slice.map(r => `<tr data-selected="${sel.has(r.id)}"><td><label class="ac-check"><input type="checkbox" data-id="${r.id}" aria-label="Selecionar ${esc(r.name)}" ${sel.has(r.id) ? 'checked' : ''}></label></td>${cols.map(c => `<td class="${c.num ? 'num' : ''}">${cell(c, r)}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${cols.length + 1}" style="height:auto;padding:28px"><div class="ac-empty" style="border:0;padding:8px"><h4>Nenhum resultado</h4><p>Ajuste a busca ou o filtro de status.</p><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button" data-clear>Limpar filtros</button></div></td></tr>`;
+      // data-label: no celular (.ac-table--stack) cada linha vira um cartão "rótulo: valor"; a coluna name, sem rótulo, é o título
+      tbody.innerHTML = slice.length ? slice.map(r => `<tr data-selected="${sel.has(r.id)}"><td class="ac-table__select"><label class="ac-check"><input type="checkbox" data-id="${r.id}" aria-label="Selecionar ${esc(r.name)}" ${sel.has(r.id) ? 'checked' : ''}></label></td>${cols.map(c => `<td class="${c.num ? 'num' : ''}"${c.k === 'name' ? '' : ` data-label="${esc(c.label)}"`}>${cell(c, r)}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${cols.length + 1}" style="height:auto;padding:28px"><div class="ac-empty" style="border:0;padding:8px"><h4>Nenhum resultado</h4><p>Ajuste a busca ou o filtro de status.</p><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button" data-clear>Limpar filtros</button></div></td></tr>`;
       info.textContent = all.length ? `${page * per + 1}–${Math.min(all.length, page * per + per)} de ${all.length}` : '0 resultados';
       let ph = `<button type="button" data-p="${page - 1}" ${page === 0 ? 'disabled' : ''} aria-label="Página anterior">${icon('left')}</button>`;
       for (let i = 0; i < pages; i++) ph += `<button type="button" data-p="${i}" ${i === page ? 'aria-current="page"' : ''}>${i + 1}</button>`;
       pager.innerHTML = ph + `<button type="button" data-p="${page + 1}" ${page >= pages - 1 ? 'disabled' : ''} aria-label="Próxima página">${icon('right')}</button>`;
       bulk.classList.toggle('is-on', sel.size > 0); $('.n', bulk).textContent = `${sel.size} selecionado${sel.size > 1 ? 's' : ''}`;
+      tableRoles($('table', el));
+      if (fk) { const n = $(fk, el); if (n && !n.disabled) n.focus(); else { const c = $('[aria-current="page"]', pager); c && c.focus(); } }
     };
     search.addEventListener('input', () => { q = search.value; page = 0; render(); });
     filt.addEventListener('change', () => { status = filt.value; page = 0; render(); });
@@ -446,7 +486,7 @@
     const rz = $('[data-ac-resize]', el); if (rz) sidebarResize(el, rz);
     const t = $('[data-ac-toggle]', el);
     t && t.addEventListener('click', () => { const c = el.dataset.collapsed !== 'true'; el.dataset.collapsed = c; t.setAttribute('aria-expanded', !c); t.setAttribute('aria-label', c ? 'Expandir menu' : 'Recolher menu'); });
-    $$('.ac-sidebar__item', el).forEach(a => { a.addEventListener('click', e => { e.preventDefault(); $$('.ac-sidebar__item', el).forEach(x => x.removeAttribute('aria-current')); a.setAttribute('aria-current', 'page'); }); const txt = $('.ac-sidebar__text', a); if (txt) a.dataset.tip = txt.textContent; a.dataset.tipSide = 'right'; });
+    $$('.ac-sidebar__item', el).forEach(a => { a.addEventListener('click', e => { const h = a.getAttribute('href'); if (!h || h === '#') e.preventDefault(); $$('.ac-sidebar__item', el).forEach(x => x.removeAttribute('aria-current')); a.setAttribute('aria-current', 'page'); }); const txt = $('.ac-sidebar__text', a); if (txt) a.dataset.tip = txt.textContent; a.dataset.tipSide = 'right'; });
   };
 
   C.stepper = el => {
@@ -457,8 +497,9 @@
   };
 
   C['text-effect'] = el => {
-    const txt = el.dataset.text || el.textContent.trim(); el.setAttribute('aria-label', txt);
-    const play = () => { el.innerHTML = txt.split(/(\s+)/).map((w, i) => /^\s+$/.test(w) ? w : `<span class="w" aria-hidden="true" style="--i:${i / 2}">${esc(w)}</span>`).join(''); };
+    const txt = el.dataset.text || el.textContent.trim();
+    // aria-label não vale em <p>/<h1>/<span>: o texto inteiro vai num span só para leitores de tela
+    const play = () => { el.innerHTML = `<span class="ac-sr">${esc(txt)}</span>` + txt.split(/(\s+)/).map((w, i) => /^\s+$/.test(w) ? w : `<span class="w" aria-hidden="true" style="--i:${i / 2}">${esc(w)}</span>`).join(''); };
     play(); el._replay = play;
   };
 
@@ -472,8 +513,10 @@
 
   C.scramble = el => {
     const txt = el.textContent, chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&*'; let raf;
-    const run = () => { cancelAnimationFrame(raf); let f = 0; const tick = () => { el.textContent = [...txt].map((c, i) => c === ' ' ? ' ' : i < f / 2 ? c : chars[Math.random() * chars.length | 0]).join(''); f++; if (f / 2 <= txt.length) raf = requestAnimationFrame(tick); else el.textContent = txt; }; tick(); };
-    el.setAttribute('aria-label', txt); el.addEventListener('mouseenter', run); el.addEventListener('focus', run); el._replay = run;
+    // o texto embaralhado fica escondido do leitor de tela, que lê sempre o texto final
+    el.innerHTML = `<span class="ac-sr">${esc(txt)}</span><span aria-hidden="true">${esc(txt)}</span>`; const vis = el.lastChild;
+    const run = () => { cancelAnimationFrame(raf); if (reduce()) return; let f = 0; const tick = () => { vis.textContent = [...txt].map((c, i) => c === ' ' ? ' ' : i < f / 2 ? c : chars[Math.random() * chars.length | 0]).join(''); f++; if (f / 2 <= txt.length) raf = requestAnimationFrame(tick); else vis.textContent = txt; }; tick(); };
+    el.addEventListener('mouseenter', run); el.addEventListener('focus', run); el._replay = run;
   };
 
   C.magnetic = el => {
@@ -488,7 +531,8 @@
     const v = el.dataset.values.split(',').map(Number), w = 200, h = 44, mx = Math.max(...v), mn = Math.min(...v);
     const pts = v.map((y, i) => [i / (v.length - 1) * w, h - 4 - (y - mn) / (mx - mn || 1) * (h - 8)]);
     const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
-    el.innerHTML = `<svg class="ac-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ac-spark-grad" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".14"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path class="a" d="${d} L${w} ${h} L0 ${h} Z"/><path class="l" d="${d}"/></svg>`;
+    const gid = id('ac-spark-grad');
+    el.innerHTML = `<svg class="ac-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${gid}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".14"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path class="a" d="${d} L${w} ${h} L0 ${h} Z"/><path class="l" d="${d}"/></svg>`;
     const l = $('path.l', el); l.style.setProperty('--len', Math.ceil(l.getTotalLength()));
   };
 
@@ -556,7 +600,7 @@
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); it[(i + (e.key === 'ArrowDown' ? 1 : -1) + it.length) % it.length].focus(); }
       else if (e.key === 'Home') { e.preventDefault(); it[0]?.focus(); }
       else if (e.key === 'End') { e.preventDefault(); it[it.length - 1]?.focus(); }
-      else if (e.key === 'Tab') closePop(pop);
+      else if (e.key === 'Tab') closePop(pop, true);
       else if (e.key.length === 1 && /\S/.test(e.key)) { const k = e.key.toLowerCase(); const n = it.slice(i + 1).concat(it.slice(0, i + 1)).find(x => x.textContent.trim().toLowerCase().startsWith(k)); n && n.focus(); }
       else if (onExit) onExit(e);
     });
@@ -598,7 +642,7 @@
       if (k === 'ArrowDown') { e.preventDefault(); move(1); } else if (k === 'ArrowUp') { e.preventDefault(); move(-1); }
       else if (k === 'Home') { e.preventDefault(); act = -1; move(1); } else if (k === 'End') { e.preventDefault(); act = opts().length; move(-1); }
       else if (k === 'Enter' || k === ' ') { e.preventDefault(); pick(act); }
-      else if (k === 'Tab') closePop(pop);
+      else if (k === 'Tab') closePop(pop, true);
       else if (k.length === 1) { clearTimeout(typedT); typed += k.toLowerCase(); typedT = setTimeout(() => typed = '', 600); const i = opts().findIndex(o => !o.disabled && o.text.toLowerCase().startsWith(typed)); if (i >= 0) { act = i; render(); } }
     });
     lb.addEventListener('click', e => { const li = e.target.closest('[data-i]'); if (li) pick(+li.dataset.i); });
@@ -729,11 +773,11 @@
     const chips = () => { ul.innerHTML = [...chosen].map(idv => { const p = opts.find(o => o.id === idv); return p ? `<li class="ac-chip"><span class="ac-avatar">${esc(ini(p.name))}</span>${esc(p.name)}<button type="button" data-rm="${esc(idv)}" aria-label="Remover ${esc(p.name)}">${icon('x')}</button></li>` : ''; }).join(''); };
     const render = () => {
       const q = norm(inp.value); list = opts.filter(o => norm(o.name + ' ' + (o.detail || '')).includes(q)); act = Math.min(act, Math.max(0, list.length - 1));
-      lb.innerHTML = list.length ? list.map((o, i) => `<li class="ac-option" role="option" id="${lb.id}-${i}" data-i="${i}" aria-selected="${chosen.has(o.id)}" data-active="${i === act}" data-checked="${chosen.has(o.id)}"><span class="ac-avatar" style="width:24px;height:24px;font-size:10px;box-shadow:none">${esc(ini(o.name))}</span>${esc(o.name)}<small>${esc(o.detail || '')}</small></li>`).join('') : '<li class="ac-listbox__empty">Ninguém encontrado.</li>';
+      lb.innerHTML = list.length ? list.map((o, i) => `<li class="ac-option" role="option" id="${lb.id}-${i}" data-i="${i}" aria-selected="${chosen.has(o.id)}" data-active="${i === act}" data-checked="${chosen.has(o.id)}"><span class="ac-avatar" style="width:24px;height:24px;font-size:var(--ac-fs-xs);box-shadow:none">${esc(ini(o.name))}</span>${esc(o.name)}<small>${esc(o.detail || '')}</small></li>`).join('') : '<li class="ac-listbox__empty">Ninguém encontrado.</li>';
       inp.setAttribute('aria-activedescendant', list.length ? `${lb.id}-${act}` : '');
       reveal($(`#${lb.id}-${act}`, lb));
     };
-    const show = () => { render(); pop.style.width = el.offsetWidth + 'px'; openPop(pop, el); };
+    const show = () => { render(); pop.style.width = el.offsetWidth + 'px'; openPop(pop, el, { owner: inp }); };
     const toggle = i => { const o = list[i]; if (!o) return; chosen.has(o.id) ? chosen.delete(o.id) : chosen.add(o.id); chips(); render(); emit(); place(pop, el); };
     inp.addEventListener('focus', show);
     inp.addEventListener('input', () => { act = 0; pop.hidden ? show() : render(); });
@@ -1289,9 +1333,339 @@
     });
   }
 
+  /* ======================= Pesquisa de 28/10/2026 (4squad, zero-7-global, 4selet-v2) ======================= */
+
+  ICONS.copy = '<path d="M7.5 14.5C7.5 11.2002 7.5 9.55025 8.52513 8.52513C9.55025 7.5 11.2002 7.5 14.5 7.5C17.7998 7.5 19.4497 7.5 20.4749 8.52513C21.5 9.55025 21.5 11.2002 21.5 14.5C21.5 17.7998 21.5 19.4497 20.4749 20.4749C19.4497 21.5 17.7998 21.5 14.5 21.5C11.2002 21.5 9.55025 21.5 8.52513 20.4749C7.5 19.4497 7.5 17.7998 7.5 14.5Z"/><path d="M7.5 16.5C6.10355 16.5 5.40533 16.5 4.84402 16.3036C3.83866 15.9518 3.0482 15.1613 2.69641 14.156C2.5 13.5947 2.5 12.8964 2.5 11.5V9.5C2.5 6.20017 2.5 4.55025 3.52513 3.52513C4.55025 2.5 6.20017 2.5 9.5 2.5H11.5C12.8964 2.5 13.5947 2.5 14.156 2.69641C15.1613 3.0482 15.9518 3.83866 16.3036 4.84402C16.5 5.40533 16.5 6.10355 16.5 7.5"/>';
+  ICONS.eye = '<path d="M21.544 11.045C21.848 11.4713 22 11.6845 22 12C22 12.3155 21.848 12.5287 21.544 12.955C20.1779 14.8706 16.6892 19 12 19C7.31078 19 3.8221 14.8706 2.45604 12.955C2.15201 12.5287 2 12.3155 2 12C2 11.6845 2.15201 11.4713 2.45604 11.045C3.8221 9.12944 7.31078 5 12 5C16.6892 5 20.1779 9.12944 21.544 11.045Z"/><path d="M15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12Z"/>';
+  ICONS['eye-off'] = '<path d="M19.439 15.439C20.3636 14.5212 21.0775 13.6091 21.544 12.955C21.848 12.5287 22 12.3155 22 12C22 11.6845 21.848 11.4713 21.544 11.045C20.1779 9.12944 16.6892 5 12 5C11.0922 5 10.2294 5.15476 9.41827 5.41827M6.74742 6.74742C4.73118 8.1072 3.24215 9.94266 2.45604 11.045C2.15201 11.4713 2 11.6845 2 12C2 12.3155 2.15201 12.5287 2.45604 12.955C3.8221 14.8706 7.31078 19 12 19C13.9908 19 15.7651 18.2557 17.2526 17.2526"/><path d="M9.85786 10C9.32783 10.53 9 11.2623 9 12.0711C9 13.6887 10.3113 15 11.9289 15C12.7377 15 13.47 14.6722 14 14.1421"/><path d="M3 3L21 21"/>';
+  ICONS.pause = '<path d="M4 7C4 5.58579 4 4.87868 4.43934 4.43934C4.87868 4 5.58579 4 7 4C8.41421 4 9.12132 4 9.56066 4.43934C10 4.87868 10 5.58579 10 7V17C10 18.4142 10 19.1213 9.56066 19.5607C9.12132 20 8.41421 20 7 20C5.58579 20 4.87868 20 4.43934 19.5607C4 19.1213 4 18.4142 4 17V7Z"/><path d="M14 7C14 5.58579 14 4.87868 14.4393 4.43934C14.8787 4 15.5858 4 17 4C18.4142 4 19.1213 4 19.5607 4.43934C20 4.87868 20 5.58579 20 7V17C20 18.4142 20 19.1213 19.5607 19.5607C19.1213 20 18.4142 20 17 20C15.5858 20 14.8787 20 14.4393 19.5607C14 19.1213 14 18.4142 14 17V7Z"/>';
+  ICONS.play = '<path d="M18.8906 12.846C18.5371 14.189 16.8667 15.138 13.5257 17.0361C10.296 18.8709 8.6812 19.7884 7.37983 19.4196C6.8418 19.2671 6.35159 18.9776 5.95624 18.5787C5 17.6139 5 15.7426 5 12C5 8.2574 5 6.3861 5.95624 5.42132C6.35159 5.02245 6.8418 4.73288 7.37983 4.58042C8.6812 4.21165 10.296 5.12907 13.5257 6.96393C16.8667 8.86197 18.5371 9.811 18.8906 11.154C19.0365 11.7084 19.0365 12.2916 18.8906 12.846Z"/>';
+  ICONS.send = '<path d="M21.0477 3.05293C18.8697 0.707363 2.48648 6.4532 2.50001 8.551C2.51535 10.9299 8.89809 11.6617 10.6672 12.1581C11.7311 12.4565 12.016 12.7625 12.2613 13.8781C13.3723 18.9305 13.9301 21.4435 15.2014 21.4996C17.2278 21.5892 23.1733 5.342 21.0477 3.05293Z"/><path d="M11.5 12.5L15 9"/>';
+  ICONS.clock = '<circle cx="12" cy="12" r="10"/><path d="M12 8V12L14 14"/>';
+
+  /* Carrossel (padrão Carousel do WAI-ARIA APG, snap-carousel do 4selet-v2 e shop-banner do zero-7): trilha com
+     scroll-snap; setas, bolinhas e pausa numa cápsula; slide fora da vista fica inerte (o Tab não cai nele). O ativo é o
+     mais perto do começo da rolagem (o último, quando a rolagem chega ao fim). data-autoplay="12000" troca sozinho e
+     para no hover, no foco e no botão Pausar, que vale mais que o hover. Com movimento reduzido não há troca sozinha. */
+  C.carousel = el => {
+    const track = $('.ac-carousel__track', el); if (!track) return;
+    const slides = [...track.children], n = slides.length;
+    if (!el.hasAttribute('role')) el.setAttribute('role', 'region');
+    el.setAttribute('aria-roledescription', 'carrossel');
+    if (!el.getAttribute('aria-label') && !el.getAttribute('aria-labelledby')) el.setAttribute('aria-label', 'Carrossel');
+    track.id = track.id || id('car');
+    slides.forEach((s, i) => { s.classList.add('ac-carousel__slide'); s.setAttribute('role', 'group'); s.setAttribute('aria-roledescription', 'slide'); s.setAttribute('aria-label', `${i + 1} de ${n}`); });
+    if (n < 2) return;
+    const auto = +el.dataset.autoplay || 0, can = auto > 0 && !reduce();
+    const bar = document.createElement('div'); bar.className = 'ac-carousel__controls';
+    bar.innerHTML = `${can ? `<button type="button" class="ac-carousel__btn" data-car="pause" aria-controls="${track.id}">${icon('pause')}${icon('play')}</button>` : ''}<button type="button" class="ac-carousel__btn" data-car="-1" aria-controls="${track.id}" aria-label="Slide anterior">${icon('left')}</button><div class="ac-carousel__dots" role="group" aria-label="Escolher slide">${slides.map((_, i) => `<button type="button" class="ac-carousel__dot" data-i="${i}" aria-controls="${track.id}" aria-label="Slide ${i + 1} de ${n}" tabindex="-1"></button>`).join('')}</div><button type="button" class="ac-carousel__btn" data-car="1" aria-controls="${track.id}" aria-label="Próximo slide">${icon('right')}</button>`;
+    el.appendChild(bar);
+    const dots = $$('.ac-carousel__dot', bar), pause = $('[data-car="pause"]', bar);
+    const left = s => s.offsetLeft - (parseFloat(getComputedStyle(track).paddingLeft) || 0);
+    const active = () => { const max = track.scrollWidth - track.clientWidth; if (max > 0 && track.scrollLeft >= max - 2) return n - 1; let b = 0, d = Infinity; slides.forEach((s, i) => { const x = Math.abs(left(s) - track.scrollLeft); if (x < d) { d = x; b = i; } }); return b; };
+    let cur = -1, raf = 0, want = null, wantT = 0;
+    const sync = () => {
+      raf = 0; const i = active(), w = track.clientWidth, sl = track.scrollLeft;
+      // inerte: o que mostra menos de 60% de si (o slide espiando ao lado não recebe foco)
+      slides.forEach((s, k) => { const a = s.offsetLeft - sl, vis = Math.min(w, a + s.offsetWidth) - Math.max(0, a); s.inert = k !== i && vis < s.offsetWidth * .6; });
+      if (i === cur) return;
+      const first = cur < 0; cur = i;
+      dots.forEach((d, k) => { if (k === i) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); d.tabIndex = k === i ? 0 : -1; });
+      if (!first) el.dispatchEvent(new CustomEvent('ac:change', { detail: { index: i, total: n }, bubbles: true }));
+    };
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(sync); };
+    const at = () => want ?? cur;
+    const go = (i, focusDot) => { i = (i + n) % n; want = i; clearTimeout(wantT); wantT = setTimeout(() => { want = null; }, 700); track.scrollTo({ left: left(slides[i]), behavior: reduce() ? 'auto' : 'smooth' }); if (focusDot) dots[i].focus(); };
+    let timer = 0, held = false, stopped = false; // held: hover ou foco dentro; stopped: botão Pausar
+    const live = () => track.setAttribute('aria-live', can && !stopped && !held ? 'off' : 'polite');
+    const arm = () => { clearTimeout(timer); live(); if (!can || held || stopped) return; timer = setTimeout(() => { if (!el.isConnected) return; if (!document.hidden) go(at() + 1); arm(); }, auto); };
+    const hold = on => { held = on; arm(); };
+    const setPause = on => { stopped = on; pause.dataset.paused = on; pause.setAttribute('aria-label', on ? 'Retomar a troca automática' : 'Pausar a troca automática'); arm(); };
+    if (pause) {
+      setPause(false);
+      el.addEventListener('pointerenter', () => hold(true));
+      el.addEventListener('pointerleave', () => hold(el.contains(document.activeElement)));
+      el.addEventListener('focusin', () => hold(true));
+      el.addEventListener('focusout', e => { if (!el.contains(e.relatedTarget)) hold(el.matches(':hover')); });
+    }
+    bar.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b === pause) setPause(!stopped); else if (b.dataset.i) go(+b.dataset.i); else go(at() + +b.dataset.car); });
+    // com o foco nos controles: ← → trocam de slide, Home e End vão às pontas; nas bolinhas o foco acompanha
+    bar.addEventListener('keydown', e => { const k = { ArrowLeft: at() - 1, ArrowRight: at() + 1, Home: 0, End: n - 1 }[e.key]; if (k === undefined) return; e.preventDefault(); go(k, e.target.classList.contains('ac-carousel__dot')); });
+    track.addEventListener('scroll', schedule, { passive: true });
+    new ResizeObserver(schedule).observe(track);
+    sync(); arm();
+    el._carousel = { go: i => go(i), next: () => go(at() + 1), prev: () => go(at() - 1), pause: () => pause && setPause(true), play: () => pause && setPause(false) };
+  };
+
+  /* Tabela em cartões no celular (table/cell do zero-7): com display: block o Safari deixa de ler a tabela como tabela;
+     os papéis ARIA devolvem cabeçalhos e células ao leitor de tela. data-ac="stack" põe a classe e os papéis. */
+  function tableRoles(t) {
+    if (!t) return;
+    t.setAttribute('role', 'table');
+    $$(':scope > thead, :scope > tbody, :scope > tfoot', t).forEach(g => g.setAttribute('role', 'rowgroup'));
+    $$('tr', t).forEach(r => r.setAttribute('role', 'row'));
+    $$('th', t).forEach(c => c.setAttribute('role', c.closest('thead') ? 'columnheader' : 'rowheader'));
+    $$('td', t).forEach(c => c.setAttribute('role', 'cell'));
+  }
+  C.stack = t => { t.classList.add('ac-table--stack'); tableRoles(t); };
+
+  /* Campo de senha (CampoSenha do 4squad e password-rules do zero-7): botão Mostrar/Esconder com aria-pressed; regras
+     que se marcam enquanto a pessoa digita (escondidas com os campos vazios), anunciadas de uma vez depois de uma pausa;
+     e a validade no próprio campo (setCustomValidity), que o data-ac="validate" já respeita ao enviar.
+     data-secret: chave de API, longe do preenchimento automático e dos gerenciadores de senha. */
+  const PW_RULES = {
+    min: n => [`pelo menos ${n} caracteres`, v => v.length >= n],
+    numero: () => ['um número', v => /\d/.test(v)],
+    maiuscula: () => ['uma letra maiúscula', v => /\p{Lu}/u.test(v)],
+    minuscula: () => ['uma letra minúscula', v => /\p{Ll}/u.test(v)],
+    especial: () => ['um caractere especial (! @ # $ …)', v => /[^\p{L}\p{N}\s]/u.test(v)]
+  };
+  const listPt = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' e ' + a[a.length - 1];
+  C.password = el => {
+    const inp = $('input', el); if (!inp) return;
+    el.classList.add('ac-password');
+    const secret = el.hasAttribute('data-secret'), what = secret ? 'chave' : 'senha';
+    if (secret) { inp.autocomplete = 'new-password'; inp.spellcheck = false; inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocorrect', 'off'); inp.setAttribute('data-1p-ignore', 'true'); inp.setAttribute('data-lpignore', 'true'); }
+    // o nome acessível fica fixo e o estado vai em aria-pressed; a dica visível troca entre Mostrar e Esconder
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'ac-password__toggle';
+    btn.setAttribute('aria-label', `Mostrar ${what}`); btn.setAttribute('aria-pressed', 'false'); btn.dataset.tip = 'Mostrar';
+    if (inp.id) btn.setAttribute('aria-controls', inp.id);
+    btn.innerHTML = icon('eye') + icon('eye-off'); inp.after(btn);
+    const reveal = on => { inp.type = on ? 'text' : 'password'; btn.setAttribute('aria-pressed', on); btn.dataset.tip = on ? 'Esconder' : 'Mostrar'; const t = document.getElementById('ac-tip'); if (t && btn.getAttribute('aria-describedby') === 'ac-tip') t.textContent = btn.dataset.tip; };
+    btn.addEventListener('click', () => reveal(inp.type === 'password'));
+    // enviado de verdade, volta a esconder: o gerenciador de senhas reconhece o campo e nada fica à mostra
+    if (inp.form) inp.form.addEventListener('submit', e => { if (!e.defaultPrevented) reveal(false); });
+    const rules = (el.dataset.rules || '').split(',').map(s => s.trim().split(':')).filter(([k]) => PW_RULES[k]).map(([k, a]) => { const [t, test] = PW_RULES[k](+a || 8); return { t, test }; });
+    const cf = el.dataset.confirm ? $(el.dataset.confirm) : null, conf = cf && (cf.matches('input') ? cf : $('input', cf));
+    if (!rules.length && !conf) return;
+    if (conf) rules.push({ t: 'as senhas conferem', test: v => !!conf.value && v === conf.value, match: true });
+    const ul = document.createElement('ul'); ul.className = 'ac-password__rules'; ul.id = id('pwr'); ul.setAttribute('aria-label', `Requisitos da ${what}`); ul.hidden = true;
+    ul.innerHTML = rules.map(r => `<li data-ok="false">${icon('check', 'ac-icon ac-password__ok')}${icon('alert', 'ac-icon ac-password__no')}<span>${esc(r.t[0].toUpperCase() + r.t.slice(1))}</span><span class="ac-sr"></span></li>`).join('');
+    const live = document.createElement('p'); live.className = 'ac-sr'; live.setAttribute('aria-live', 'polite');
+    el.after(ul, live);
+    inp.setAttribute('aria-describedby', [...(inp.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean), ul.id].join(' '));
+    let said = '', t = 0;
+    const update = quiet => {
+      const v = inp.value, ok = rules.map(r => r.test(v)), miss = rules.filter((r, k) => !ok[k] && !r.match).map(r => r.t);
+      $$('li', ul).forEach((li, k) => { li.dataset.ok = ok[k]; li.lastChild.textContent = ok[k] ? ' (atendido)' : ' (falta)'; });
+      ul.hidden = !v && !(conf && conf.value);
+      inp.setCustomValidity(v && miss.length ? `A ${what} precisa de ${listPt(miss)}.` : '');
+      if (conf) conf.setCustomValidity(conf.value && conf.value !== v ? 'As senhas não conferem.' : '');
+      // um anúncio só, depois que a pessoa para de digitar (e não um por tecla)
+      clearTimeout(t); if (quiet) return;
+      t = setTimeout(() => {
+        if (ul.hidden) { said = ''; return; }
+        const m = miss.length ? `Falta${miss.length > 1 ? 'm' : ''}: ${listPt(miss)}.` : conf && !ok[ok.length - 1] ? (conf.value ? 'As senhas ainda não conferem.' : 'Requisitos atendidos. Agora confirme a senha.') : 'Todos os requisitos atendidos.';
+        if (m !== said) live.textContent = said = m;
+      }, 400);
+    };
+    // na captura, antes do data-ac="validate", que lê a validade no mesmo evento
+    ['input', 'change'].forEach(ev => {
+      el.addEventListener(ev, () => update(), true);
+      if (conf && conf.parentElement) conf.parentElement.addEventListener(ev, e => { if (e.target === conf) update(); }, true);
+    });
+    update(true);
+  };
+
+  /* Conversa (Conversa.tsx e BotaoDescer do 4squad): balões enviados e recebidos; tocar no balão mostra a hora; botão
+     “Ir para a mensagem mais nova” quando a lista está a mais de 120 px do fim; campo de escrever (Ctrl/⌘+Enter envia).
+     O envio só emite ac:send com o texto: quem usa decide como a mensagem entra na lista (que desce sozinha). */
+  C.chat = el => {
+    const log = $('.ac-chat__log', el); if (!log) return;
+    log.setAttribute('role', 'log'); log.setAttribute('aria-live', 'polite'); if (!log.hasAttribute('tabindex')) log.tabIndex = 0;
+    if (!log.getAttribute('aria-label')) log.setAttribute('aria-label', 'Mensagens');
+    const view = document.createElement('div'); view.className = 'ac-chat__view'; log.before(view);
+    const down = document.createElement('button'); down.type = 'button'; down.className = 'ac-chat__down'; down.setAttribute('aria-label', 'Ir para a mensagem mais nova'); down.innerHTML = icon('chevron');
+    view.append(log, down);
+    // atEnd: perto do fim (até 120 px), some o botão; stuck: no fim mesmo, e a lista acompanha o que cresce lá embaixo.
+    // stuck só muda pela rolagem (subir solta, chegar ao fim prende): conteúdo crescendo não solta.
+    let atEnd = true, stuck = true, top = 0, raf = 0, pin = false, pinT = 0;
+    const gap = () => log.scrollHeight - log.scrollTop - log.clientHeight;
+    const sync = () => { raf = 0; atEnd = gap() <= 120; down.classList.toggle('is-on', !atEnd); };
+    const end = smooth => log.scrollTo({ top: log.scrollHeight, behavior: smooth && !reduce() ? 'smooth' : 'auto' });
+    log.addEventListener('scroll', () => { const t = log.scrollTop; if (gap() < 4) stuck = true; else if (t < top - 1) stuck = false; top = t; if (!raf) raf = requestAnimationFrame(sync); }, { passive: true });
+    // a lista mudou de tamanho, ou um balão cresceu (hora aberta, imagem carregada): quem estava no fim continua no fim
+    const ro = new ResizeObserver(en => { if (en.some(x => x.target === log) ? atEnd : stuck) end(); sync(); });
+    ro.observe(log);
+    const deco = m => {
+      if (m.dataset.author && !$('.ac-msg__who', m)) m.insertAdjacentHTML('afterbegin', `<span class="ac-sr ac-msg__who">${esc(m.dataset.author)}: </span>`);
+      if (m.dataset.time && !$('.ac-msg__time', m)) m.insertAdjacentHTML('beforeend', `<div class="ac-msg__time"><div><time>${esc(m.dataset.time)}</time></div></div>`);
+      ro.observe(m);
+    };
+    $$('.ac-msg', log).forEach(deco);
+    // mensagem nova: desce junto só se a pessoa já estava no fim (ou acabou de enviar); senão, o botão aparece
+    new MutationObserver(ms => { ms.forEach(m => m.addedNodes.forEach(x => { if (x.nodeType === 1) (x.matches('.ac-msg') ? [x] : $$('.ac-msg', x)).forEach(deco); })); if (atEnd || pin) end(); pin = false; sync(); }).observe(log, { childList: true });
+    log.addEventListener('click', e => {
+      const r = e.target.closest('.ac-msg__retry'); if (r) { el.dispatchEvent(new CustomEvent('ac:retry', { detail: { message: r.closest('.ac-msg') }, bubbles: true })); return; }
+      const m = e.target.closest('.ac-msg');
+      if (!m || !$('.ac-msg__time', m) || e.target.closest('a, button, input, textarea, select, [role="button"]') || String(getSelection() || '')) return;
+      m.toggleAttribute('data-open');
+    });
+    down.addEventListener('click', () => { end(true); log.focus({ preventScroll: true }); });
+    const form = $('.ac-chat__composer', el), ta = form && $('textarea', form);
+    if (ta) {
+      ta.setAttribute('aria-keyshortcuts', 'Control+Enter Meta+Enter');
+      const fit = () => { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 160) + 'px'; };
+      const send = () => {
+        const text = ta.value.trim(); if (!text) { ta.focus(); return; }
+        pin = true; clearTimeout(pinT); pinT = setTimeout(() => { pin = false; }, 1000);
+        if (el.dispatchEvent(new CustomEvent('ac:send', { detail: { text }, bubbles: true, cancelable: true }))) { ta.value = ''; fit(); }
+        ta.focus();
+      };
+      ta.addEventListener('input', fit);
+      ta.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); send(); } });
+      form.addEventListener('submit', e => { e.preventDefault(); send(); });
+    }
+    end(); sync();
+  };
+
+  /* Campo copiável (clipboard-text do zero-7, porte do Kumo): valor só de leitura, cortado com reticências, e o botão de
+     copiar colado. Copia data-copy (o valor inteiro, sem máscara), não o texto da tela. Se a área de transferência falhar,
+     o valor inteiro aparece selecionado, com a dica do atalho para copiar à mão. */
+  const copyText = async (text, host) => {
+    try { await navigator.clipboard.writeText(text); return true; } catch (_) { /* tenta o caminho antigo */ }
+    try { const ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0'; host.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return !!ok; } catch (_) { return false; }
+  };
+  C.copyfield = el => {
+    el.classList.add('ac-copyfield');
+    let val = $('.ac-copyfield__value', el);
+    if (!val) { val = document.createElement('span'); val.className = 'ac-copyfield__value'; val.textContent = el.textContent.trim(); el.textContent = ''; el.appendChild(val); }
+    const label = el.dataset.label || 'Copiar';
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'ac-copyfield__btn'; btn.setAttribute('aria-label', label); btn.dataset.tip = 'Copiar';
+    // os dois ícones ocupam o mesmo lugar e trocam por escala, opacidade e desfoque
+    btn.innerHTML = `<span class="ac-copyfield__icons" aria-hidden="true">${icon('copy')}${icon('check')}</span>`;
+    const live = document.createElement('span'); live.className = 'ac-sr'; live.setAttribute('aria-live', 'polite');
+    const hint = document.createElement('p'); hint.className = 'ac-copyfield__hint'; hint.hidden = true;
+    el.append(btn, live); el.after(hint);
+    const tip = s => { btn.dataset.tip = s; const t = document.getElementById('ac-tip'); if (t && btn.getAttribute('aria-describedby') === 'ac-tip') t.textContent = s; };
+    let t = 0;
+    btn.addEventListener('click', async () => {
+      const text = el.dataset.copy ?? val.textContent.trim(), ok = await copyText(text, el);
+      if (!el.contains(document.activeElement)) btn.focus({ preventScroll: true });
+      clearTimeout(t);
+      if (ok) {
+        el.dataset.state = 'copied'; btn.setAttribute('aria-label', 'Copiado'); tip('Copiado'); live.textContent = 'Copiado'; hint.hidden = true;
+        t = setTimeout(() => { delete el.dataset.state; btn.setAttribute('aria-label', label); tip('Copiar'); live.textContent = ''; }, 1500);
+        el.dispatchEvent(new CustomEvent('ac:copy', { detail: { text }, bubbles: true }));
+      } else {
+        val.textContent = text; el.dataset.state = 'manual';
+        const r = document.createRange(), s = getSelection(); r.selectNodeContents(val); s.removeAllRanges(); s.addRange(r);
+        hint.hidden = false; hint.textContent = `Não deu para copiar sozinho. O texto está selecionado: use ${/Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl'}+C.`;
+        live.textContent = hint.textContent;
+      }
+    });
+  };
+
+  /* Faixas de aviso em fila (FaixasTopo do 4squad): aviso que vale para a conta inteira, um por vez, do mais grave ao
+     mais leve (data-priority, ou o tom: crítico, perigo, atenção, ok, neutro). Com mais de um: setas, troca a cada 10 s
+     (para no hover e no foco; nunca com movimento reduzido) e “Aviso 2 de 3” para o leitor de tela quando a pessoa
+     troca. Trocas automáticas não são anunciadas. data-dismissible deixa dispensar (evento ac:dismiss). */
+  const TONES = ['critico', 'perigo', 'atencao', 'ok', 'neutro'];
+  C.banners = el => {
+    el.classList.add('ac-banners');
+    if (!el.hasAttribute('role')) el.setAttribute('role', 'region');
+    if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', 'Avisos da conta');
+    const rank = b => b.dataset.priority !== undefined ? +b.dataset.priority : Math.max(0, TONES.indexOf(b.dataset.tone || 'neutro'));
+    let items = $$(':scope > .ac-banners__item', el).map((b, k) => [b, k]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(x => x[0]);
+    items.forEach(b => {
+      // o conteúdo vai num miolo centralizado; o X fica na ponta
+      const body = document.createElement('div'); body.className = 'ac-banners__body'; body.append(...b.childNodes); b.appendChild(body);
+      body.insertAdjacentHTML('afterbegin', '<span class="ac-sr ac-banners__n"></span>');
+      if (b.hasAttribute('data-dismissible')) b.insertAdjacentHTML('beforeend', `<button type="button" class="ac-banners__close" aria-label="Dispensar aviso">${icon('x')}</button>`);
+      el.appendChild(b);
+    });
+    const nav = (d, l, ic) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'ac-banners__nav'; b.dataset.bn = d; b.setAttribute('aria-label', l); b.innerHTML = icon(ic); return b; };
+    const prev = nav(-1, 'Aviso anterior', 'left'), next = nav(1, 'Próximo aviso', 'right');
+    const live = document.createElement('span'); live.className = 'ac-sr'; live.setAttribute('aria-live', 'polite');
+    el.prepend(prev); el.append(next, live);
+    const ms = +el.dataset.interval || 10000;
+    let i = 0, timer = 0, held = false;
+    const text = b => ($('.ac-banners__long', b) || $('.ac-banners__text', b) || b).textContent.trim();
+    const arm = () => { clearTimeout(timer); if (items.length < 2 || held || reduce()) return; timer = setTimeout(() => { if (!el.isConnected) return; if (!document.hidden) show(i + 1); else arm(); }, ms); };
+    function show(n, say, pre = '') {
+      if (!items.length) { el.hidden = true; return; }
+      i = (n + items.length) % items.length; const cur = items[i], many = items.length > 1;
+      items.forEach((b, k) => { b.hidden = b !== cur; $('.ac-banners__n', b).textContent = many ? `Aviso ${k + 1} de ${items.length}. ` : ''; });
+      el.dataset.tone = cur.dataset.tone || 'neutro'; prev.hidden = next.hidden = !many;
+      if (say) live.textContent = pre + (many ? `Aviso ${i + 1} de ${items.length}: ` : '') + text(cur);
+      arm();
+    }
+    const hold = on => { held = on; arm(); };
+    el.addEventListener('pointerenter', () => hold(true));
+    el.addEventListener('pointerleave', () => hold(el.contains(document.activeElement)));
+    el.addEventListener('focusin', () => hold(true));
+    el.addEventListener('focusout', e => { if (!el.contains(e.relatedTarget)) hold(el.matches(':hover')); });
+    el.addEventListener('click', e => {
+      const b = e.target.closest('[data-bn]'); if (b) { show(i + +b.dataset.bn, true); return; }
+      const x = e.target.closest('.ac-banners__close'); if (!x) return;
+      const it = x.closest('.ac-banners__item'), back = el.contains(document.activeElement);
+      items = items.filter(o => o !== it); it.remove();
+      el.dispatchEvent(new CustomEvent('ac:dismiss', { detail: { id: it.id || '' }, bubbles: true }));
+      show(i, true, 'Aviso dispensado. ');
+      if (back && items.length) { const c = items[i]; ($('.ac-banners__close', c) || (next.hidden ? $('a, button', c) : next)).focus(); }
+    });
+    show(0);
+  };
+
+  /* Diálogo em bottom sheet no celular (dialogo-teclado.js do zero-7): o teclado virtual não mexe em bottom: 0 nem em
+     100dvh (no iOS nunca; no Chrome Android, por padrão). Quando ele cobre mais de 120 px e o campo focado está num
+     .ac-dialog aberto, o <html> recebe --ac-keyboard-h (o sheet sobe isso) e --ac-visible-h (o teto do sheet), e o
+     campo rola para dentro da vista. Soltar o foco ou fechar o diálogo devolve tudo. */
+  (() => {
+    const vv = global.visualViewport; if (!vv) return;
+    const root = document.documentElement, phone = matchMedia('(max-width: 640px)');
+    const FIELD = 'input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]), textarea, select, [contenteditable="true"]';
+    let raf = 0;
+    const measure = () => {
+      raf = 0;
+      const covered = Math.round(innerHeight - (vv.height + vv.offsetTop)), a = document.activeElement;
+      const f = phone.matches && covered > 120 && a && a.matches && a.matches(FIELD) && a.closest('dialog.ac-dialog[open]') ? a : null;
+      if (f) { root.style.setProperty('--ac-keyboard-h', covered + 'px'); root.style.setProperty('--ac-visible-h', Math.round(vv.height) + 'px'); root.setAttribute('data-ac-keyboard', ''); requestAnimationFrame(() => reveal(f)); }
+      else if (root.hasAttribute('data-ac-keyboard')) { root.style.removeProperty('--ac-keyboard-h'); root.style.removeProperty('--ac-visible-h'); root.removeAttribute('data-ac-keyboard'); }
+    };
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(measure); };
+    vv.addEventListener('resize', schedule); vv.addEventListener('scroll', schedule);
+    document.addEventListener('focusin', schedule); document.addEventListener('focusout', schedule);
+    document.addEventListener('close', schedule, true);
+  })();
+
+  /* Confirmar e alertar (Confirmar e Alerta da Janela do 4squad): diálogo montado na hora que devolve uma promessa.
+     confirm: título, a consequência em texto, botão que repete o nome da ação e Cancelar com o foco inicial. Se onConfirm
+     devolver uma promessa, o botão carrega e o diálogo espera; se ela falhar, o erro aparece dentro do diálogo.
+     alert: uma mensagem e o OK. Ao fechar, o foco volta para onde estava. */
+  function ask(o, only) {
+    if (typeof o === 'string') o = { text: o };
+    o = o || {};
+    return new Promise(resolve => {
+      const back = document.activeElement, u = id('ask'), dlg = document.createElement('dialog');
+      dlg.className = 'ac ac-dialog ac-ask'; dlg.setAttribute('role', 'alertdialog'); dlg.setAttribute('aria-labelledby', u + 't');
+      if (o.text) dlg.setAttribute('aria-describedby', u + 'd');
+      dlg.innerHTML = `<div class="ac-dialog__in">${o.danger ? `<span class="ac-dialog__icon">${icon('alert')}</span>` : ''}<h2 class="ac-dialog__title" id="${u}t">${esc(o.title || (only ? 'Atenção' : 'Tem certeza?'))}</h2>${o.text ? `<p class="ac-dialog__desc" id="${u}d">${esc(o.text)}</p>` : ''}<p class="ac-error ac-ask__error" role="alert" hidden></p>
+        <div class="ac-dialog__actions">${only ? '' : `<button class="ac-btn ac-btn--ghost" type="button" data-ask="0">${esc(o.cancelLabel || 'Cancelar')}</button>`}<button class="ac-btn${o.danger ? ' ac-btn--danger' : ''}" type="button" data-ask="1">${esc(only ? o.okLabel || 'OK' : o.confirmLabel || 'Confirmar')}</button></div></div>`;
+      document.body.appendChild(dlg);
+      const err = $('.ac-ask__error', dlg), yes = $('[data-ask="1"]', dlg), no = $('[data-ask="0"]', dlg);
+      let value = false;
+      dlg.addEventListener('close', () => { dlg.remove(); if (back && back.isConnected && back.focus) back.focus(); resolve(only ? undefined : value); }, { once: true });
+      const done = v => { value = v; dlg.removeAttribute('aria-busy'); close(dlg); };
+      const fail = e => { yes.dataset.loading = 'false'; dlg.removeAttribute('aria-busy'); if (no) no.disabled = false; err.hidden = false; err.innerHTML = icon('alert') + esc((e && e.message) || 'Não deu certo. Tente de novo.'); yes.focus(); };
+      if (no) no.addEventListener('click', () => done(false));
+      yes.addEventListener('click', () => {
+        if (dlg.getAttribute('aria-busy') === 'true') return;
+        if (only || !o.onConfirm) return done(true);
+        err.hidden = true; let r;
+        try { r = o.onConfirm(); } catch (e) { return fail(e); }
+        if (!r || typeof r.then !== 'function') return done(true);
+        yes.dataset.loading = 'true'; dlg.setAttribute('aria-busy', 'true'); if (no) no.disabled = true;
+        r.then(() => { yes.dataset.loading = 'false'; done(true); }, fail);
+      });
+      open(dlg); (no || yes).focus();
+    });
+  }
+
   /* ---------------- init ---------------- */
   function init(root = document) {
-    $$('[data-ac]', root).forEach(el => {
+    const els = $$('[data-ac]', root); if (root.matches && root.matches('[data-ac]')) els.unshift(root);
+    els.forEach(el => {
       el.dataset.ac.split(/\s+/).forEach(name => {
         if (!C[name]) return; const flag = 'acInit' + name.replace(/-./g, m => m[1].toUpperCase());
         if (el.dataset[flag]) return; el.dataset[flag] = '1';
@@ -1300,6 +1674,6 @@
     });
   }
 
-  global.Orthos = global.Seleta = global.Acervo = { init, reveal, toast, command, open, close, skeleton, icon, place, results: RESULTS, dirty: { baseline: dirtyBaseline, refresh: dirtyRefresh }, tour, countries: COUNTRIES, logo: { load: loadLogo, replay: replayLogo, screen: loadingScreen, sanitize: sanitizeSvg }, loading: loadingScreen, components: C };
+  global.Orthos = global.Seleta = global.Acervo = { init, reveal, toast, command, open, close, skeleton, icon, place, results: RESULTS, dirty: { baseline: dirtyBaseline, refresh: dirtyRefresh }, tour, countries: COUNTRIES, logo: { load: loadLogo, replay: replayLogo, screen: loadingScreen, sanitize: sanitizeSvg }, loading: loadingScreen, confirm: o => ask(o), alert: o => ask(o, true), components: C };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => init()); else init();
 })(window);

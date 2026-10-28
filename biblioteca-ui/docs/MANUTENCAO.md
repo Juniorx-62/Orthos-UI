@@ -66,3 +66,11 @@ O tema fica em `uilib.tema`. Se o navegador bloquear o armazenamento, a bibliote
 ## Segurança
 
 Todo texto é inserido escapado; URLs só são aceitas se forem http/https; links externos usam `rel="noopener noreferrer"`. Nenhum código de exemplos externos é executado.
+
+## Arquivo original e pasta `work/` (28/10/2026)
+
+- `legacy/biblioteca-4squad-original.html` é byte a byte igual ao `mvp-validacao.html` (md5 `f6b08b42…`). O `.gitattributes` marca a pasta como `-text`, para o git não trocar o fim de linha e o hash continuar batendo em qualquer máquina.
+- O `mvp-validacao.html` recebido em 28/10/2026 foi comparado com esta cópia: **mesmo conteúdo**, nenhuma tela, seção ou peça nova. Nada foi regenerado.
+- A pasta `work/` da raiz (extração do bundle, `cv.json`, `sv.json`, `gen_local.py`, capturas brutas) saiu do git e do deploy: tem 26 MB, duplicava `assets/4squad/` e trazia o bundle do 4squad. Ela continua no disco de quem já tinha o repositório e está no histórico do git (`git checkout 7401fa1 -- work`).
+- Para regenerar a partir de uma versão nova do arquivo: extrair do bundle o `sv=JSON.parse('…')` (peças) e o `cv=JSON.parse(`…`)` (telas com imagens), gravar as imagens em `assets/4squad/tela-NN-{claro,escuro}.jpg`, atualizar `legacy/pecas-4squad.json`, rodar `work/gen_local.py` (o mapa `M` de categorias das telas 1–50 e a lista `vit` das 20 seções estão fixos no código: tela ou seção nova exige editar esse mapa) e depois `python tests/build-single.py`.
+- Defeitos conhecidos do original: "Entrar no console" e "Entrar no app" usam a mesma imagem nos quatro espaços (`tela-01`/`tela-02`), e o filtro de tipo das peças não tem "Constantes".

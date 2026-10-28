@@ -1,0 +1,7 @@
+# O site publica a raiz do repositório. Fica de fora o que não é página nem biblioteca.
+work/
+.mcp.json
+.claude/
+.playwright-mcp/
+*.py
+biblioteca-ui/tests/
