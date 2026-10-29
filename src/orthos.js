@@ -1901,17 +1901,17 @@
       const c = document.createElement('canvas'); c.width = cols; c.height = rows; const x = c.getContext('2d', { willReadFrequently: true });
       const s = Math.max(cols / im.naturalWidth, rows / im.naturalHeight), w = im.naturalWidth * s, h = im.naturalHeight * s;
       x.drawImage(im, (cols - w) / 2, (rows - h) / 2, w, h);
-      const d = x.getImageData(0, 0, cols, rows).data, n = cols * rows, r = new Float32Array(n), rgb = new Float32Array(n * 3), al = new Float32Array(n);
+      const d = x.getImageData(0, 0, cols, rows).data, n = cols * rows, r = new Float32Array(n), rgb = new Float32Array(n * 3), al = new Float32Array(n), bg = new Uint8Array(n);
       // figura com fundo transparente: o fundo vira pontinhos claros ("papel") e a figura ganha o degradê, se houver
       const paper = hexRgb(getComputedStyle(el).getPropertyValue('--ac-text-3').trim()) || [136, 136, 136], grad = (el.dataset.gradient || '').split(',').map(c => hexRgb(c.trim())).filter(Boolean);
       for (let i = 0; i < n; i++) {
         const R = d[i * 4], G = d[i * 4 + 1], B = d[i * 4 + 2], A = d[i * 4 + 3] / 255, L = (.2126 * R + .7152 * G + .0722 * B) / 255;
-        if (A < .06) { r[i] = .16; rgb.set(paper, i * 3); al[i] = .35; continue; }
+        if (A < .06) { r[i] = .16; rgb.set(paper, i * 3); al[i] = .35; bg[i] = 1; continue; }
         r[i] = (.18 + .82 * Math.pow(1 - L * .82, 1.35)) * (.45 + .55 * A); al[i] = 1;
         if (grad.length > 1) { const k = ((i / cols) | 0) / rows, a = grad[0], b = grad[1]; rgb[i * 3] = a[0] + (b[0] - a[0]) * k; rgb[i * 3 + 1] = a[1] + (b[1] - a[1]) * k; rgb[i * 3 + 2] = a[2] + (b[2] - a[2]) * k; }
         else { rgb[i * 3] = R; rgb[i * 3 + 1] = G; rgb[i * 3 + 2] = B; }
       }
-      return { r, rgb, al };
+      return { r, rgb, al, bg };
     };
     const size = () => {
       // a altura vem do aspect-ratio (definido uma vez): mudar o tamanho dentro do ResizeObserver criaria um laço
@@ -1923,6 +1923,8 @@
     function hexRgb(h) { const m = /^#?([0-9a-f]{6})$/i.exec(h || ''); if (m) { const n = parseInt(m[1], 16); return [n >> 16, n >> 8 & 255, n & 255]; } const c = /rgba?\(([^)]+)\)/.exec(h || ''); return c ? c[1].split(/[ ,/]+/).slice(0, 3).map(Number) : null; }
     const draw = now => {
       raf = 0; if (!cur) return;
+      // data-mono: pontos na cor do texto do tema (preto no claro, branco no escuro); o fundo no cinza do tema
+      const mono = el.hasAttribute('data-mono'), cs = mono && getComputedStyle(el), ink = mono && (hexRgb(cs.color) || [0, 0, 0]), pap = mono && (hexRgb(cs.getPropertyValue('--ac-text-3').trim()) || [136, 136, 136]);
       const n = cols * rows, maxR = CELL * .5, dur = 900; let busy = false;
       ctx.clearRect(0, 0, W, H);
       lens += (lensT - lens) * .18; if (Math.abs(lensT - lens) > .01) busy = true;
@@ -1935,6 +1937,7 @@
         if (lens > .01) { const dx = x - mx, dy = y - my, d = Math.hypot(dx, dy), f = Math.max(0, 1 - d / 70) * lens; if (f > 0) { rad *= 1 + f * .6; const push = (el.hasAttribute('data-displace') ? 9 : 4) * f; x += dx / (d || 1) * push; y += dy / (d || 1) * push; } }
         for (const rp of ripples) { const age = (now - rp.t) / 900, ring = age * 260, dx = x - rp.x, dy = y - rp.y, d = Math.hypot(dx, dy), f = Math.max(0, 1 - Math.abs(d - ring) / 30) * (1 - age); if (f > 0) { x += dx / (d || 1) * 6 * f; y += dy / (d || 1) * 6 * f; rad *= 1 + f * .4; } }
         const r = rad * maxR; if (r < .35) continue;
+        if (mono) { const t = (to && from) ? (to.bg[i] && from.bg[i]) : cur.bg[i], c = t ? pap : ink; R = c[0]; G = c[1]; B = c[2]; }
         ctx.fillStyle = `rgb(${R | 0} ${G | 0} ${B | 0} / ${Al.toFixed(2)})`; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill();
       }
       if (to && !busy) { cur = to; to = from = null; }
@@ -1955,6 +1958,9 @@
     cv.addEventListener('click', e => { if (reduce()) return; const r = cv.getBoundingClientRect(); ripples.push({ x: e.clientX - r.left, y: e.clientY - r.top, t: performance.now() }); kick(); });
     if (window.IntersectionObserver) new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; if (visible) kick(); })).observe(el);
     let lastW = 0; new ResizeObserver(() => { if (cv.clientWidth === lastW) return; lastW = cv.clientWidth; size(); cur = null; show(at); }).observe(cv);
+    // troca de tema (atributo data-theme ou preferência do sistema): redesenha com as cores novas
+    new MutationObserver(kick).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+    matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', kick);
     el._halftone = { show: i => { at = i; show(i); } };
   };
 
