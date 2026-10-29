@@ -175,12 +175,47 @@
     falha = false; yes.click(); ok(await within(p) === true && !d.isConnected, 'não resolveu');
   });
   await t('Orthos.alert: um OK só, que fecha e resolve', async () => { const p = Orthos.alert('A sessão vai terminar.'); await w(30); const d = $('dialog.ac-ask'); ok($$('button', d).length === 1 && $('.ac-dialog__title', d).textContent === 'Atenção' && document.activeElement.textContent === 'OK', 'formato'); $('button', d).click(); await within(p); ok(!d.isConnected, 'não fechou'); });
-  await t('OTP: colar a mensagem inteira acha o código; dígitos arábicos', async () => {
-    const paste = (x, txt) => { const e = new Event('paste', { bubbles: true, cancelable: true }); e.clipboardData = { getData: () => txt }; x.dispatchEvent(e); };
-    let el, s, got; const fresh = () => { mount('otp'); el = $('[data-ac="otp"]', palco); s = $$('.ac-otp__slot', el); got = null; el.addEventListener('ac:complete', e => { got = e.detail; }); };
-    fresh(); paste(s[3], 'Seu código Orthos: 888 813. Válido por 10 min'); ok(got && got.value === '888813' && got.valid, 'texto: ' + (got && got.value));
-    fresh(); paste(s[0], 'código ٨٨٨-٨١٣'); ok(got && got.value === '888813', 'arábico: ' + (got && got.value));
-    fresh(); paste(s[0], '12'); ok(s.map(x => x.value).join('') === '12' && !got && document.activeElement === s[2], 'colar parcial mudou');
+  // OTP no modelo do Kobra: um campo só, casas desenhadas por cima
+  const otpFresh = (attrs = '') => { palco.innerHTML = `<div class="ac-otp" data-ac="otp" data-length="6" data-valid="888813" data-delay="0" ${attrs}></div>`; Orthos.init(palco); const el = $('.ac-otp', palco), inp = $('.ac-otp__input', el), r = { el, inp, got: null, digits: () => $$('.ac-otp__ch:not(.is-out)', el).map(x => x.textContent).join('') }; el.addEventListener('ac:complete', e => { r.got = e.detail; }); return r; };
+  const otpType = (inp, txt) => { for (const c of txt) { const s = inp.selectionStart, e = inp.selectionEnd; inp.value = inp.value.slice(0, s) + c + inp.value.slice(e); inp.setSelectionRange(s + 1, s + 1); inp.dispatchEvent(new Event('input', { bubbles: true })); } };
+  // com a janela sem foco do sistema, focus() move o foco mas não dispara o evento; o teste dispara no lugar
+  const otpFocus = inp => { inp.focus(); if (!document.hasFocus()) inp.dispatchEvent(new FocusEvent('focus')); };
+  const otpPaste = (inp, txt) => { const e = new Event('paste', { bubbles: true, cancelable: true }); e.clipboardData = { getData: () => txt }; inp.dispatchEvent(e); };
+  await t('OTP: um único campo com one-time-code, casas só de desenho', () => {
+    const { el, inp } = otpFresh();
+    ok($$('input', el).length === 1 && inp.autocomplete === 'one-time-code' && inp.inputMode === 'numeric' && inp.maxLength === 6, 'campo');
+    ok($('.ac-otp__slots', el).getAttribute('aria-hidden') === 'true' && $$('.ac-otp__slot', el).length === 6 && /6 dígitos/.test(inp.getAttribute('aria-label')), 'casas/rótulo');
+  });
+  await t('OTP: digitar preenche, setas movem, o anel segue a casa ativa', async () => {
+    const { el, inp } = otpFresh(); otpFocus(inp); await w(10);
+    const ring = $('.ac-otp__ring', el), act = () => $$('.ac-otp__slot', el).findIndex(s => s.classList.contains('is-active'));
+    ok(ring.classList.contains('is-on') && act() === 0, 'anel no início');
+    otpType(inp, '12a3'); ok(inp.value === '123' && act() === 3, 'digitar: ' + inp.value + ' ativa ' + act());
+    key(inp, 'ArrowLeft'); ok(inp.selectionStart === 2 && inp.selectionEnd === 3 && act() === 2, 'seta esquerda');
+    otpType(inp, '9'); ok(inp.value === '129' && act() === 3, 'trocar dígito: ' + inp.value);
+    key(inp, 'Home'); ok(act() === 0, 'Home'); key(inp, 'End'); ok(act() === 3, 'End');
+    await w(350); ok($$('.ac-otp__ch:not(.is-out)', el).map(x => x.textContent).join('') === '129', 'casas desenhadas');
+  });
+  await t('OTP: colar a mensagem inteira acha o código; dígitos arábicos; colar parcial', async () => {
+    let o = otpFresh(); otpFocus(o.inp); otpPaste(o.inp, 'Seu código Orthos: 888 813. Válido por 10 min'); await w(300);
+    ok(o.got && o.got.value === '888813' && o.got.valid === true, 'texto: ' + (o.got && o.got.value));
+    o = otpFresh(); otpFocus(o.inp); otpPaste(o.inp, 'código ٨٨٨-٨١٣'); await w(300); ok(o.got && o.got.value === '888813', 'arábico: ' + (o.got && o.got.value));
+    o = otpFresh(); otpFocus(o.inp); otpPaste(o.inp, '12'); await w(100); ok(o.inp.value === '12' && !o.got && o.inp.selectionStart === 2 && o.digits() === '12', 'parcial: ' + o.inp.value);
+  });
+  await t('OTP: código certo vira sucesso; errado limpa, marca erro e volta ao início', async () => {
+    let o = otpFresh(); otpFocus(o.inp); otpType(o.inp, '888813'); ok(o.el.dataset.state === 'pending' && o.inp.getAttribute('aria-busy') === 'true', 'sem conferência');
+    await w(30); ok(o.el.dataset.state === 'success' && /confirmado/.test($('.ac-otp__msg', o.el).textContent) && !o.inp.hasAttribute('aria-busy'), 'sem sucesso');
+    o = otpFresh(); otpFocus(o.inp); otpType(o.inp, '123456'); await w(30);
+    ok(o.el.dataset.state === 'error' && o.inp.value === '' && o.inp.getAttribute('aria-invalid') === 'true' && document.activeElement === o.inp && o.inp.selectionStart === 0, 'erro: ' + o.el.dataset.state);
+    ok(/inválido/.test($('.ac-otp__msg', o.el).textContent) && $('.ac-otp__ring', o.el).classList.contains('is-on'), 'mensagem/anel');
+    otpType(o.inp, '1'); ok(!o.el.dataset.state && !o.inp.hasAttribute('aria-invalid') && $('.ac-otp__msg', o.el).textContent === '', 'erro não some ao digitar');
+  });
+  await t('OTP: sem data-valid, resolve() do ac:complete decide', async () => {
+    palco.innerHTML = '<div class="ac-otp" data-ac="otp" data-length="4" data-error="Expirou"></div>'; Orthos.init(palco);
+    const el = $('.ac-otp', palco), inp = $('input', el); let det; el.addEventListener('ac:complete', e => { det = e.detail; });
+    otpFocus(inp); otpType(inp, '4321'); ok(det && det.value === '4321' && det.valid === null && el.dataset.state === 'pending', 'evento');
+    await w(800); ok(el.dataset.state === 'pending', 'resolveu sozinho');
+    det.resolve(false); ok(el.dataset.state === 'error' && $('.ac-otp__msg', el).textContent === 'Expirou' && inp.value === '', 'resolve(false)');
   });
   // correções de 28/10/2026 (auditoria e navegadores)
   await t('validate: com erro barra o envio; válido emite ac:valid', async () => {

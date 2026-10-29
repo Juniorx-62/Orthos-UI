@@ -127,14 +127,14 @@
       api: [['data-ac="validate"', '<form>', '—', 'Ativa validação nativa com mensagens próprias'], ['required / minlength / type="email" / pattern', 'HTML', '—', 'Regras usadas'], ['data-pattern-msg', 'texto', '—', 'Mensagem para pattern']],
       a11y: ['Erros aparecem em texto ao lado do campo.', 'Ao enviar com erros, o foco vai para o primeiro campo inválido.'] },
 
-    { id: 'otp', grupo: 'Formulários', nome: 'Input OTP', desc: 'Código segmentado com colar, apagar e setas. Valida ao completar: sucesso em verde, erro com tremida e limpeza automática.',
+    { id: 'otp', grupo: 'Formulários', nome: 'Input OTP', desc: 'Código segmentado num único campo: um anel desliza até a casa ativa, os dígitos entram girando, colar deixa um rastro e, ao completar, as casas ondulam enquanto o código é conferido. Certo: varredura verde com salto. Errado: limpa, anel vermelho e mensagem.',
       ref: { nome: 'Kobra · Input OTP', url: 'https://kobra.systems/components/input-otp' },
       html: `<div style="display:grid;gap:12px;justify-items:center">
   <div class="ac-otp" data-ac="otp" data-length="6" data-valid="888813"></div>
-  <p class="ac-hint">Código de teste: <code>888813</code></p>
+  <p class="ac-hint">Código de teste: <code>888813</code> (cole também “Seu código: 888 813”)</p>
 </div>`,
-      api: [['data-length', 'número', '6', 'Quantidade de dígitos'], ['data-valid', 'texto', '—', 'Código esperado (demo); omita para validar fora'], ['ac:complete', 'evento', '—', 'detail: { value, valid }']],
-      a11y: ['Cada casa tem rótulo “Dígito n de 6”.', 'autocomplete="one-time-code" para preenchimento por SMS.'] },
+      api: [['data-length', 'número', '6', 'Quantidade de dígitos'], ['data-valid', 'texto', '—', 'Código esperado (demo); omita para validar fora'], ['data-delay', 'ms', '700', 'Tempo da conferência com data-valid'], ['data-error / data-success', 'texto', '—', 'Mensagens de erro e de acerto'], ['data-name / data-label / data-disabled', 'atributos', '—', 'Nome no formulário, rótulo do campo, desativado'], ['ac:complete', 'evento', '—', 'detail: { value, valid, resolve(ok, mensagem) }; sem data-valid, chame resolve depois de conferir no servidor'], ['data-state', 'saída', '—', 'pending | success | error'], ['--otp-size', 'CSS', '56px', 'Tamanho da casa (no celular encolhe até 11vw)']],
+      a11y: ['Um único campo com rótulo “Código de verificação, 6 dígitos”; as casas são só desenho (aria-hidden).', 'autocomplete="one-time-code": o SMS preenche o código inteiro de uma vez, também no iOS.', 'Erro e acerto aparecem em texto num role="status"; o campo ganha aria-invalid no erro e aria-busy enquanto confere.', 'Setas, Home e End movem entre as casas; movimento reduzido desliga rastros, saltos e a onda.'] },
 
     { id: 'choice', grupo: 'Formulários', nome: 'Checkbox, Radio e Switch', desc: 'Controles nativos estilizados, com estado indeterminado e animação de mola.',
       ref: { nome: 'Radix · Switch', url: 'https://www.radix-ui.com/primitives/docs/components/switch' },
