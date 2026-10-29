@@ -251,34 +251,141 @@
 
   // dígitos arábicos (٠-٩) e persas (۰-۹) viram 0-9: teclados e SMS nesses idiomas mandam o código assim
   const otpDigits = s => String(s || '').replace(/[٠-٩۰-۹]/g, c => String(c.charCodeAt(0) & 15));
+  // acha o código no texto colado ("Seu código: 482 913. Válido por 10 min"): prefere um trecho com exatamente len dígitos
+  const otpCode = (t, len) => { const runs = (otpDigits(String(t || '').normalize('NFKC')).match(/\d(?:[\s‐‑–-]?\d)*/g) || []).map(r => r.replace(/\D/g, '')); return runs.find(r => r.length === len) || runs.join(''); };
+  /* Input OTP no modelo do Kobra: um único <input> transparente por cima das casas (o SMS do iOS e do Android preenche tudo
+     de uma vez), um anel que desliza até a casa ativa, dígitos que entram girando, rastro ao colar, onda enquanto confere
+     e varredura com salto quando o código está certo. */
   C.otp = el => {
-    const len = +el.dataset.length || 6, half = Math.ceil(len / 2), valid = el.dataset.valid;
-    el.setAttribute('role', 'group'); el.setAttribute('aria-label', el.dataset.label || 'Código de verificação');
-    let h = '<div class="ac-otp__group">';
-    for (let i = 0; i < len; i++) { if (i === half) h += '</div><span class="ac-otp__sep" aria-hidden="true"></span><div class="ac-otp__group">'; h += `<input class="ac-otp__slot" inputmode="numeric" autocomplete="${i === 0 ? 'one-time-code' : 'off'}" maxlength="1" aria-label="Dígito ${i + 1} de ${len}">`; }
-    el.innerHTML = h + '</div>';
-    const s = $$('.ac-otp__slot', el);
-    const value = () => s.map(x => x.value).join('');
-    const check = () => {
-      const v = value(); el.dataset.state = '';
-      if (v.length === len) {
-        const ok = !valid || v === valid; el.dataset.state = ok ? 'success' : 'error';
-        el.dispatchEvent(new CustomEvent('ac:complete', { detail: { value: v, valid: ok }, bubbles: true }));
-        if (!ok) setTimeout(() => { if (el.dataset.state === 'error') { s.forEach(x => { x.value = ''; x.classList.remove('is-filled'); }); s[0].focus(); } }, 900);
-      }
+    const len = +el.dataset.length || 6, half = Math.ceil(len / 2), msgId = id('otp-msg');
+    let h = '';
+    for (let i = 0; i < len; i++) {
+      if (i === half) h += `</div><div class="ac-otp__sep"><svg class="ac-icon" viewBox="0 0 24 24"><path d="M20 12L4 12"/></svg></div><div class="ac-otp__group">`;
+      h += `<div class="ac-otp__slot" style="--i:${i}"><span class="ac-otp__cell"><span class="ac-otp__ph">0</span></span></div>`;
+    }
+    el.removeAttribute('role');
+    el.innerHTML = `<div class="ac-otp__box"><div class="ac-otp__slots" aria-hidden="true"><div class="ac-otp__group">${h}</div><span class="ac-otp__ring"></span></div>`
+      + `<input class="ac-otp__input" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="${len}" spellcheck="false" autocapitalize="off" aria-label="${esc(el.dataset.label || 'Código de verificação')}, ${len} dígitos" aria-describedby="${msgId}"></div>`
+      + `<p class="ac-otp__msg" id="${msgId}" role="status"></p>`;
+    const inp = $('.ac-otp__input', el), slots = $$('.ac-otp__slot', el), row = $('.ac-otp__slots', el), ring = $('.ac-otp__ring', el), msg = $('.ac-otp__msg', el);
+    if (el.dataset.name) inp.name = el.dataset.name;
+    if (el.hasAttribute('data-disabled')) inp.disabled = true;
+    let shown = '', ringOn = false, landing = false, pointer = false, timer = 0;
+
+    const setState = (st, text) => {
+      if (st) el.dataset.state = st; else delete el.dataset.state;
+      msg.textContent = text || '';
+      st === 'error' ? inp.setAttribute('aria-invalid', 'true') : inp.removeAttribute('aria-invalid');
+      st === 'pending' ? inp.setAttribute('aria-busy', 'true') : inp.removeAttribute('aria-busy');
     };
-    const fill = (from, txt) => { const d = otpDigits(txt).replace(/\D/g, ''); [...d].forEach((c, k) => { const x = s[from + k]; if (x) { x.value = c; x.classList.add('is-filled'); } }); const nx = s[Math.min(from + d.length, len - 1)]; nx.focus(); check(); };
-    s.forEach((x, i) => {
-      x.addEventListener('input', () => { const d = otpDigits(x.value).replace(/\D/g, ''); x.value = ''; if (d) fill(i, d); else x.classList.remove('is-filled'); });
-      x.addEventListener('keydown', e => {
-        if (e.key === 'Backspace' && !x.value && i > 0) { e.preventDefault(); s[i - 1].value = ''; s[i - 1].classList.remove('is-filled'); s[i - 1].focus(); el.dataset.state = ''; }
-        if (e.key === 'ArrowLeft' && i > 0) s[i - 1].focus();
-        if (e.key === 'ArrowRight' && i < len - 1) s[i + 1].focus();
+    // desenha só as casas que mudaram; numa colagem, cada dígito chega um pouco depois do anterior
+    const render = (from = 0, to = 0) => {
+      const v = inp.value, motion = !reduce();
+      slots.forEach((s, i) => {
+        const c = v[i] || '';
+        if (c === (shown[i] || '')) return;
+        const cell = s.firstChild, d = i >= from && i < to ? (i - from) * .045 : 0, prev = cell.querySelector('.ac-otp__ch:not(.is-out)');
+        s.style.setProperty('--land', d + 's');
+        if (prev) { if (motion) { prev.classList.add('is-out'); setTimeout(() => prev.remove(), 300); } else prev.remove(); }
+        if (c) { const n = document.createElement('span'); n.className = 'ac-otp__ch'; n.textContent = c; n.style.setProperty('--d', d + 's'); cell.appendChild(n); }
+        s.classList.toggle('is-filled', !!c);
       });
-      // colar a mensagem inteira ("Seu código: 482 913. Válido por 10 min") acha o código; sem um trecho de N dígitos, cola como antes
-      x.addEventListener('paste', e => { e.preventDefault(); const t = otpDigits((e.clipboardData || window.clipboardData).getData('text')); const code = (t.match(/\d(?:[ -]?\d)*/g) || []).map(r => r.replace(/\D/g, '')).find(r => r.length === len); code ? fill(0, code) : fill(i, t); });
-      x.addEventListener('focus', () => x.select());
+      shown = v;
+    };
+    // casas ativas = seleção do campo; o anel aparece enquanto falta dígito, numa seleção de várias casas ou durante a colagem
+    const place = () => {
+      const v = inp.value, on = document.activeElement === inp;
+      const a = Math.min(inp.selectionStart ?? v.length, len - 1), b = Math.max(a, Math.min((inp.selectionEnd ?? v.length) - 1, len - 1));
+      slots.forEach((s, i) => s.classList.toggle('is-active', on && i >= a && i <= b));
+      const show = on && (v.length < len || b > a || landing);
+      if (show) {
+        const r = row.getBoundingClientRect(), p = slots[a].getBoundingClientRect(), q = slots[b].getBoundingClientRect();
+        if (!ringOn) ring.classList.add('is-jump');
+        ring.style.cssText = `width:${q.right - p.left}px;height:${p.height}px;transform:translate(${p.left - r.left}px,${p.top - r.top}px)`;
+        if (!ringOn) { void ring.offsetWidth; ring.classList.remove('is-jump'); }
+      }
+      ring.classList.toggle('is-on', show); ringOn = show;
+    };
+    // cursor parado sobre um dígito vira a seleção desse dígito (digitar troca); com tudo preenchido, fica no último
+    const fix = () => {
+      if (document.activeElement === inp) {
+        const v = inp.value, s = inp.selectionStart, e = inp.selectionEnd;
+        if (s === e && s < v.length) inp.setSelectionRange(s, s + 1);
+        else if (s === e && v.length === len) inp.setSelectionRange(len - 1, len);
+      }
+      place();
+    };
+    const sweep = (from, to, tone) => {
+      if (reduce() || to <= from) return;
+      const step = tone === 'success' ? .048 : .045;
+      for (let i = from; i < to; i++) {
+        const t = document.createElement('span'); t.className = 'ac-otp__trail' + (tone === 'success' ? ' is-success' : '');
+        slots[i].style.setProperty('--t', (i - from) * step + 's'); slots[i].appendChild(t); setTimeout(() => t.remove(), 1000);
+        if (tone === 'success') { slots[i].classList.remove('is-bounce'); void slots[i].offsetWidth; slots[i].classList.add('is-bounce'); }
+      }
+      // enquanto os dígitos colados pousam, o anel fica e a conferência espera
+      if (tone === 'paste') { landing = true; setTimeout(() => { landing = false; place(); complete(); }, (to - from - 1) * step * 1000); }
+    };
+    const complete = () => {
+      const v = inp.value;
+      if (v.length < len || landing || el.dataset.state) return;
+      const want = el.dataset.valid, valid = want ? v === want : null;
+      let settled = false;
+      const resolve = (good, text) => {
+        if (settled || inp.value !== v) return; settled = true; clearTimeout(timer);
+        if (good) { setState('success', text || el.dataset.success || 'Código confirmado.'); sweep(0, len, 'success'); place(); return; }
+        setState('error', text || el.dataset.error || 'Código inválido. Tente de novo.');
+        inp.value = ''; render();
+        if (document.activeElement === inp || document.activeElement === document.body) { inp.focus(); inp.setSelectionRange(0, 0); }
+        place();
+      };
+      setState('pending');
+      el.dispatchEvent(new CustomEvent('ac:complete', { detail: { value: v, valid, resolve }, bubbles: true }));
+      if (want && !settled) timer = setTimeout(() => resolve(valid), +(el.dataset.delay ?? 700));
+    };
+    const edited = () => { clearTimeout(timer); if (el.dataset.state) setState(''); };
+
+    inp.addEventListener('input', () => {
+      const pos = inp.selectionStart ?? 0, v = otpDigits(inp.value).replace(/\D/g, '').slice(0, len), prev = shown;
+      if (v !== inp.value) { inp.value = v; inp.setSelectionRange(Math.min(pos, v.length), Math.min(pos, v.length)); }
+      if (v === prev) return fix();
+      edited();
+      // mais de um dígito de uma vez = preenchimento automático (SMS, gerenciador de senhas)
+      const grow = v.length - prev.length > 1 && v.startsWith(prev);
+      render(grow ? prev.length : 0, grow ? v.length : 0); if (grow) sweep(prev.length, v.length, 'paste');
+      fix(); complete();
     });
+    inp.addEventListener('paste', e => {
+      e.preventDefault();
+      if (inp.readOnly || inp.disabled) return;
+      const code = otpCode((e.clipboardData || window.clipboardData).getData('text'), len); if (!code) return;
+      const v = inp.value, whole = code.length >= len, from = whole ? 0 : inp.selectionStart ?? v.length;
+      const next = (v.slice(0, from) + code + v.slice(whole ? v.length : inp.selectionEnd ?? v.length)).slice(0, len);
+      if (next === v) return;
+      edited(); inp.value = next;
+      const to = Math.min(from + code.length, len);
+      inp.setSelectionRange(next.length, next.length);
+      render(from, to); sweep(from, to, 'paste'); fix(); complete();
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+      const v = inp.value, s = inp.selectionStart ?? v.length;
+      const to = { ArrowLeft: Math.max(0, s - 1), ArrowRight: Math.min(v.length, s + 1), Home: 0, End: v.length }[e.key];
+      if (to === undefined) return;
+      e.preventDefault(); inp.setSelectionRange(to, to); fix();
+    });
+    // clique numa casa: vai para ela, mas nunca além do primeiro espaço vazio
+    inp.addEventListener('pointerdown', () => { pointer = true; });
+    inp.addEventListener('click', e => {
+      pointer = false;
+      if (inp.selectionEnd - inp.selectionStart > 1) return place();
+      let i = slots.findIndex(s => e.clientX < s.getBoundingClientRect().right); if (i < 0) i = len - 1;
+      i = Math.min(i, inp.value.length); inp.setSelectionRange(i, i); fix();
+    });
+    inp.addEventListener('focus', () => { if (!pointer) inp.setSelectionRange(inp.value.length, inp.value.length); fix(); });
+    inp.addEventListener('blur', place);
+    inp.addEventListener('select', place);
+    if (window.ResizeObserver) new ResizeObserver(() => ringOn && place()).observe(row);
   };
 
   C.slider = el => {

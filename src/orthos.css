@@ -183,8 +183,8 @@
 /* ---------- Fields ---------- */
 .ac-field { display: grid; gap: 6px; font-family: var(--ac-font); }
 .ac-label { font: 500 var(--ac-fs-sm) var(--ac-font); color: var(--ac-text); }
-.ac-hint { font-size: var(--ac-fs-sm); color: var(--ac-text-3); }
-.ac-error { margin: 0; font-size: var(--ac-fs-sm); color: var(--ac-danger); display: flex; gap: 6px; align-items: center; }
+.ac-hint { font-size: var(--ac-fs-base); color: var(--ac-text-3); }
+.ac-error { margin: 0; font-size: var(--ac-fs-base); color: var(--ac-danger); display: flex; gap: 6px; align-items: center; }
 .ac-input, .ac-textarea, .ac-select {
   width: 100%; height: 40px; padding: 0 12px; border-radius: var(--ac-r-sm);
   border: 1px solid var(--ac-border-strong); background: var(--ac-surface); color: var(--ac-text);
@@ -418,18 +418,49 @@
 .ac-steps li[data-state="current"] { color: var(--ac-text); font-weight: 500; }
 .ac-steps li[data-state="current"]::before { border-color: var(--ac-text); box-shadow: 0 0 0 4px var(--ac-surface-3); color: var(--ac-text); }
 
-/* ---------- Input OTP (inspirado em Kobra / shadcn) ---------- */
-.ac-otp { display: inline-flex; align-items: center; gap: 8px; font-family: var(--ac-font); }
-.ac-otp__group { display: flex; }
-.ac-otp__slot { width: clamp(36px, 11vw, 44px); height: 52px; margin-left: -1px; border: 1px solid var(--ac-border-strong); background: var(--ac-surface); color: var(--ac-text); font: 600 var(--ac-fs-xl) var(--ac-mono); text-align: center; caret-color: transparent; transition: border-color .2s, box-shadow .2s, transform .2s var(--ac-ease-spring); position: relative; }
-.ac-otp__slot:first-child { margin-left: 0; border-radius: 12px 0 0 12px; }
-.ac-otp__slot:last-child { border-radius: 0 12px 12px 0; }
-.ac-otp__slot:focus { outline: none; z-index: 1; border-color: var(--ac-text); box-shadow: 0 0 0 3px var(--ac-ring); }
-.ac-otp__slot.is-filled { animation: ac-pop-sm .25s var(--ac-ease-spring); }
-.ac-otp__sep { width: 10px; height: 2px; border-radius: 2px; background: var(--ac-border-strong); }
-.ac-otp[data-state="error"] .ac-otp__slot { border-color: var(--ac-danger); color: var(--ac-danger); }
-.ac-otp[data-state="error"] { animation: ac-shake .4s var(--ac-ease); }
-.ac-otp[data-state="success"] .ac-otp__slot { border-color: var(--ac-success); color: var(--ac-success); }
+/* ---------- Input OTP (modelo do Kobra: um campo invisível sobre as casas, anel que desliza, dígitos que giram) ---------- */
+.ac-otp { --otp-r: 12px; --otp-size: 56px; --otp-gap: clamp(6px, 2.4vw, 12px); --otp-spring: cubic-bezier(.3, 1.3, .5, 1); --otp-ink: var(--ac-text); --otp-trail: color-mix(in oklab, var(--ac-text) 45%, transparent);
+  display: inline-flex; flex-direction: column; align-items: center; max-width: 100%; font-family: var(--ac-font); color: var(--ac-text); }
+.ac-otp__box { position: relative; max-width: 100%; direction: ltr; }
+.ac-otp__slots, .ac-otp__group { display: flex; align-items: center; gap: var(--otp-gap); min-width: 0; }
+.ac-otp__slots { position: relative; }
+.ac-otp__slot { container-type: inline-size; position: relative; display: grid; place-items: center; flex: 0 1 auto; width: min(var(--otp-size), 11vw); min-width: 30px; min-height: 44px; aspect-ratio: 1; border-radius: var(--otp-r); background: color-mix(in oklab, var(--ac-text) 6%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ac-text) 12%, transparent); transition: background-color .15s var(--ac-ease); }
+.ac-otp__slot.is-active { z-index: 1; background: color-mix(in oklab, var(--ac-text) 10%, transparent); }
+.ac-otp__cell { display: grid; place-items: center; perspective: 240px; font: 600 min(var(--ac-fs-2xl), 43cqi)/1 var(--ac-font); font-variant-numeric: tabular-nums; }
+.ac-otp__cell > span { grid-area: 1 / 1; }
+.ac-otp__ph { color: color-mix(in oklab, var(--ac-text) 20%, transparent); transition: opacity .15s var(--ac-ease) var(--land, 0s); }
+.ac-otp__slot.is-filled .ac-otp__ph { opacity: 0; }
+.ac-otp__ch { color: var(--otp-ink); transform-origin: center bottom; transform-style: preserve-3d; animation: ac-otp-in .3s var(--otp-spring) var(--d, 0s) both; }
+.ac-otp__ch.is-out { animation: ac-otp-out .25s var(--ac-ease) both; }
+.ac-otp__sep { display: flex; flex: none; color: var(--ac-text-3); }
+.ac-otp__sep .ac-icon { width: 20px; height: 20px; }
+/* o anel é um só e viaja até a casa (ou faixa de casas) selecionada */
+.ac-otp__ring { position: absolute; left: 0; top: 0; z-index: 2; width: 0; height: 0; border-radius: var(--otp-r); box-shadow: 0 0 0 3px color-mix(in oklab, var(--otp-ink) 75%, transparent); opacity: 0; pointer-events: none; transition: transform .3s var(--otp-spring), width .3s var(--otp-spring), height .3s var(--otp-spring), opacity .2s var(--ac-ease); }
+.ac-otp__ring.is-on { opacity: 1; }
+.ac-otp__ring.is-jump { transition: opacity .2s var(--ac-ease); }
+/* o campo de verdade: transparente, por cima de tudo, recebe teclado, colar e o código do SMS */
+.ac-otp__input { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; margin: 0; padding: 0 0 0 4px; border: 0; outline: 0; background: transparent; color: transparent; -webkit-text-fill-color: transparent; caret-color: transparent; font: 16px var(--ac-mono); letter-spacing: 1em; cursor: text; clip-path: inset(0 0 0 0); }
+.ac-otp__input::selection { background: transparent; color: transparent; }
+.ac-otp__input:-webkit-autofill { -webkit-box-shadow: 0 0 0 100px transparent inset; transition: background-color 600000s; }
+.ac-otp__input:disabled { cursor: not-allowed; }
+.ac-otp:has(.ac-otp__input:disabled) { opacity: .5; }
+.ac-otp__msg { margin: 0; font: var(--ac-fs-base)/1.4 var(--ac-font); color: var(--ac-text-2); text-align: center; }
+.ac-otp__msg:not(:empty) { margin-top: 12px; }
+/* estados: conferindo (onda), erro (anel vermelho), certo (varredura e salto) */
+.ac-otp[data-state="pending"] .ac-otp__cell { animation: ac-otp-wave 1.15s ease-in-out calc(var(--i) * 70ms) infinite both; }
+.ac-otp[data-state="error"] { --otp-ink: var(--ac-danger); }
+.ac-otp[data-state="error"] .ac-otp__msg { color: var(--ac-danger); }
+.ac-otp[data-state="success"] { --otp-ink: var(--ac-success); --otp-trail: var(--ac-success); }
+.ac-otp[data-state="success"] .ac-otp__msg { color: var(--ac-success); }
+.ac-otp__trail { position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 3px var(--otp-trail); opacity: 0; pointer-events: none; animation: ac-otp-trail .4s var(--ac-ease) var(--t, 0s) forwards; }
+.ac-otp__trail.is-success { animation-duration: .34s; animation-timing-function: cubic-bezier(.32, .72, 0, 1); }
+.ac-otp__slot.is-bounce { animation: ac-otp-bounce .42s var(--ac-ease) var(--t, 0s) both; }
+@keyframes ac-otp-in { from { opacity: 0; transform: translateY(6px) rotateX(-35deg); filter: blur(2px); } }
+@keyframes ac-otp-out { to { opacity: 0; transform: translateY(-2px) rotateX(15deg); filter: blur(2px); } }
+@keyframes ac-otp-wave { 0%, 100% { opacity: 1; } 50% { opacity: .28; } }
+@keyframes ac-otp-trail { 30% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes ac-otp-bounce { 40% { transform: translateY(-8px); } }
+@media (max-width: 640px) { .ac-otp { --otp-r: 9px; } }
 
 /* ---------- Combobox / Command ---------- */
 .ac-combo { position: relative; }
@@ -483,7 +514,7 @@
 .ac-table-tools .ac-input { height: 34px; }
 .ac-table-scroll { overflow-x: auto; }
 .ac-table { width: 100%; border-collapse: collapse; font-size: var(--ac-fs-base); color: var(--ac-text); }
-.ac-table th { height: 40px; padding: 0 14px; text-align: left; font-weight: 500; color: var(--ac-text-3); font-size: var(--ac-fs-sm); background: var(--ac-surface-2); border-bottom: 1px solid var(--ac-border); white-space: nowrap; }
+.ac-table th { height: 40px; padding: 0 14px; text-align: left; font-weight: 500; color: var(--ac-text-3); font-size: var(--ac-fs-base); background: var(--ac-surface-2); border-bottom: 1px solid var(--ac-border); white-space: nowrap; }
 .ac-table td { height: 52px; padding: 0 14px; border-bottom: 1px solid var(--ac-border); white-space: nowrap; }
 .ac-table tbody tr { transition: background .15s; }
 .ac-table tbody tr:hover { background: color-mix(in oklab, var(--ac-surface-2) 60%, transparent); }

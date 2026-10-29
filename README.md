@@ -56,7 +56,7 @@ Atalho de busca: `Ctrl K`.
 - Conteúdo inserido depois do carregamento: `Orthos.init(elemento)`.
 - APIs: `Orthos.toast()` (com `.update()`), `Orthos.toast.promise(promessa, mensagens)`, `Orthos.command()`, `Orthos.skeleton(el, on)`, `Orthos.open(dialog)`, `Orthos.close(dialog)`, `Orthos.results` (textos das páginas de erro), `Orthos.logo.load(el, arquivo)`, `Orthos.logo.replay(el)`, `Orthos.loading({ logo, text })` (tela de carregamento), `Orthos.tour(passos)`, `Orthos.dirty.baseline(form)`, `Orthos.confirm(opções)` e `Orthos.alert(mensagem)` (devolvem Promise; com `onConfirm` assíncrono o botão fica carregando e o erro aparece dentro da janela).
 - Atalho global: `Alt+T` leva o foco aos avisos.
-- Escala de texto: `--ac-fs-xs` 12px · `sm` 13 · `base` 14 · `md` 15 · `lg` 17 · `xl` 20 · `2xl` 22 · `3xl` 28 · `touch` 16 (campos em telas de toque, para o Safari do iPhone não dar zoom). 12px é o mínimo; a suíte de testes falha se alguma demo tiver texto menor.
+- Escala de texto: `--ac-fs-xs` 12px · `sm` 13 · `base` 14 · `md` 15 · `lg` 17 · `xl` 20 · `2xl` 22 · `3xl` 28 · `touch` 16 (campos em telas de toque, para o Safari do iPhone não dar zoom). 12px é o mínimo; a suíte de testes falha se alguma demo tiver texto menor. Dicas (`.ac-hint`), erros (`.ac-error`) e cabeçalhos de tabela usam 14px. O site de documentação usa `--site-read` (16px) no texto corrido e no menu, e `--site-small` (14px) nos rótulos.
 - Tokens de forma e movimento: `--ac-btn-radius`, `--ac-dur-fast | base | slow | overlay`, `--ac-ease-standard`, `--ac-ease-out`.
 - Eventos: `ac:change`, `ac:select`, `ac:complete`, `ac:valid`.
 - Formulário com `data-ac="validate"`: com erro, o envio é barrado e o foco vai ao primeiro campo inválido. Válido, emite `ac:valid` (cancelável) e o formulário é enviado normalmente; para enviar por `fetch`, chame `e.preventDefault()` nesse evento.
@@ -64,7 +64,7 @@ Atalho de busca: `Ctrl K`.
 ## Componentes (60)
 
 **Fundamentos:** Button (variantes, carregando, shimmer), Magnetic button, Badge e Kbd, Avatar, Tooltip, Toggle/Toolbar/grupo de botões/separador.
-**Formulários:** Input e Field, Validação, Input OTP, Checkbox/Radio/Switch, Slider, Segmented, Combobox, Date picker, File dropzone, Color palette 3D, Select, Number field, Seletor de pessoas e tags, Intervalo de datas, Alterações não salvas, Campo de dinheiro, Telefone com país, Campo de senha (regras ao vivo, modo segredo), Campo copiável, Escolha em cartões.
+**Formulários:** Input e Field, Validação, Input OTP (campo único no modelo do Kobra), Checkbox/Radio/Switch, Slider, Segmented, Combobox, Date picker, File dropzone, Color palette 3D, Select, Number field, Seletor de pessoas e tags, Intervalo de datas, Alterações não salvas, Campo de dinheiro, Telefone com país, Campo de senha (regras ao vivo, modo segredo), Campo copiável, Escolha em cartões.
 **Navegação:** Tabs, Sidebar, Dropdown menu, Command palette, Breadcrumb e Pagination, Stepper, Accordion, Context menu e Menubar, Abas com muitas seções, Tour de apresentação; Sidebar com largura ajustável.
 **Feedback:** Toast (pilha, promessa, arrastar, Alt+T), Alert e Banner, Dialog e confirmação, Sheet, Progress e Spinner, Skeleton automático, Empty state, Popover e Hover card, Páginas de erro e resultado, Carregamento com logo (SVG traçado ou imagem, tela inteira), Faixas de aviso em fila, Diálogo em bottom sheet no celular (com teclado virtual), Confirmar e alertar.
 **Dados:** Data table (busca, filtro, ordenação, seleção em lote com desfazer, paginação), Stat cards e gráficos, Gráficos de área/barras/meta/empilhada, Card e cartão recolhível, Tabela em cartões no celular, Linha do tempo, Conversa (chat), Carrossel acessível.
@@ -83,7 +83,7 @@ reimplementadas em HTML/CSS/JS puro; o detalhe está em `docs/mudancas-2026-10-2
 
 ## Testes
 
-A suíte roda no Chrome e no Safari (WebKit) com 116 de 116 testes; a mesma página publicada em https://orthos-ui.vercel.app/tests/componentes.html serve para conferir no Firefox e em aparelhos reais.
+A suíte roda no Chrome e no Safari (WebKit) com 122 testes; a mesma página publicada em https://orthos-ui.vercel.app/tests/componentes.html serve para conferir no Firefox e em aparelhos reais.
 
 Sirva a pasta (`python -m http.server`) e abra `/tests/componentes.html`. A página monta todos os componentes, confere a
 documentação de cada um e testa o teclado dos componentes interativos; o resultado aparece na tela e em `window.RESULTADO`.

@@ -198,8 +198,8 @@
 /* ---------- Fields ---------- */
 .ac-field { display: grid; gap: 6px; font-family: var(--ac-font); }
 .ac-label { font: 500 var(--ac-fs-sm) var(--ac-font); color: var(--ac-text); }
-.ac-hint { font-size: var(--ac-fs-sm); color: var(--ac-text-3); }
-.ac-error { margin: 0; font-size: var(--ac-fs-sm); color: var(--ac-danger); display: flex; gap: 6px; align-items: center; }
+.ac-hint { font-size: var(--ac-fs-base); color: var(--ac-text-3); }
+.ac-error { margin: 0; font-size: var(--ac-fs-base); color: var(--ac-danger); display: flex; gap: 6px; align-items: center; }
 .ac-input, .ac-textarea, .ac-select {
   width: 100%; height: 40px; padding: 0 12px; border-radius: var(--ac-r-sm);
   border: 1px solid var(--ac-border-strong); background: var(--ac-surface); color: var(--ac-text);
@@ -433,18 +433,49 @@
 .ac-steps li[data-state="current"] { color: var(--ac-text); font-weight: 500; }
 .ac-steps li[data-state="current"]::before { border-color: var(--ac-text); box-shadow: 0 0 0 4px var(--ac-surface-3); color: var(--ac-text); }
 
-/* ---------- Input OTP (inspirado em Kobra / shadcn) ---------- */
-.ac-otp { display: inline-flex; align-items: center; gap: 8px; font-family: var(--ac-font); }
-.ac-otp__group { display: flex; }
-.ac-otp__slot { width: clamp(36px, 11vw, 44px); height: 52px; margin-left: -1px; border: 1px solid var(--ac-border-strong); background: var(--ac-surface); color: var(--ac-text); font: 600 var(--ac-fs-xl) var(--ac-mono); text-align: center; caret-color: transparent; transition: border-color .2s, box-shadow .2s, transform .2s var(--ac-ease-spring); position: relative; }
-.ac-otp__slot:first-child { margin-left: 0; border-radius: 12px 0 0 12px; }
-.ac-otp__slot:last-child { border-radius: 0 12px 12px 0; }
-.ac-otp__slot:focus { outline: none; z-index: 1; border-color: var(--ac-text); box-shadow: 0 0 0 3px var(--ac-ring); }
-.ac-otp__slot.is-filled { animation: ac-pop-sm .25s var(--ac-ease-spring); }
-.ac-otp__sep { width: 10px; height: 2px; border-radius: 2px; background: var(--ac-border-strong); }
-.ac-otp[data-state="error"] .ac-otp__slot { border-color: var(--ac-danger); color: var(--ac-danger); }
-.ac-otp[data-state="error"] { animation: ac-shake .4s var(--ac-ease); }
-.ac-otp[data-state="success"] .ac-otp__slot { border-color: var(--ac-success); color: var(--ac-success); }
+/* ---------- Input OTP (modelo do Kobra: um campo invisível sobre as casas, anel que desliza, dígitos que giram) ---------- */
+.ac-otp { --otp-r: 12px; --otp-size: 56px; --otp-gap: clamp(6px, 2.4vw, 12px); --otp-spring: cubic-bezier(.3, 1.3, .5, 1); --otp-ink: var(--ac-text); --otp-trail: color-mix(in oklab, var(--ac-text) 45%, transparent);
+  display: inline-flex; flex-direction: column; align-items: center; max-width: 100%; font-family: var(--ac-font); color: var(--ac-text); }
+.ac-otp__box { position: relative; max-width: 100%; direction: ltr; }
+.ac-otp__slots, .ac-otp__group { display: flex; align-items: center; gap: var(--otp-gap); min-width: 0; }
+.ac-otp__slots { position: relative; }
+.ac-otp__slot { container-type: inline-size; position: relative; display: grid; place-items: center; flex: 0 1 auto; width: min(var(--otp-size), 11vw); min-width: 30px; min-height: 44px; aspect-ratio: 1; border-radius: var(--otp-r); background: color-mix(in oklab, var(--ac-text) 6%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ac-text) 12%, transparent); transition: background-color .15s var(--ac-ease); }
+.ac-otp__slot.is-active { z-index: 1; background: color-mix(in oklab, var(--ac-text) 10%, transparent); }
+.ac-otp__cell { display: grid; place-items: center; perspective: 240px; font: 600 min(var(--ac-fs-2xl), 43cqi)/1 var(--ac-font); font-variant-numeric: tabular-nums; }
+.ac-otp__cell > span { grid-area: 1 / 1; }
+.ac-otp__ph { color: color-mix(in oklab, var(--ac-text) 20%, transparent); transition: opacity .15s var(--ac-ease) var(--land, 0s); }
+.ac-otp__slot.is-filled .ac-otp__ph { opacity: 0; }
+.ac-otp__ch { color: var(--otp-ink); transform-origin: center bottom; transform-style: preserve-3d; animation: ac-otp-in .3s var(--otp-spring) var(--d, 0s) both; }
+.ac-otp__ch.is-out { animation: ac-otp-out .25s var(--ac-ease) both; }
+.ac-otp__sep { display: flex; flex: none; color: var(--ac-text-3); }
+.ac-otp__sep .ac-icon { width: 20px; height: 20px; }
+/* o anel é um só e viaja até a casa (ou faixa de casas) selecionada */
+.ac-otp__ring { position: absolute; left: 0; top: 0; z-index: 2; width: 0; height: 0; border-radius: var(--otp-r); box-shadow: 0 0 0 3px color-mix(in oklab, var(--otp-ink) 75%, transparent); opacity: 0; pointer-events: none; transition: transform .3s var(--otp-spring), width .3s var(--otp-spring), height .3s var(--otp-spring), opacity .2s var(--ac-ease); }
+.ac-otp__ring.is-on { opacity: 1; }
+.ac-otp__ring.is-jump { transition: opacity .2s var(--ac-ease); }
+/* o campo de verdade: transparente, por cima de tudo, recebe teclado, colar e o código do SMS */
+.ac-otp__input { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; margin: 0; padding: 0 0 0 4px; border: 0; outline: 0; background: transparent; color: transparent; -webkit-text-fill-color: transparent; caret-color: transparent; font: 16px var(--ac-mono); letter-spacing: 1em; cursor: text; clip-path: inset(0 0 0 0); }
+.ac-otp__input::selection { background: transparent; color: transparent; }
+.ac-otp__input:-webkit-autofill { -webkit-box-shadow: 0 0 0 100px transparent inset; transition: background-color 600000s; }
+.ac-otp__input:disabled { cursor: not-allowed; }
+.ac-otp:has(.ac-otp__input:disabled) { opacity: .5; }
+.ac-otp__msg { margin: 0; font: var(--ac-fs-base)/1.4 var(--ac-font); color: var(--ac-text-2); text-align: center; }
+.ac-otp__msg:not(:empty) { margin-top: 12px; }
+/* estados: conferindo (onda), erro (anel vermelho), certo (varredura e salto) */
+.ac-otp[data-state="pending"] .ac-otp__cell { animation: ac-otp-wave 1.15s ease-in-out calc(var(--i) * 70ms) infinite both; }
+.ac-otp[data-state="error"] { --otp-ink: var(--ac-danger); }
+.ac-otp[data-state="error"] .ac-otp__msg { color: var(--ac-danger); }
+.ac-otp[data-state="success"] { --otp-ink: var(--ac-success); --otp-trail: var(--ac-success); }
+.ac-otp[data-state="success"] .ac-otp__msg { color: var(--ac-success); }
+.ac-otp__trail { position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 3px var(--otp-trail); opacity: 0; pointer-events: none; animation: ac-otp-trail .4s var(--ac-ease) var(--t, 0s) forwards; }
+.ac-otp__trail.is-success { animation-duration: .34s; animation-timing-function: cubic-bezier(.32, .72, 0, 1); }
+.ac-otp__slot.is-bounce { animation: ac-otp-bounce .42s var(--ac-ease) var(--t, 0s) both; }
+@keyframes ac-otp-in { from { opacity: 0; transform: translateY(6px) rotateX(-35deg); filter: blur(2px); } }
+@keyframes ac-otp-out { to { opacity: 0; transform: translateY(-2px) rotateX(15deg); filter: blur(2px); } }
+@keyframes ac-otp-wave { 0%, 100% { opacity: 1; } 50% { opacity: .28; } }
+@keyframes ac-otp-trail { 30% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes ac-otp-bounce { 40% { transform: translateY(-8px); } }
+@media (max-width: 640px) { .ac-otp { --otp-r: 9px; } }
 
 /* ---------- Combobox / Command ---------- */
 .ac-combo { position: relative; }
@@ -498,7 +529,7 @@
 .ac-table-tools .ac-input { height: 34px; }
 .ac-table-scroll { overflow-x: auto; }
 .ac-table { width: 100%; border-collapse: collapse; font-size: var(--ac-fs-base); color: var(--ac-text); }
-.ac-table th { height: 40px; padding: 0 14px; text-align: left; font-weight: 500; color: var(--ac-text-3); font-size: var(--ac-fs-sm); background: var(--ac-surface-2); border-bottom: 1px solid var(--ac-border); white-space: nowrap; }
+.ac-table th { height: 40px; padding: 0 14px; text-align: left; font-weight: 500; color: var(--ac-text-3); font-size: var(--ac-fs-base); background: var(--ac-surface-2); border-bottom: 1px solid var(--ac-border); white-space: nowrap; }
 .ac-table td { height: 52px; padding: 0 14px; border-bottom: 1px solid var(--ac-border); white-space: nowrap; }
 .ac-table tbody tr { transition: background .15s; }
 .ac-table tbody tr:hover { background: color-mix(in oklab, var(--ac-surface-2) 60%, transparent); }
@@ -1091,6 +1122,8 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 <style>
 /* Site de documentação do Orthos UI */
 /* color-scheme fica na biblioteca (src/orthos.css) */
+/* o site lê mais que a biblioteca: texto corrido e menu em 16 px, rótulos e textos auxiliares em 14 px (os componentes seguem a escala --ac-fs-*) */
+:root { --site-read: 16px; --site-small: var(--ac-fs-base); }
 body { margin: 0; background: var(--ac-bg); color: var(--ac-text); font: var(--ac-fs-base)/1.55 var(--ac-font); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
 a { color: inherit; }
 code { font-family: var(--ac-mono); font-size: max(var(--ac-fs-xs), .92em); }
@@ -1100,7 +1133,7 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 .skip:focus { top: 12px; }
 .only-m { display: none !important; }
 
-.shell { display: grid; grid-template-columns: 252px minmax(0, 1fr); min-height: 100vh; }
+.shell { display: grid; grid-template-columns: 288px minmax(0, 1fr); min-height: 100vh; }
 
 /* ---------- navegação ---------- */
 .side { position: sticky; top: 0; height: 100vh; height: 100dvh; display: flex; flex-direction: column; gap: 10px; padding: 16px 12px; border-right: 1px solid var(--ac-border); background: var(--ac-bg); }
@@ -1109,7 +1142,7 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 .brand__mark { width: 24px; height: 24px; flex: none; border-radius: 6px; }
 :root[data-theme="dark"] .brand__mark { box-shadow: 0 0 0 1px #2a2a2f; }
 .brand__tag { font: 600 var(--ac-fs-xs) var(--ac-mono); padding: 2px 6px; border-radius: 6px; background: var(--ac-surface-2); color: var(--ac-text-3); border: 1px solid var(--ac-border); }
-.search { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px 0 10px; border: 1px solid var(--ac-border); border-radius: 10px; background: var(--ac-surface); color: var(--ac-text-3); font: var(--ac-fs-base) var(--ac-font); cursor: pointer; box-shadow: var(--ac-shadow-sm); transition: border-color .2s; }
+.search { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 8px 0 10px; border: 1px solid var(--ac-border); border-radius: 10px; background: var(--ac-surface); color: var(--ac-text-3); font: var(--ac-fs-base) var(--ac-font); cursor: pointer; box-shadow: var(--ac-shadow-sm); transition: border-color .2s; font-size: var(--site-read); }
 .search:hover { border-color: var(--ac-border-strong); }
 .search span { flex: 1; text-align: left; }
 .search .ac-kbd { height: 20px; font-size: var(--ac-fs-xs); border-bottom-width: 1px; }
@@ -1117,20 +1150,20 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 /* rolagem invisível: continua rolando com roda, toque e teclado */
 #nav, .panel { scrollbar-width: none; -ms-overflow-style: none; }
 #nav::-webkit-scrollbar, .panel::-webkit-scrollbar { display: none; }
-.nav__g { margin: 16px 0 4px; padding: 0 8px; font: 500 var(--ac-fs-xs) var(--ac-font); color: var(--ac-text-3); letter-spacing: .02em; }
-.nav__a { display: flex; align-items: center; gap: 8px; min-height: 30px; padding: 5px 8px; line-height: 1.35; border-radius: 8px; color: var(--ac-text-2); text-decoration: none; font-size: var(--ac-fs-base); transition: background .15s, color .15s; }
+.nav__g { margin: 18px 0 4px; padding: 0 8px; font: 500 var(--site-small) var(--ac-font); color: var(--ac-text-3); letter-spacing: .02em; }
+.nav__a { display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 6px 8px; line-height: 1.35; border-radius: 8px; color: var(--ac-text-2); text-decoration: none; font-size: var(--site-read); transition: background .15s, color .15s; }
 .nav__a:hover { background: var(--ac-surface-2); color: var(--ac-text); }
 .nav__a[aria-current="page"] { background: var(--ac-surface); color: var(--ac-text); font-weight: 500; box-shadow: var(--ac-shadow-sm), inset 0 0 0 1px var(--ac-border); }
 .nav__a i { width: 5px; height: 5px; border-radius: 50%; background: var(--ac-border-strong); flex: none; }
 .nav__a[aria-current="page"] i { background: var(--ac-text); }
 .nav__a .n { margin-left: auto; font: var(--ac-fs-xs) var(--ac-mono); color: var(--ac-text-3); }
 .side__foot { border-top: 1px solid var(--ac-border); padding-top: 10px; }
-.side__foot .ac-btn { width: 100%; justify-content: flex-start; }
+.side__foot .ac-btn { width: 100%; justify-content: flex-start; font-size: var(--site-read); }
 .veil { position: fixed; inset: 0; z-index: 40; background: rgb(0 0 0 / .4); }
 
 /* ---------- página de componente: palco + painel ---------- */
 .main { min-width: 0; outline: none; }
-.doc { display: grid; grid-template-columns: minmax(0, 1fr) 340px; min-height: 100vh; }
+.doc { display: grid; grid-template-columns: minmax(0, 1fr) 380px; min-height: 100vh; }
 .stage { display: flex; flex-direction: column; min-width: 0; padding: 12px; }
 .stage__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 0 2px 12px; }
 .stage__crumb { font-size: var(--ac-fs-sm); color: var(--ac-text-3); }
@@ -1153,27 +1186,27 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 
 .panel { position: sticky; top: 0; height: 100vh; overflow: auto; padding: 28px 24px 40px; border-left: 1px solid var(--ac-border); background: var(--ac-bg); }
 .panel h1 { margin: 0 0 8px; font: 650 var(--ac-fs-2xl)/1.2 var(--ac-font); letter-spacing: -.025em; }
-.panel .lead { margin: 0 0 18px; color: var(--ac-text-2); font-size: var(--ac-fs-base); }
-.panel h2 { margin: 26px 0 10px; font: 600 var(--ac-fs-xs) var(--ac-font); color: var(--ac-text); }
+.panel .lead { margin: 0 0 18px; color: var(--ac-text-2); font-size: var(--site-read); line-height: 1.6; }
+.panel h2 { margin: 28px 0 10px; font: 600 var(--site-small) var(--ac-font); color: var(--ac-text); }
 .ref { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--ac-border); border-radius: 12px; background: var(--ac-surface); text-decoration: none; transition: border-color .2s; }
 .ref:hover { border-color: var(--ac-border-strong); }
-.ref small { display: block; color: var(--ac-text-3); font-size: var(--ac-fs-xs); }
-.ref b { font-weight: 500; font-size: var(--ac-fs-sm); }
+.ref small { display: block; color: var(--ac-text-3); font-size: var(--site-small); }
+.ref b { font-weight: 500; font-size: var(--site-read); }
 .ref svg { margin-left: auto; color: var(--ac-text-3); }
-.snippet { display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 12px; border: 1px solid var(--ac-border); border-radius: 10px; background: var(--ac-surface); font: var(--ac-fs-xs) var(--ac-mono); color: var(--ac-text-2); }
+.snippet { display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 12px; border: 1px solid var(--ac-border); border-radius: 10px; background: var(--ac-surface); font: var(--site-small) var(--ac-mono); color: var(--ac-text-2); }
 .snippet code { flex: 1; overflow: auto; white-space: nowrap; scrollbar-width: none; }
-.api { width: 100%; border-collapse: collapse; font-size: var(--ac-fs-sm); }
-.api th { text-align: left; font-weight: 500; color: var(--ac-text-3); padding: 0 8px 8px 0; border-bottom: 1px solid var(--ac-border); }
+.api { width: 100%; border-collapse: collapse; font-size: var(--site-read); line-height: 1.5; }
+.api th { text-align: left; font-weight: 500; font-size: var(--site-small); color: var(--ac-text-3); padding: 0 8px 8px 0; border-bottom: 1px solid var(--ac-border); }
 .api td { padding: 9px 8px 9px 0; border-bottom: 1px solid var(--ac-border); vertical-align: top; color: var(--ac-text-2); }
-.api td:first-child code { color: var(--ac-text); font-size: var(--ac-fs-xs); overflow-wrap: anywhere; }
-.api td small { display: block; color: var(--ac-text-3); font: var(--ac-fs-xs) var(--ac-mono); margin-top: 2px; }
-.a11y { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; color: var(--ac-text-2); font-size: var(--ac-fs-sm); }
+.api td:first-child code { color: var(--ac-text); font-size: var(--site-small); overflow-wrap: anywhere; }
+.api td small { display: block; color: var(--ac-text-3); font: var(--site-small) var(--ac-mono); margin-top: 2px; }
+.a11y { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; color: var(--ac-text-2); font-size: var(--site-read); line-height: 1.5; }
 .a11y li { display: flex; gap: 8px; }
-.a11y li::before { content: ""; flex: none; width: 14px; height: 14px; margin-top: 3px; border-radius: 50%; background: var(--ac-success-bg); box-shadow: inset 0 0 0 4px var(--ac-success-bg), inset 0 0 0 10px var(--ac-success); }
+.a11y li::before { content: ""; flex: none; width: 14px; height: 14px; margin-top: 5px; border-radius: 50%; background: var(--ac-success-bg); box-shadow: inset 0 0 0 4px var(--ac-success-bg), inset 0 0 0 10px var(--ac-success); }
 .pn { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 28px; }
-.pn a { display: block; padding: 10px 12px; border: 1px solid var(--ac-border); border-radius: 12px; text-decoration: none; font-size: var(--ac-fs-sm); }
+.pn a { display: block; padding: 10px 12px; border: 1px solid var(--ac-border); border-radius: 12px; text-decoration: none; font-size: var(--site-read); }
 .pn a:hover { border-color: var(--ac-border-strong); background: var(--ac-surface); }
-.pn small { display: block; color: var(--ac-text-3); font-size: var(--ac-fs-xs); }
+.pn small { display: block; color: var(--ac-text-3); font-size: var(--site-small); }
 .pn a:last-child { text-align: right; }
 
 /* ---------- página inicial ---------- */
@@ -1189,19 +1222,20 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 .tile__label a { color: var(--ac-text-3); text-decoration: none; }
 .tile__label a:hover { color: var(--ac-text); }
 .tile__demo { flex: 1; display: grid; place-items: center; }
+.tile .ac-otp { --otp-size: 42px; }
 .t4 { grid-column: span 4; } .t5 { grid-column: span 5; } .t7 { grid-column: span 7; } .t8 { grid-column: span 8; } .t6 { grid-column: span 6; } .t12 { grid-column: span 12; }
 .sec-h { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 0 0 18px; }
 .sec-h h2 { margin: 0; font: 650 var(--ac-fs-2xl) var(--ac-font); letter-spacing: -.02em; }
-.sec-h p { margin: 0; color: var(--ac-text-3); }
+.sec-h p { margin: 0; color: var(--ac-text-3); font-size: var(--site-read); }
 .index { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-bottom: 72px; }
 .index a { display: grid; gap: 4px; padding: 14px 16px; border: 1px solid var(--ac-border); border-radius: 14px; background: var(--ac-surface); text-decoration: none; transition: border-color .2s, transform .25s var(--ac-ease); }
 .index a:hover { border-color: var(--ac-border-strong); transform: translateY(-2px); }
-.index b { font-weight: 550; font-size: var(--ac-fs-base); }
-.index span { color: var(--ac-text-3); font-size: var(--ac-fs-sm); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.index small { color: var(--ac-text-3); font: var(--ac-fs-xs) var(--ac-mono); }
+.index b { font-weight: 550; font-size: var(--site-read); }
+.index span { color: var(--ac-text-3); font-size: var(--site-small); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.index small { color: var(--ac-text-3); font: var(--site-small) var(--ac-mono); }
 .start { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .start .code { min-height: 0; }
-.start pre { font-size: var(--ac-fs-xs); }
+.start pre { font-size: var(--site-small); }
 .foot { margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--ac-border); color: var(--ac-text-3); font-size: var(--ac-fs-sm); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
 /* ---------- responsivo ---------- */
@@ -1233,12 +1267,12 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 .a11y.is-no li::before { background: var(--ac-danger-bg); box-shadow: inset 0 0 0 4px var(--ac-danger-bg), inset 0 0 0 10px var(--ac-danger); }
 .a11y.is-tip li::before { background: var(--ac-surface-3); box-shadow: inset 0 0 0 4px var(--ac-surface-3), inset 0 0 0 10px var(--ac-text-2); }
 .md-dlg { width: min(760px, calc(100vw - 32px)); }
-.md-pre { margin: 0; max-height: 60vh; overflow: auto; padding: 14px 16px; border: 1px solid var(--ac-border); border-radius: 12px; background: var(--ac-surface-2); font: var(--ac-fs-xs)/1.6 var(--ac-mono); white-space: pre-wrap; color: var(--ac-text-2); }
+.md-pre { margin: 0; max-height: 60vh; overflow: auto; padding: 14px 16px; border: 1px solid var(--ac-border); border-radius: 12px; background: var(--ac-surface-2); font: var(--site-small)/1.6 var(--ac-mono); white-space: pre-wrap; color: var(--ac-text-2); }
 .prose h1 { margin: 0 0 10px; font: 650 34px/1.15 var(--ac-font); letter-spacing: -.03em; }
 .prose h2 { margin: 36px 0 12px; font: 600 var(--ac-fs-lg) var(--ac-font); }
-.prose .lead { color: var(--ac-text-2); font-size: var(--ac-fs-md); max-width: 70ch; }
-.prose .api { max-width: 860px; font-size: var(--ac-fs-base); }
-.nav__a .n { font-family: var(--ac-font); font-size: var(--ac-fs-xs); padding: 1px 6px; border-radius: 99px; background: var(--ac-surface-2); }
+.prose .lead { color: var(--ac-text-2); font-size: var(--site-read); line-height: 1.6; max-width: 70ch; }
+.prose .api { max-width: 860px; }
+.nav__a .n { font-family: var(--ac-font); font-size: var(--site-small); padding: 1px 6px; border-radius: 99px; background: var(--ac-surface-2); }
 /* item do menu com nome longo: cresce em altura; ponto e selo "novo" ficam alinhados à primeira linha */
 .nav__a i { align-self: flex-start; margin-top: .5em; }
 .nav__a .n { align-self: flex-start; margin-top: 1px; flex: none; }
@@ -1526,34 +1560,141 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 
   // dígitos arábicos (٠-٩) e persas (۰-۹) viram 0-9: teclados e SMS nesses idiomas mandam o código assim
   const otpDigits = s => String(s || '').replace(/[٠-٩۰-۹]/g, c => String(c.charCodeAt(0) & 15));
+  // acha o código no texto colado ("Seu código: 482 913. Válido por 10 min"): prefere um trecho com exatamente len dígitos
+  const otpCode = (t, len) => { const runs = (otpDigits(String(t || '').normalize('NFKC')).match(/\d(?:[\s‐‑–-]?\d)*/g) || []).map(r => r.replace(/\D/g, '')); return runs.find(r => r.length === len) || runs.join(''); };
+  /* Input OTP no modelo do Kobra: um único <input> transparente por cima das casas (o SMS do iOS e do Android preenche tudo
+     de uma vez), um anel que desliza até a casa ativa, dígitos que entram girando, rastro ao colar, onda enquanto confere
+     e varredura com salto quando o código está certo. */
   C.otp = el => {
-    const len = +el.dataset.length || 6, half = Math.ceil(len / 2), valid = el.dataset.valid;
-    el.setAttribute('role', 'group'); el.setAttribute('aria-label', el.dataset.label || 'Código de verificação');
-    let h = '<div class="ac-otp__group">';
-    for (let i = 0; i < len; i++) { if (i === half) h += '</div><span class="ac-otp__sep" aria-hidden="true"></span><div class="ac-otp__group">'; h += `<input class="ac-otp__slot" inputmode="numeric" autocomplete="${i === 0 ? 'one-time-code' : 'off'}" maxlength="1" aria-label="Dígito ${i + 1} de ${len}">`; }
-    el.innerHTML = h + '</div>';
-    const s = $$('.ac-otp__slot', el);
-    const value = () => s.map(x => x.value).join('');
-    const check = () => {
-      const v = value(); el.dataset.state = '';
-      if (v.length === len) {
-        const ok = !valid || v === valid; el.dataset.state = ok ? 'success' : 'error';
-        el.dispatchEvent(new CustomEvent('ac:complete', { detail: { value: v, valid: ok }, bubbles: true }));
-        if (!ok) setTimeout(() => { if (el.dataset.state === 'error') { s.forEach(x => { x.value = ''; x.classList.remove('is-filled'); }); s[0].focus(); } }, 900);
-      }
+    const len = +el.dataset.length || 6, half = Math.ceil(len / 2), msgId = id('otp-msg');
+    let h = '';
+    for (let i = 0; i < len; i++) {
+      if (i === half) h += `</div><div class="ac-otp__sep"><svg class="ac-icon" viewBox="0 0 24 24"><path d="M20 12L4 12"/></svg></div><div class="ac-otp__group">`;
+      h += `<div class="ac-otp__slot" style="--i:${i}"><span class="ac-otp__cell"><span class="ac-otp__ph">0</span></span></div>`;
+    }
+    el.removeAttribute('role');
+    el.innerHTML = `<div class="ac-otp__box"><div class="ac-otp__slots" aria-hidden="true"><div class="ac-otp__group">${h}</div><span class="ac-otp__ring"></span></div>`
+      + `<input class="ac-otp__input" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="${len}" spellcheck="false" autocapitalize="off" aria-label="${esc(el.dataset.label || 'Código de verificação')}, ${len} dígitos" aria-describedby="${msgId}"></div>`
+      + `<p class="ac-otp__msg" id="${msgId}" role="status"></p>`;
+    const inp = $('.ac-otp__input', el), slots = $$('.ac-otp__slot', el), row = $('.ac-otp__slots', el), ring = $('.ac-otp__ring', el), msg = $('.ac-otp__msg', el);
+    if (el.dataset.name) inp.name = el.dataset.name;
+    if (el.hasAttribute('data-disabled')) inp.disabled = true;
+    let shown = '', ringOn = false, landing = false, pointer = false, timer = 0;
+
+    const setState = (st, text) => {
+      if (st) el.dataset.state = st; else delete el.dataset.state;
+      msg.textContent = text || '';
+      st === 'error' ? inp.setAttribute('aria-invalid', 'true') : inp.removeAttribute('aria-invalid');
+      st === 'pending' ? inp.setAttribute('aria-busy', 'true') : inp.removeAttribute('aria-busy');
     };
-    const fill = (from, txt) => { const d = otpDigits(txt).replace(/\D/g, ''); [...d].forEach((c, k) => { const x = s[from + k]; if (x) { x.value = c; x.classList.add('is-filled'); } }); const nx = s[Math.min(from + d.length, len - 1)]; nx.focus(); check(); };
-    s.forEach((x, i) => {
-      x.addEventListener('input', () => { const d = otpDigits(x.value).replace(/\D/g, ''); x.value = ''; if (d) fill(i, d); else x.classList.remove('is-filled'); });
-      x.addEventListener('keydown', e => {
-        if (e.key === 'Backspace' && !x.value && i > 0) { e.preventDefault(); s[i - 1].value = ''; s[i - 1].classList.remove('is-filled'); s[i - 1].focus(); el.dataset.state = ''; }
-        if (e.key === 'ArrowLeft' && i > 0) s[i - 1].focus();
-        if (e.key === 'ArrowRight' && i < len - 1) s[i + 1].focus();
+    // desenha só as casas que mudaram; numa colagem, cada dígito chega um pouco depois do anterior
+    const render = (from = 0, to = 0) => {
+      const v = inp.value, motion = !reduce();
+      slots.forEach((s, i) => {
+        const c = v[i] || '';
+        if (c === (shown[i] || '')) return;
+        const cell = s.firstChild, d = i >= from && i < to ? (i - from) * .045 : 0, prev = cell.querySelector('.ac-otp__ch:not(.is-out)');
+        s.style.setProperty('--land', d + 's');
+        if (prev) { if (motion) { prev.classList.add('is-out'); setTimeout(() => prev.remove(), 300); } else prev.remove(); }
+        if (c) { const n = document.createElement('span'); n.className = 'ac-otp__ch'; n.textContent = c; n.style.setProperty('--d', d + 's'); cell.appendChild(n); }
+        s.classList.toggle('is-filled', !!c);
       });
-      // colar a mensagem inteira ("Seu código: 482 913. Válido por 10 min") acha o código; sem um trecho de N dígitos, cola como antes
-      x.addEventListener('paste', e => { e.preventDefault(); const t = otpDigits((e.clipboardData || window.clipboardData).getData('text')); const code = (t.match(/\d(?:[ -]?\d)*/g) || []).map(r => r.replace(/\D/g, '')).find(r => r.length === len); code ? fill(0, code) : fill(i, t); });
-      x.addEventListener('focus', () => x.select());
+      shown = v;
+    };
+    // casas ativas = seleção do campo; o anel aparece enquanto falta dígito, numa seleção de várias casas ou durante a colagem
+    const place = () => {
+      const v = inp.value, on = document.activeElement === inp;
+      const a = Math.min(inp.selectionStart ?? v.length, len - 1), b = Math.max(a, Math.min((inp.selectionEnd ?? v.length) - 1, len - 1));
+      slots.forEach((s, i) => s.classList.toggle('is-active', on && i >= a && i <= b));
+      const show = on && (v.length < len || b > a || landing);
+      if (show) {
+        const r = row.getBoundingClientRect(), p = slots[a].getBoundingClientRect(), q = slots[b].getBoundingClientRect();
+        if (!ringOn) ring.classList.add('is-jump');
+        ring.style.cssText = `width:${q.right - p.left}px;height:${p.height}px;transform:translate(${p.left - r.left}px,${p.top - r.top}px)`;
+        if (!ringOn) { void ring.offsetWidth; ring.classList.remove('is-jump'); }
+      }
+      ring.classList.toggle('is-on', show); ringOn = show;
+    };
+    // cursor parado sobre um dígito vira a seleção desse dígito (digitar troca); com tudo preenchido, fica no último
+    const fix = () => {
+      if (document.activeElement === inp) {
+        const v = inp.value, s = inp.selectionStart, e = inp.selectionEnd;
+        if (s === e && s < v.length) inp.setSelectionRange(s, s + 1);
+        else if (s === e && v.length === len) inp.setSelectionRange(len - 1, len);
+      }
+      place();
+    };
+    const sweep = (from, to, tone) => {
+      if (reduce() || to <= from) return;
+      const step = tone === 'success' ? .048 : .045;
+      for (let i = from; i < to; i++) {
+        const t = document.createElement('span'); t.className = 'ac-otp__trail' + (tone === 'success' ? ' is-success' : '');
+        slots[i].style.setProperty('--t', (i - from) * step + 's'); slots[i].appendChild(t); setTimeout(() => t.remove(), 1000);
+        if (tone === 'success') { slots[i].classList.remove('is-bounce'); void slots[i].offsetWidth; slots[i].classList.add('is-bounce'); }
+      }
+      // enquanto os dígitos colados pousam, o anel fica e a conferência espera
+      if (tone === 'paste') { landing = true; setTimeout(() => { landing = false; place(); complete(); }, (to - from - 1) * step * 1000); }
+    };
+    const complete = () => {
+      const v = inp.value;
+      if (v.length < len || landing || el.dataset.state) return;
+      const want = el.dataset.valid, valid = want ? v === want : null;
+      let settled = false;
+      const resolve = (good, text) => {
+        if (settled || inp.value !== v) return; settled = true; clearTimeout(timer);
+        if (good) { setState('success', text || el.dataset.success || 'Código confirmado.'); sweep(0, len, 'success'); place(); return; }
+        setState('error', text || el.dataset.error || 'Código inválido. Tente de novo.');
+        inp.value = ''; render();
+        if (document.activeElement === inp || document.activeElement === document.body) { inp.focus(); inp.setSelectionRange(0, 0); }
+        place();
+      };
+      setState('pending');
+      el.dispatchEvent(new CustomEvent('ac:complete', { detail: { value: v, valid, resolve }, bubbles: true }));
+      if (want && !settled) timer = setTimeout(() => resolve(valid), +(el.dataset.delay ?? 700));
+    };
+    const edited = () => { clearTimeout(timer); if (el.dataset.state) setState(''); };
+
+    inp.addEventListener('input', () => {
+      const pos = inp.selectionStart ?? 0, v = otpDigits(inp.value).replace(/\D/g, '').slice(0, len), prev = shown;
+      if (v !== inp.value) { inp.value = v; inp.setSelectionRange(Math.min(pos, v.length), Math.min(pos, v.length)); }
+      if (v === prev) return fix();
+      edited();
+      // mais de um dígito de uma vez = preenchimento automático (SMS, gerenciador de senhas)
+      const grow = v.length - prev.length > 1 && v.startsWith(prev);
+      render(grow ? prev.length : 0, grow ? v.length : 0); if (grow) sweep(prev.length, v.length, 'paste');
+      fix(); complete();
     });
+    inp.addEventListener('paste', e => {
+      e.preventDefault();
+      if (inp.readOnly || inp.disabled) return;
+      const code = otpCode((e.clipboardData || window.clipboardData).getData('text'), len); if (!code) return;
+      const v = inp.value, whole = code.length >= len, from = whole ? 0 : inp.selectionStart ?? v.length;
+      const next = (v.slice(0, from) + code + v.slice(whole ? v.length : inp.selectionEnd ?? v.length)).slice(0, len);
+      if (next === v) return;
+      edited(); inp.value = next;
+      const to = Math.min(from + code.length, len);
+      inp.setSelectionRange(next.length, next.length);
+      render(from, to); sweep(from, to, 'paste'); fix(); complete();
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+      const v = inp.value, s = inp.selectionStart ?? v.length;
+      const to = { ArrowLeft: Math.max(0, s - 1), ArrowRight: Math.min(v.length, s + 1), Home: 0, End: v.length }[e.key];
+      if (to === undefined) return;
+      e.preventDefault(); inp.setSelectionRange(to, to); fix();
+    });
+    // clique numa casa: vai para ela, mas nunca além do primeiro espaço vazio
+    inp.addEventListener('pointerdown', () => { pointer = true; });
+    inp.addEventListener('click', e => {
+      pointer = false;
+      if (inp.selectionEnd - inp.selectionStart > 1) return place();
+      let i = slots.findIndex(s => e.clientX < s.getBoundingClientRect().right); if (i < 0) i = len - 1;
+      i = Math.min(i, inp.value.length); inp.setSelectionRange(i, i); fix();
+    });
+    inp.addEventListener('focus', () => { if (!pointer) inp.setSelectionRange(inp.value.length, inp.value.length); fix(); });
+    inp.addEventListener('blur', place);
+    inp.addEventListener('select', place);
+    if (window.ResizeObserver) new ResizeObserver(() => ringOn && place()).observe(row);
   };
 
   C.slider = el => {
@@ -3084,14 +3225,14 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       api: [['data-ac="validate"', '<form>', '—', 'Ativa validação nativa com mensagens próprias'], ['required / minlength / type="email" / pattern', 'HTML', '—', 'Regras usadas'], ['data-pattern-msg', 'texto', '—', 'Mensagem para pattern']],
       a11y: ['Erros aparecem em texto ao lado do campo.', 'Ao enviar com erros, o foco vai para o primeiro campo inválido.'] },
 
-    { id: 'otp', grupo: 'Formulários', nome: 'Input OTP', desc: 'Código segmentado com colar, apagar e setas. Valida ao completar: sucesso em verde, erro com tremida e limpeza automática.',
+    { id: 'otp', grupo: 'Formulários', nome: 'Input OTP', desc: 'Código segmentado num único campo: um anel desliza até a casa ativa, os dígitos entram girando, colar deixa um rastro e, ao completar, as casas ondulam enquanto o código é conferido. Certo: varredura verde com salto. Errado: limpa, anel vermelho e mensagem.',
       ref: { nome: 'Kobra · Input OTP', url: 'https://kobra.systems/components/input-otp' },
       html: `<div style="display:grid;gap:12px;justify-items:center">
   <div class="ac-otp" data-ac="otp" data-length="6" data-valid="888813"></div>
-  <p class="ac-hint">Código de teste: <code>888813</code></p>
+  <p class="ac-hint">Código de teste: <code>888813</code> (cole também “Seu código: 888 813”)</p>
 </div>`,
-      api: [['data-length', 'número', '6', 'Quantidade de dígitos'], ['data-valid', 'texto', '—', 'Código esperado (demo); omita para validar fora'], ['ac:complete', 'evento', '—', 'detail: { value, valid }']],
-      a11y: ['Cada casa tem rótulo “Dígito n de 6”.', 'autocomplete="one-time-code" para preenchimento por SMS.'] },
+      api: [['data-length', 'número', '6', 'Quantidade de dígitos'], ['data-valid', 'texto', '—', 'Código esperado (demo); omita para validar fora'], ['data-delay', 'ms', '700', 'Tempo da conferência com data-valid'], ['data-error / data-success', 'texto', '—', 'Mensagens de erro e de acerto'], ['data-name / data-label / data-disabled', 'atributos', '—', 'Nome no formulário, rótulo do campo, desativado'], ['ac:complete', 'evento', '—', 'detail: { value, valid, resolve(ok, mensagem) }; sem data-valid, chame resolve depois de conferir no servidor'], ['data-state', 'saída', '—', 'pending | success | error'], ['--otp-size', 'CSS', '56px', 'Tamanho da casa (no celular encolhe até 11vw)']],
+      a11y: ['Um único campo com rótulo “Código de verificação, 6 dígitos”; as casas são só desenho (aria-hidden).', 'autocomplete="one-time-code": o SMS preenche o código inteiro de uma vez, também no iOS.', 'Erro e acerto aparecem em texto num role="status"; o campo ganha aria-invalid no erro e aria-busy enquanto confere.', 'Setas, Home e End movem entre as casas; movimento reduzido desliga rastros, saltos e a onda.'] },
 
     { id: 'choice', grupo: 'Formulários', nome: 'Checkbox, Radio e Switch', desc: 'Controles nativos estilizados, com estado indeterminado e animação de mola.',
       ref: { nome: 'Radix · Switch', url: 'https://www.radix-ui.com/primitives/docs/components/switch' },
@@ -3909,7 +4050,7 @@ window.GUIA = {
   tooltip: { usar: ['Nomear botões só com ícone e explicar abreviações.'], evitar: ['Informação essencial ou interativa (use popover).', 'Celular, onde não há hover.'], dicas: ['Uma frase curta.', 'Mostre o atalho de teclado quando houver.'] },
   input: { usar: ['Entrada de texto livre com rótulo visível.'], evitar: ['Placeholder no lugar do rótulo.', 'Campos sem ajuda quando o formato é específico.'], dicas: ['Erro abaixo do campo, com o que fazer.', 'Contador quando houver limite de caracteres.'] },
   form: { usar: ['Cadastros e formulários com regras claras.'], evitar: ['Validar enquanto a pessoa ainda está digitando o primeiro caractere.'], dicas: ['Valide ao sair do campo e ao enviar.', 'Ao enviar com erro, leve o foco ao primeiro campo inválido.', 'Mensagens específicas: “Use pelo menos 8 caracteres (faltam 3)”.'] },
-  otp: { usar: ['Códigos de verificação de 4 a 8 dígitos.'], evitar: ['Senhas ou códigos alfanuméricos longos.'], dicas: ['Aceite colar o código inteiro (ou a mensagem toda: o código é achado no texto).', 'autocomplete="one-time-code" para o SMS preencher sozinho.', 'Em erro, limpe e devolva o foco à primeira casa.'] },
+  otp: { usar: ['Códigos de verificação de 4 a 8 dígitos.'], evitar: ['Senhas ou códigos alfanuméricos longos.'], dicas: ['Aceite colar o código inteiro (ou a mensagem toda: o código é achado no texto).', 'Use um único campo com autocomplete="one-time-code" para o SMS preencher sozinho.', 'Em erro, limpe, mostre a mensagem e devolva o cursor à primeira casa.', 'Confira no servidor dentro do ac:complete e chame resolve(true | false).'] },
   choice: { usar: ['Checkbox: várias opções ou aceite. Radio: uma opção entre poucas. Switch: liga/desliga com efeito imediato.'], evitar: ['Switch quando a mudança só vale ao clicar em “Salvar” (use checkbox).', 'Radio com mais de 6 opções (use select).'], dicas: ['Agrupe em <fieldset> com <legend>.', 'Texto de apoio abaixo do rótulo quando a opção não for óbvia.'] },
   slider: { usar: ['Valores aproximados em faixa conhecida: volume, desconto.'], evitar: ['Valores exatos (use number field).'], dicas: ['Mostre o valor atual ao lado.', 'Passo coerente com a unidade.'] },
   segmented: { usar: ['Trocar a visão de um mesmo conteúdo (Dia/Semana/Mês).'], evitar: ['Mais de 5 opções.', 'Navegação entre páginas (use tabs).'], dicas: ['Rótulos curtos e do mesmo tamanho.'] },
