@@ -28,6 +28,7 @@
 <script src="../site/demos-imagens.js"></script>
 <script src="../site/demos-profundidade.js"></script>
 <script src="../site/demos-modelos.js"></script>
+<script src="../site/demos-kobra.js"></script>
 <script src="../site/guia.js"></script>
 <script>
 /* Abra no navegador (python -m http.server na raiz e /tests/componentes.html). O resultado também fica em window.RESULTADO. */
@@ -334,6 +335,41 @@
   await t('palavras que viram: frase inteira para o leitor, letras animadas escondidas', () => {
     mount('flip-words'); const el = $('.ac-flip-words', palco);
     ok(/vende mais, organiza tudo/.test($('.ac-sr', el).textContent) && $('.ac-flip-words__w', el).getAttribute('aria-hidden') === 'true' && $$('.ac-flip-words__c', el).length === 'vende mais'.length, 'estrutura');
+  });
+  await t('vídeo: controles próprios, rótulos que mudam e teclado', async () => {
+    mount('video'); const el = $('.ac-video', palco), v = $('video', el);
+    ok(!v.controls && el.getAttribute('role') === 'region' && $$('[data-v="play"]', el).length === 2 && $('.ac-video__seek', el) && el.classList.contains('ac-video--liquid'), 'estrutura');
+    ok($('[data-v="play"]', el).getAttribute('aria-label') === 'Tocar' && $('.ac-video__pill', el).textContent === 'Recife de coral visto do alto', 'rótulos');
+    const sp = $('[data-v="speed"]', el); sp.click(); ok(v.playbackRate === 1.25 && sp.textContent === '1,25×', 'velocidade');
+    key(el, 'm'); await w(30); ok(v.muted && $('[data-v="vol"]', el).getAttribute('aria-label') === 'Ligar o som', 'mudo'); key(el, 'm');
+    ok($$('.ac-video', palco)[1].classList.contains('ac-video--blur'), 'blur');
+  });
+  await t('halftone: canvas com descrição e abas que trocam a imagem', async () => {
+    mount('halftone'); await w(400); const el = $('.ac-halftone', palco), cv = $('canvas', el), tabs = $$('.ac-halftone__tabs button', el);
+    ok(cv && cv.getAttribute('role') === 'img' && tabs.length === 4 && cv.width > 0, 'estrutura');
+    ok(/Orthos/.test(cv.getAttribute('aria-label') || ''), 'descrição: ' + cv.getAttribute('aria-label'));
+    tabs[3].click(); await w(400); ok(/Fones/.test(cv.getAttribute('aria-label')), 'troca: ' + cv.getAttribute('aria-label'));
+  });
+  await t('ícones que se transformam: aria-pressed, rótulo e volta sozinho', async () => {
+    mount('morph-icons'); const bs = $$('.ac-morph', palco); ok(bs.length === 12 && bs.every(b => $('svg[data-off]', b) && $('svg[data-on]', b)), 'botões');
+    const play = bs[1]; ok(play.getAttribute('aria-label') === 'Tocar' && play.getAttribute('aria-pressed') === 'false', 'início');
+    play.click(); ok(play.getAttribute('aria-pressed') === 'true' && play.getAttribute('aria-label') === 'Pausar', 'troca');
+    const copy = bs[0]; copy.dataset.revert = '60'; copy.click(); ok(copy.getAttribute('aria-label') === 'Copiado', 'copiado'); await w(120); ok(copy.getAttribute('aria-pressed') === 'false', 'não voltou');
+  });
+  await t('editor com IA: seleção abre a barra, pedido gera resposta e Substituir troca o trecho', async () => {
+    mount('ai-editor'); const ed = $('.ac-ai-editor', palco), doc = $('.ac-ai-editor__doc', ed), p = $('p', doc);
+    ok(doc.isContentEditable && doc.getAttribute('role') === 'textbox', 'documento');
+    const r = document.createRange(); r.setStart(p.firstChild, 0); r.setEnd(p.firstChild, 20); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.dispatchEvent(new Event('selectionchange')); await w(30);
+    const pop = $('.ac-ai-pop', ed); ok(!pop.hidden && pop.getAttribute('role') === 'toolbar' && $$('.ac-ai-fmt', pop).length === 5, 'barra');
+    $('[data-ai="ask"]', pop).click(); const inp = $('.ac-ai-input', pop); ok(inp && document.activeElement === inp, 'campo');
+    inp.value = 'deixe mais curto'; $('form', pop).dispatchEvent(new Event('submit', { cancelable: true, bubbles: true })); ok(pop.getAttribute('role') === 'dialog', 'cartão');
+    await w(2600); ok(!$('.ac-ai-card__actions', pop).hidden && /minificador/.test($('.ac-ai-card__a', pop).textContent), 'resposta');
+    $('[data-ai="replace"]', pop).click(); ok(/^Quase todo minificador/.test(p.textContent) && pop.hidden, 'substituir');
+  });
+  await t('conversa em sequência: digitando, entrada uma a uma e hora no toque', async () => {
+    mount('conversation'); const c = $('.ac-conversation', palco); ok(c.getAttribute('role') === 'log', 'papel');
+    const b = $('.ac-msg__bubble[role="button"]', c); b.click(); ok(b.closest('.ac-msg').hasAttribute('data-open') && b.getAttribute('aria-expanded') === 'true', 'hora');
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) { c.dataset.typing = '40'; c._conversation.play(); await w(10); ok($$('.ac-msg.is-waiting', c).length >= 3, 'não escondeu'); await w(2800); ok(!$('.ac-msg.is-waiting', c) && !$('.ac-conversation__typing', c), 'não terminou'); }
   });
   await t('Orthos.transition: executa a troca (com ou sem View Transitions)', async () => { let n = 0; await Orthos.transition(() => { n++; }); ok(n === 1, 'não executou'); });
   // modelos de tela e campo de cartão

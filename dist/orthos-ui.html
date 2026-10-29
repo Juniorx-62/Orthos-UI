@@ -1286,7 +1286,9 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
    Layouts que reagem à largura do próprio contêiner (container queries), não da tela: funcionam dentro de qualquer área. */
 
 /* ---------- App shell com dashboard: menu lateral, topo, números, gráfico com painel de apoio e tabela ---------- */
-.ac-shell { container: ac-shell / inline-size; display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 640px; background: var(--ac-bg); color: var(--ac-text); font-family: var(--ac-font); }
+/* o contêiner (.ac-shell) é medido; a grade fica em .ac-shell__in, porque a container query só alcança os filhos */
+.ac-shell { container: ac-shell / inline-size; background: var(--ac-bg); color: var(--ac-text); font-family: var(--ac-font); }
+.ac-shell__in { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 640px; }
 .ac-shell__side.ac-sidebar { --w: 100%; width: auto; border-width: 0 1px 0 0; border-radius: 0; box-shadow: none; }
 .ac-shell__main { display: grid; align-content: start; gap: 16px; min-width: 0; padding: 20px 24px 28px; }
 .ac-shell__top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
@@ -1298,16 +1300,18 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-shell__brand-m { display: none; }
 @container ac-shell (max-width: 900px) { .ac-shell__kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ac-shell__grid { grid-template-columns: minmax(0, 1fr); } .ac-shell__search { width: 160px; } }
 @container ac-shell (max-width: 720px) {
-  .ac-shell { grid-template-columns: minmax(0, 1fr); }
+  .ac-shell__in { grid-template-columns: minmax(0, 1fr); min-height: 0; }
   .ac-shell__side { display: none; }
   .ac-shell__brand-m { display: flex; align-items: center; gap: 8px; font-weight: 650; }
   .ac-shell__main { padding: 14px; }
   .ac-shell__search { display: none; }
 }
-@container ac-shell (max-width: 420px) { .ac-shell__kpis { grid-template-columns: minmax(0, 1fr); } }
+@container ac-shell (max-width: 420px) { .ac-shell__kpis { gap: 8px; } .ac-shell__kpis .ac-card__body { padding: 12px; } .ac-shell__kpis .ac-stat__value { font-size: var(--ac-fs-lg) !important; } }
+@container ac-shell (max-width: 300px) { .ac-shell__kpis { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- Entrar (auth): painel de imagem + formulário; no estreito, só o formulário ---------- */
-.ac-auth { container: ac-auth / inline-size; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); min-height: 640px; background: var(--ac-bg); color: var(--ac-text); font-family: var(--ac-font); }
+.ac-auth { container: ac-auth / inline-size; background: var(--ac-bg); color: var(--ac-text); font-family: var(--ac-font); }
+.ac-auth__in { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); min-height: 640px; }
 .ac-auth__panel { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; padding: 32px; color: #fff; }
 .ac-auth__panel > img { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; }
 .ac-auth__panel::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgb(0 0 0 / .78), rgb(0 0 0 / .1) 55%, rgb(0 0 0 / .35)); }
@@ -1322,10 +1326,11 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-auth__row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .ac-auth a { color: var(--ac-text); }
 .ac-auth [data-tpl-step]:not([hidden]) { display: grid; gap: 16px; justify-items: stretch; }
-@container ac-auth (max-width: 720px) { .ac-auth { grid-template-columns: minmax(0, 1fr); } .ac-auth__panel { display: none; } .ac-auth__form { align-content: start; padding: 28px 18px; } }
+@container ac-auth (max-width: 720px) { .ac-auth__in { grid-template-columns: minmax(0, 1fr); min-height: 0; } .ac-auth__panel { display: none; } .ac-auth__form { align-content: start; padding: 28px 18px; } }
 
 /* ---------- Checkout (padrão Baymard): poucos campos, resumo do total sempre à vista ---------- */
-.ac-checkout { container: ac-checkout / inline-size; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; align-items: start; padding: 24px; background: var(--ac-bg); color: var(--ac-text); font-family: var(--ac-font); }
+.ac-checkout { container: ac-checkout / inline-size; background: var(--ac-bg); color: var(--ac-text); font-family: var(--ac-font); }
+.ac-checkout__in { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; align-items: start; padding: 24px; }
 .ac-checkout__form { display: grid; gap: 22px; min-width: 0; }
 .ac-checkout__section { display: grid; gap: 12px; margin: 0; padding: 0; border: 0; min-width: 0; }
 .ac-checkout__section > legend { margin-bottom: 4px; padding: 0; font: 650 var(--ac-fs-lg) var(--ac-font); }
@@ -1345,7 +1350,7 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-card-number .ac-input { padding-right: 84px; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
 .ac-card-number__brand { position: absolute; right: 8px; top: 50%; translate: 0 -50%; min-width: 0; padding: 3px 8px; border: 1px solid var(--ac-border); border-radius: 6px; background: var(--ac-surface-2); font: 700 var(--ac-fs-xs)/1.2 var(--ac-font); letter-spacing: .04em; text-transform: uppercase; color: var(--ac-text-2); pointer-events: none; }
 .ac-card-number__brand:empty { display: none; }
-@container ac-checkout (max-width: 760px) { .ac-checkout { grid-template-columns: minmax(0, 1fr); padding: 16px; } .ac-checkout__summary { position: static; order: -1; } }
+@container ac-checkout (max-width: 760px) { .ac-checkout__in { grid-template-columns: minmax(0, 1fr); padding: 16px; } .ac-checkout__summary { position: static; order: -1; } }
 
 /* ---------- Preços: alternância mensal/anual, um plano em destaque, perguntas frequentes ---------- */
 .ac-pricing { container: ac-pricing / inline-size; display: grid; justify-items: center; gap: 22px; padding: 32px 24px; background: var(--ac-bg); color: var(--ac-text); font-family: var(--ac-font); text-align: center; }
@@ -1423,6 +1428,113 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
   .ac-ring3d__spin.is-snap { transition: none; }
   .ac-flip-words__c { animation: none; }
 }
+
+/* ======================= Peças estudadas na Kobra (29/10/2026): vídeo, halftone e ícones que se transformam ======================= */
+
+/* ---------- Player de vídeo com controles em vidro ---------- */
+.ac-video { --glass: rgb(255 255 255 / .16); --glass-line: rgb(255 255 255 / .28); position: relative; overflow: hidden; aspect-ratio: 16 / 9; border: 1px solid var(--ac-border); border-radius: var(--ac-r-lg); background: #000; color: #fff; font-family: var(--ac-font); outline: none; isolation: isolate; }
+.ac-video:focus-visible { box-shadow: 0 0 0 3px var(--ac-ring); }
+.ac-video > video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ac-video__ui { position: absolute; inset: 0; display: grid; grid-template-rows: auto 1fr auto; padding: 12px; background: linear-gradient(rgb(0 0 0 / .35), transparent 26%, transparent 62%, rgb(0 0 0 / .55)); transition: opacity .3s var(--ac-ease); }
+.ac-video.is-idle .ac-video__ui { opacity: 0; cursor: none; }
+.ac-video__top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ac-video__pill { display: inline-flex; align-items: center; gap: 6px; max-width: 60%; padding: 6px 12px; border-radius: var(--ac-r-full); font: 500 var(--ac-fs-base) var(--ac-font); color: #fff; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ac-video__pill .ac-icon { width: 18px; height: 18px; flex: none; }
+.ac-video__mid { display: flex; align-items: center; justify-content: center; gap: clamp(14px, 6%, 40px); opacity: 0; transition: opacity .25s var(--ac-ease); }
+.ac-video[data-state="paused"] .ac-video__mid, .ac-video:hover .ac-video__mid, .ac-video:focus-within .ac-video__mid { opacity: 1; }
+.ac-video__btn { display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; border-radius: 50%; background: none; color: #fff; cursor: pointer; font: 600 var(--ac-fs-base) var(--ac-font); transition: background var(--ac-dur-fast), transform .2s var(--ac-ease); }
+.ac-video__btn:hover { background: rgb(255 255 255 / .16); }
+.ac-video__btn:focus-visible, .ac-video__seek:focus-visible, .ac-video__pill:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.ac-video__round { width: 48px; height: 48px; }
+.ac-video__big { width: 66px; height: 66px; }
+.ac-video__big .ac-icon { width: 28px; height: 28px; }
+.ac-video__round:active { transform: scale(.94); }
+.ac-video__speed { width: auto; min-width: 40px; padding: 0 8px; border-radius: var(--ac-r-full); font-variant-numeric: tabular-nums; }
+.ac-video__bottom { display: grid; gap: 4px; }
+.ac-video__row { display: flex; align-items: center; gap: 2px; }
+.ac-video__space { flex: 1; }
+.ac-video__time { padding: 0 8px; font: 500 var(--ac-fs-sm) var(--ac-font); font-variant-numeric: tabular-nums; color: rgb(255 255 255 / .9); white-space: nowrap; }
+.ac-video__vol { display: inline-flex; align-items: center; }
+.ac-video__volume { width: 0; opacity: 0; transition: width .25s var(--ac-ease), opacity .2s; accent-color: #fff; }
+.ac-video__vol:hover .ac-video__volume, .ac-video__vol:focus-within .ac-video__volume { width: 72px; opacity: 1; }
+/* barra de progresso: o range nativo (acessível) fica por cima, transparente; o desenho fica embaixo */
+.ac-video__track { position: relative; height: 18px; margin: 0 6px; }
+.ac-video__track::before, .ac-video__buffer, .ac-video__fill { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 4px; margin-top: -2px; border-radius: 4px; transform-origin: left; transition: height .15s; }
+.ac-video__track::before { background: rgb(255 255 255 / .25); }
+.ac-video__buffer { background: rgb(255 255 255 / .35); transform: scaleX(0); }
+.ac-video__fill { background: #fff; transform: scaleX(0); }
+.ac-video__track:hover::before, .ac-video__track:hover .ac-video__buffer, .ac-video__track:hover .ac-video__fill { height: 6px; margin-top: -3px; }
+.ac-video__seek { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.ac-video__tip { position: absolute; bottom: 100%; left: 0; translate: -50% -6px; padding: 3px 8px; border-radius: 6px; background: rgb(0 0 0 / .7); font: 600 var(--ac-fs-xs) var(--ac-font); font-variant-numeric: tabular-nums; opacity: 0; pointer-events: none; transition: opacity .15s; }
+.ac-video__track:hover .ac-video__tip { opacity: 1; }
+/* vidro: blur simples ou "líquido" (desfoque + saturação + brilho de borda, imitando refração) */
+.ac-video__pill, .ac-video__round { background: var(--glass); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 0 0 1px var(--glass-line); }
+.ac-video--liquid .ac-video__pill, .ac-video--liquid .ac-video__round { background: linear-gradient(135deg, rgb(255 255 255 / .22), rgb(255 255 255 / .06) 60%); -webkit-backdrop-filter: blur(6px) saturate(1.8) brightness(1.08); backdrop-filter: blur(6px) saturate(1.8) brightness(1.08); box-shadow: inset 0 1px 1px rgb(255 255 255 / .55), inset 0 -1px 1px rgb(0 0 0 / .18), inset 0 0 0 1px rgb(255 255 255 / .18), 0 6px 18px rgb(0 0 0 / .22); }
+.ac-video video::cue { background: rgb(0 0 0 / .6); font: 500 var(--ac-fs-lg) var(--ac-font); }
+@media (max-width: 520px) { .ac-video__round { width: 40px; height: 40px; } .ac-video__big { width: 54px; height: 54px; } .ac-video__time { display: none; } }
+
+/* ---------- Halftone: imagem refeita em pontos ---------- */
+.ac-halftone { display: grid; justify-items: center; gap: 14px; width: 100%; }
+.ac-halftone__canvas { display: block; width: 100%; border-radius: var(--ac-r-lg); cursor: crosshair; touch-action: pan-y; }
+
+/* ---------- Ícone que se transforma ---------- */
+.ac-morph { display: inline-grid; place-items: center; width: calc(var(--size, 24px) + 20px); height: calc(var(--size, 24px) + 20px); padding: 0; border: 0; border-radius: 12px; background: none; color: var(--ac-text); cursor: pointer; transition: background var(--ac-dur-fast); }
+.ac-morph:hover { background: var(--ac-surface-2); }
+.ac-morph:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ac-ring); }
+.ac-morph > svg { grid-area: 1 / 1; width: var(--size, 24px); height: var(--size, 24px); fill: none; stroke: currentColor; stroke-width: var(--stroke, 1.5); stroke-linecap: round; stroke-linejoin: round; transition: transform .5s cubic-bezier(.3, 1.4, .5, 1), opacity .3s var(--ac-ease); }
+.ac-morph > svg * { stroke-dasharray: 1; stroke-dashoffset: 0; transition: stroke-dashoffset .42s var(--ac-ease) .14s; }
+.ac-morph:not([aria-pressed="true"]) > svg[data-on], .ac-morph[aria-pressed="true"] > svg[data-off] { opacity: 0; transform: scale(.7) rotate(-45deg); }
+.ac-morph:not([aria-pressed="true"]) > svg[data-on] *, .ac-morph[aria-pressed="true"] > svg[data-off] * { stroke-dashoffset: 1; transition-delay: 0s; transition-duration: .22s; }
+.ac-morph circle[r="1.5"] { fill: currentColor; }
+@media (prefers-reduced-motion: reduce) { .ac-morph > svg, .ac-morph > svg * { transition: none; } .ac-video__ui, .ac-video__mid, .ac-video__volume { transition: none; } }
+
+/* ---------- Editor com IA ---------- */
+.ac-ai-editor { position: relative; font-family: var(--ac-font); color: var(--ac-text); }
+.ac-ai-editor__title { margin: 0 0 12px; font: 650 var(--ac-fs-2xl)/1.25 var(--ac-font); letter-spacing: -.02em; }
+.ac-ai-editor__doc { display: grid; gap: 12px; outline: none; font-size: var(--ac-fs-md); line-height: 1.7; color: var(--ac-text-2); caret-color: var(--ac-accent); }
+.ac-ai-editor__doc > * { margin: 0; }
+.ac-ai-editor__doc code { padding: 1px 5px; border-radius: 5px; background: var(--ac-surface-2); font-family: var(--ac-mono); font-size: .9em; }
+.ac-ai-editor__doc ::selection { background: color-mix(in oklab, var(--ac-text) 16%, transparent); }
+::highlight(ac-ai) { background-color: color-mix(in oklab, var(--ac-text) 14%, transparent); }
+.ac-ai-new { animation: ac-fade-up .5s var(--ac-ease); }
+.ac-ai-pop { position: absolute; z-index: 20; border: 1px solid var(--ac-border); border-radius: var(--ac-r-full); background: var(--ac-surface); box-shadow: var(--ac-shadow-lg); animation: ac-pop-sm .18s var(--ac-ease); }
+.ac-ai-pop--bar { display: flex; align-items: center; gap: 2px; padding: 4px; white-space: nowrap; }
+.ac-ai-orb { flex: none; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #8be9ff, #3b5bfd 45%, #a855f7 80%); box-shadow: 0 0 10px rgb(59 91 253 / .35); }
+.ac-ai-ask-btn, .ac-ai-fmt { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 32px; min-width: 32px; padding: 0 10px; border: 0; border-radius: var(--ac-r-full); background: none; color: var(--ac-text); font: 500 var(--ac-fs-base) var(--ac-font); cursor: pointer; }
+.ac-ai-fmt { padding: 0; font-size: var(--ac-fs-md); color: var(--ac-text-2); }
+.ac-ai-fmt code { font: 600 var(--ac-fs-sm) var(--ac-mono); }
+.ac-ai-ask-btn:hover, .ac-ai-fmt:hover, .ac-ai-fmt[aria-pressed="true"] { background: var(--ac-surface-2); color: var(--ac-text); }
+.ac-ai-ask-btn:focus-visible, .ac-ai-fmt:focus-visible, .ac-ai-send:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ac-ring); }
+.ac-ai-sep { width: 1px; height: 18px; margin: 0 4px; background: var(--ac-border); }
+.ac-ai-pop--ask { width: min(340px, calc(100% - 8px)); padding: 4px 4px 4px 12px; }
+.ac-ai-form { display: flex; align-items: center; gap: 10px; }
+.ac-ai-input { flex: 1; min-width: 0; height: 34px; border: 0; background: none; color: var(--ac-text); font: var(--ac-fs-base) var(--ac-font); outline: none; }
+.ac-ai-send { display: grid; place-items: center; flex: none; width: 34px; height: 34px; padding: 0; border: 0; border-radius: 50%; background: var(--ac-text); color: var(--ac-bg); cursor: pointer; }
+.ac-ai-pop--card { width: min(400px, calc(100% - 8px)); padding: 14px 16px; border-radius: var(--ac-r-lg); }
+.ac-ai-card__q { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: var(--ac-fs-base); color: var(--ac-text); }
+.ac-ai-card__a { margin: 0; font-size: var(--ac-fs-md); line-height: 1.6; color: var(--ac-text); }
+.ac-ai-card__a .is-new { color: var(--ac-accent); transition: color .4s var(--ac-ease); }
+.ac-ai-thinking { background: linear-gradient(90deg, var(--ac-text-3) 0%, var(--ac-text) 50%, var(--ac-text-3) 100%) 0 0 / 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: ac-skel 1.4s linear infinite; }
+.ac-ai-card__actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.ac-ai-card__actions[hidden] { display: none; }
+
+/* ---------- Conversa em sequência ---------- */
+.ac-conversation { display: flex; flex-direction: column; gap: 8px; font-family: var(--ac-font); }
+.ac-conversation .ac-msg.is-waiting { display: none; }
+.ac-conversation .ac-msg.is-arriving { animation: ac-msg-in .5s var(--ac-ease) both; transform-origin: var(--from, left) bottom; }
+.ac-conversation .ac-msg--out.is-arriving { --from: right; }
+.ac-conversation__typing .ac-msg__bubble { padding: 12px 14px; }
+.ac-conversation__typing .ac-dots i { width: 7px; height: 7px; background: var(--ac-text-3); }
+.ac-msg__bubble:has(> .ac-msg__icon) { display: flex; align-items: center; gap: 10px; }
+.ac-msg__icon { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--ac-text); color: var(--ac-bg); }
+.ac-msg__icon .ac-icon { width: 14px; height: 14px; }
+.ac-conversation--ios .ac-msg--out { --bg: #0a84ff; --fg: #fff; }
+.ac-conversation--ios .ac-msg--in { --bg: #e9e9eb; --fg: #0b0b0c; }
+.ac-conversation--ios .ac-msg--in > .ac-msg__bubble { border-color: transparent; }
+:root[data-theme="dark"] .ac-conversation--ios .ac-msg--in { --bg: #2c2c2e; --fg: #fff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ac-conversation--ios .ac-msg--in { --bg: #2c2c2e; --fg: #fff; } }
+@keyframes ac-msg-in { from { opacity: 0; filter: blur(8px); transform: translateY(10px) scale(.94); } }
+@media (prefers-reduced-motion: reduce) { .ac-conversation .ac-msg.is-arriving, .ac-ai-new, .ac-ai-pop { animation: none; } }
 
 /* toque: campo com fonte menor que 16px faz o Safari do iPhone dar zoom na página ao focar */
 @media (pointer: coarse) {
@@ -2340,7 +2452,9 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
     const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
     const gid = id('ac-spark-grad');
     el.innerHTML = `<svg class="ac-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${gid}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".14"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path class="a" d="${d} L${w} ${h} L0 ${h} Z"/><path class="l" d="${d}"/></svg>`;
-    const l = $('path.l', el); l.style.setProperty('--len', Math.ceil(l.getTotalLength()));
+    // comprimento da linha pela soma dos segmentos (getTotalLength forçava um layout por gráfico)
+    const len = pts.reduce((a, p, i) => i ? a + Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) : 0, 0);
+    $('path.l', el).style.setProperty('--len', Math.ceil(len));
   };
 
   C.bars = el => {
@@ -3514,6 +3628,273 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       if (document.activeElement === inp) inp.setSelectionRange(at, at);
     };
     inp.addEventListener('input', fmt); fmt();
+  };
+
+  /* ---------- Peças estudadas na Kobra (29/10/2026): vídeo, halftone e ícones que se transformam ---------- */
+  // Hugeicons (stroke rounded)
+  Object.assign(ICONS, { back10: '<path d="M12 5L10.8961 3.45459C10.4851 2.87911 10.2795 2.59137 10.4093 2.32411C10.5391 2.05684 10.8689 2.04153 11.5286 2.01092C11.6848 2.00367 11.842 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 8.72836 3.57111 5.82368 6 3.99927"/><path d="M7.99219 11.004C8.52019 10.584 9.00019 9.89143 9.30019 10.02C9.60019 10.1486 9.50419 10.572 9.50419 11.232C9.50419 11.892 9.50419 14.6847 9.50419 16.008"/><path d="M16.0022 12.6C16.0022 11.22 16.0682 10.848 15.8042 10.404C15.5402 9.96001 14.8802 9.99841 14.2202 9.99841C13.5602 9.99841 13.0802 9.96001 12.7622 10.32C12.3722 10.74 12.5402 11.52 12.4922 12.6C12.6002 14.04 12.3062 15.18 12.7562 15.66C13.0802 16.056 13.6553 15.996 14.3402 16.008C15.0201 15.9997 15.4322 16.032 15.7682 15.648C16.1402 15.312 15.9602 13.98 16.0022 12.6Z"/>', fwd10: '<path d="M12 5L13.1039 3.45459C13.5149 2.87911 13.7205 2.59137 13.5907 2.32411C13.4609 2.05684 13.1311 2.04153 12.4714 2.01092C12.3152 2.00367 12.158 2 12 2C6.4772 2 2 6.47715 2 12C2 17.5228 6.4772 22 12 22C17.5229 22 22 17.5228 22 12C22 8.72836 20.4289 5.82368 18 3.99927"/><path d="M7.99219 11.004C8.52019 10.584 9.00019 9.89143 9.30019 10.02C9.60019 10.1486 9.50419 10.572 9.50419 11.232C9.50419 11.892 9.50419 14.6847 9.50419 16.008"/><path d="M16.0022 12.6C16.0022 11.22 16.0682 10.848 15.8042 10.404C15.5402 9.96001 14.8802 9.99841 14.2202 9.99841C13.5602 9.99841 13.0802 9.96001 12.7622 10.32C12.3722 10.74 12.5402 11.52 12.4922 12.6C12.6002 14.04 12.3062 15.18 12.7562 15.66C13.0802 16.056 13.6553 15.996 14.3402 16.008C15.0201 15.9997 15.4322 16.032 15.7682 15.648C16.1402 15.312 15.9602 13.98 16.0022 12.6Z"/>', vol: '<path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z"/><path d="M17 9C17.6254 9.81968 18 10.8634 18 12C18 13.1366 17.6254 14.1803 17 15"/><path d="M20 7C21.2508 8.36613 22 10.1057 22 12C22 13.8943 21.2508 15.6339 20 17"/>', mute: '<path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z"/><path d="M18 10L22 14M18 14L22 10"/>', full: '<path d="M19.9264 22.2516V20.691C19.9264 20.288 20.0525 19.8966 20.2639 19.5531C21.7583 17.1245 22.2279 14.5196 21.9002 13.505C20.857 11.3418 17.3758 10.4907 15.76 10.2878L16.7966 5.12292C16.9705 4.30387 16.3513 3.47938 15.4135 3.28136C14.4758 3.08334 13.5746 3.58679 13.4007 4.40583L11.3462 14.0815L8.77462 12.4424C8.77462 12.4424 7.47969 11.406 6.44041 12.4424C5.40114 13.4788 6.44041 14.7701 6.44041 14.7701L10.3488 19.7776C10.6003 20.0997 10.7468 20.4908 10.7688 20.8984L10.8401 22.2177"/><path d="M7.32936 1.85194C7.32936 1.85194 9.54861 1.58797 9.867 1.90156C10.1124 2.14335 9.867 4.36134 9.867 4.36134M9.867 1.90156L6.89808 4.84002M4.6477 9.59694C4.6477 9.59694 2.42845 9.86092 2.11005 9.54732C1.86463 9.30553 2.11005 7.08754 2.11005 7.08754M2.11005 9.54732L5.07898 6.60886"/>', unfull: '<path d="M19.9264 22.2502V20.6912C19.9264 20.2886 20.0525 19.8976 20.2639 19.5545C21.7583 17.1282 22.2279 14.5259 21.9002 13.5123C20.857 11.3512 17.3758 10.5009 15.76 10.2983L16.7966 5.13851C16.9705 4.32028 16.3513 3.4966 15.4135 3.29877C14.4758 3.10095 13.5746 3.6039 13.4007 4.42213L11.3462 14.0882L8.77462 12.4508C8.77462 12.4508 7.47969 11.4154 6.44041 12.4508C5.40114 13.4861 6.44041 14.7762 6.44041 14.7762L10.3488 19.7787C10.6003 20.1005 10.7468 20.4912 10.7688 20.8984L10.8401 22.2164"/><path d="M6.95693 2.2382C6.95693 2.2382 6.7053 4.50936 6.95693 4.75695M6.95693 4.75695C7.28338 5.07806 9.55878 4.80775 9.55878 4.80775M6.95693 4.75695L10.001 1.74805M5.04502 9.24998C5.04502 9.24998 5.29665 6.97882 5.04502 6.73124M5.04502 6.73124C4.71857 6.41012 2.44317 6.68043 2.44317 6.68043M5.04502 6.73124L2.00098 9.74014"/>', pip: '<path d="M11.5 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C21.947 6.29018 21.9976 8.05974 21.9999 11.5"/><path d="M20.5 14H15.5C14.6716 14 14 14.6716 14 15.5V18.5C14 19.3284 14.6716 20 15.5 20H20.5C21.3284 20 22 19.3284 22 18.5V15.5C22 14.6716 21.3284 14 20.5 14Z"/><path d="M11 9.5V12C11.0475 12.5744 10.6034 13.0238 10 13H7.5M6 8L10 12"/>', cc: '<path d="M2 12C2 8.02033 2 6.03049 3.0528 4.70201C3.22119 4.48953 3.40678 4.29302 3.60746 4.11473C4.86213 3 6.74142 3 10.5 3H13.5C17.2586 3 19.1379 3 20.3925 4.11473C20.5932 4.29302 20.7788 4.48953 20.9472 4.70201C22 6.03049 22 8.02033 22 12C22 15.9797 22 17.9695 20.9472 19.298C20.7788 19.5105 20.5932 19.707 20.3925 19.8853C19.1379 21 17.2586 21 13.5 21H10.5C6.74142 21 4.86213 21 3.60746 19.8853C3.40678 19.707 3.22119 19.5105 3.0528 19.298C2 17.9695 2 15.9797 2 12Z"/><path d="M10.5 9H10C9.06812 9 8.60218 9 8.23463 9.15224C7.74458 9.35523 7.35523 9.74458 7.15224 10.2346C7 10.6022 7 11.0681 7 12C7 12.9319 7 13.3978 7.15224 13.7654C7.35523 14.2554 7.74458 14.6448 8.23463 14.8478C8.60218 15 9.06812 15 10 15H10.5M17 9H16.5C15.5681 9 15.1022 9 14.7346 9.15224C14.2446 9.35523 13.8552 9.74458 13.6522 10.2346C13.5 10.6022 13.5 11.0681 13.5 12C13.5 12.9319 13.5 13.3978 13.6522 13.7654C13.8552 14.2554 14.2446 14.6448 14.7346 14.8478C15.1022 15 15.5681 15 16.5 15H17"/>', youtube: '<path d="M12 20.5C13.8097 20.5 15.5451 20.3212 17.1534 19.9934C19.1623 19.5839 20.1668 19.3791 21.0834 18.2006C22 17.0221 22 15.6693 22 12.9635V11.0365C22 8.33073 22 6.97787 21.0834 5.79937C20.1668 4.62088 19.1623 4.41613 17.1534 4.00662C15.5451 3.67877 13.8097 3.5 12 3.5C10.1903 3.5 8.45489 3.67877 6.84656 4.00662C4.83766 4.41613 3.83321 4.62088 2.9166 5.79937C2 6.97787 2 8.33073 2 11.0365V12.9635C2 15.6693 2 17.0221 2.9166 18.2006C3.83321 19.3791 4.83766 19.5839 6.84656 19.9934C8.45489 20.3212 10.1903 20.5 12 20.5Z"/><path d="M15.9621 12.3129C15.8137 12.9187 15.0241 13.3538 13.4449 14.2241C11.7272 15.1705 10.8684 15.6438 10.1728 15.4615C9.9372 15.3997 9.7202 15.2911 9.53799 15.1438C9 14.7089 9 13.8059 9 12C9 10.1941 9 9.29112 9.53799 8.85618C9.7202 8.70886 9.9372 8.60029 10.1728 8.53854C10.8684 8.35621 11.7272 8.82945 13.4449 9.77593C15.0241 10.6462 15.8137 11.0813 15.9621 11.6871C16.0126 11.8933 16.0126 12.1067 15.9621 12.3129Z"/>' });
+  const clock = s => { s = Math.max(0, Math.floor(s || 0)); const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, ss = String(s % 60).padStart(2, '0'); return h ? `${h}:${String(m).padStart(2, '0')}:${ss}` : `${m}:${ss}`; };
+
+  /* Player de vídeo: controles próprios sobre um <video> nativo, em "vidro" (data-glass="liquid" ou "blur").
+     Título e link para o YouTube no alto; voltar 10 s, tocar e avançar 10 s no meio; embaixo, a barra com o tempo
+     ao passar o mouse, som, tempo, velocidade, legendas, picture-in-picture e tela cheia. Teclado: espaço/K tocar,
+     J/L 10 s, ← → 5 s, ↑ ↓ volume, M som, F tela cheia, C legendas. Os controles somem tocando, sem mexer o mouse. */
+  C.video = el => {
+    const v = $('video', el); if (!v) return;
+    el.classList.add('ac-video'); el.classList.add('ac-video--' + (el.dataset.glass || 'liquid'));
+    el.tabIndex = 0; el.setAttribute('role', 'region'); el.setAttribute('aria-label', 'Player de vídeo' + (el.dataset.title ? ': ' + el.dataset.title : ''));
+    v.removeAttribute('controls'); v.playsInline = true; v.preload = v.preload || 'metadata';
+    const hasCC = !!v.querySelector('track'), canPip = document.pictureInPictureEnabled && !v.disablePictureInPicture;
+    const btn = (k, label, cls = '') => `<button type="button" class="ac-video__btn ${cls}" data-v="${k}" aria-label="${label}">${icon(k)}</button>`;
+    const ui = document.createElement('div'); ui.className = 'ac-video__ui';
+    ui.innerHTML = `<div class="ac-video__top">${el.dataset.title ? `<span class="ac-video__pill ac-video__title">${esc(el.dataset.title)}</span>` : '<span></span>'}${el.dataset.youtube ? `<a class="ac-video__pill" href="${esc(el.dataset.youtube)}" target="_blank" rel="noopener noreferrer">${icon('youtube')}Assistir no YouTube</a>` : ''}</div>`
+      + `<div class="ac-video__mid">${btn('back10', 'Voltar 10 segundos', 'ac-video__round')}${btn('play', 'Tocar', 'ac-video__round ac-video__big')}${btn('fwd10', 'Avançar 10 segundos', 'ac-video__round')}</div>`
+      + `<div class="ac-video__bottom"><div class="ac-video__track"><span class="ac-video__buffer"></span><span class="ac-video__fill"></span><span class="ac-video__tip" aria-hidden="true">0:00</span><input class="ac-video__seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Posição do vídeo"></div>`
+      + `<div class="ac-video__row">${btn('play', 'Tocar', 'ac-video__toggle')}<span class="ac-video__vol">${btn('vol', 'Tirar o som')}<input class="ac-video__volume" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volume"></span><span class="ac-video__time"><span data-v-now>0:00</span> / <span data-v-dur>0:00</span></span><span class="ac-video__space"></span>`
+      + `<button type="button" class="ac-video__btn ac-video__speed" data-v="speed" aria-label="Velocidade: 1×">1×</button>${hasCC ? btn('cc', 'Mostrar legendas') : ''}${canPip ? btn('pip', 'Picture-in-picture') : ''}${btn('full', 'Tela cheia')}</div></div>`;
+    el.appendChild(ui);
+    const q = s => $(s, el), seek = q('.ac-video__seek'), fill = q('.ac-video__fill'), buf = q('.ac-video__buffer'), tip = q('.ac-video__tip'), vol = q('.ac-video__volume');
+    const plays = $$('[data-v="play"]', el), now = q('[data-v-now]'), dur = q('[data-v-dur]'), speedBtn = q('[data-v="speed"]'), volBtn = q('[data-v="vol"]');
+    const SPEEDS = [1, 1.25, 1.5, 2, .5]; let idle = 0;
+    const setIcon = (b, k, label) => { b.innerHTML = icon(k); b.setAttribute('aria-label', label); };
+    const paintPlay = () => { el.dataset.state = v.paused ? 'paused' : 'playing'; plays.forEach(b => setIcon(b, v.paused ? 'play' : 'pause', v.paused ? 'Tocar' : 'Pausar')); };
+    const paintTime = () => { const d = v.duration || 0, p = d ? v.currentTime / d : 0; fill.style.transform = `scaleX(${p})`; if (document.activeElement !== seek) seek.value = Math.round(p * 1000); now.textContent = clock(v.currentTime); dur.textContent = clock(d); seek.setAttribute('aria-valuetext', `${clock(v.currentTime)} de ${clock(d)}`); try { buf.style.transform = `scaleX(${d && v.buffered.length ? v.buffered.end(v.buffered.length - 1) / d : 0})`; } catch (_) {} };
+    const paintVol = () => { const m = v.muted || v.volume === 0; setIcon(volBtn, m ? 'mute' : 'vol', m ? 'Ligar o som' : 'Tirar o som'); vol.value = m ? 0 : v.volume; };
+    const wake = () => { el.classList.remove('is-idle'); clearTimeout(idle); if (!v.paused) idle = setTimeout(() => { if (!el.contains(document.activeElement) || document.activeElement === el) el.classList.add('is-idle'); }, 2500); };
+    const toggle = () => { v.paused ? v.play().catch(() => {}) : v.pause(); };
+    const jump = s => { v.currentTime = Math.max(0, Math.min((v.duration || 0), v.currentTime + s)); wake(); };
+    const full = () => { const doc = document; if (doc.fullscreenElement) doc.exitFullscreen?.(); else (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el); };
+    const cc = () => { const t = v.textTracks[0]; if (!t) return; t.mode = t.mode === 'showing' ? 'hidden' : 'showing'; const b = q('[data-v="cc"]'); b.setAttribute('aria-pressed', t.mode === 'showing'); b.setAttribute('aria-label', t.mode === 'showing' ? 'Esconder legendas' : 'Mostrar legendas'); };
+    ui.addEventListener('click', e => {
+      const b = e.target.closest('[data-v]'); if (!b) { if (e.target === ui || e.target.closest('.ac-video__mid') === e.target) toggle(); return; }
+      const k = b.dataset.v;
+      if (k === 'play') toggle(); else if (k === 'back10') jump(-10); else if (k === 'fwd10') jump(10);
+      else if (k === 'vol') { v.muted = !v.muted; if (!v.muted && v.volume === 0) v.volume = .6; }
+      else if (k === 'speed') { const i = (SPEEDS.indexOf(v.playbackRate) + 1) % SPEEDS.length; v.playbackRate = SPEEDS[i]; const t = String(SPEEDS[i]).replace('.', ',') + '×'; b.textContent = t; b.setAttribute('aria-label', 'Velocidade: ' + t); }
+      else if (k === 'cc') cc(); else if (k === 'pip') (document.pictureInPictureElement ? document.exitPictureInPicture() : v.requestPictureInPicture()).catch(() => {});
+      else if (k === 'full') full();
+    });
+    ui.addEventListener('dblclick', e => { if (!e.target.closest('button, input, a')) full(); });
+    seek.addEventListener('input', () => { if (v.duration) { v.currentTime = seek.value / 1000 * v.duration; paintTime(); } });
+    vol.addEventListener('input', () => { v.volume = +vol.value; v.muted = v.volume === 0; });
+    const track = q('.ac-video__track');
+    track.addEventListener('pointermove', e => { const r = track.getBoundingClientRect(), p = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); tip.textContent = clock(p * (v.duration || 0)); tip.style.left = p * 100 + '%'; });
+    el.addEventListener('keydown', e => {
+      if (e.target.matches('input[type=range]') && /Arrow/.test(e.key)) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const k = e.key.toLowerCase(), act = { ' ': toggle, k: toggle, j: () => jump(-10), l: () => jump(10), arrowleft: () => jump(-5), arrowright: () => jump(5), arrowup: () => { v.volume = Math.min(1, v.volume + .1); v.muted = false; }, arrowdown: () => { v.volume = Math.max(0, v.volume - .1); }, m: () => { v.muted = !v.muted; }, f: full, c: cc }[k];
+      if (!act || (k === ' ' && e.target.matches('button, a'))) return;
+      e.preventDefault(); act(); wake();
+    });
+    ['play', 'pause', 'ended'].forEach(t => v.addEventListener(t, () => { paintPlay(); wake(); }));
+    ['timeupdate', 'loadedmetadata', 'durationchange', 'progress', 'seeked'].forEach(t => v.addEventListener(t, paintTime));
+    v.addEventListener('volumechange', paintVol);
+    document.addEventListener('fullscreenchange', () => { const on = document.fullscreenElement === el; const b = q('[data-v="full"]'); setIcon(b, on ? 'unfull' : 'full', on ? 'Sair da tela cheia' : 'Tela cheia'); });
+    el.addEventListener('pointermove', wake); el.addEventListener('focusin', wake);
+    paintPlay(); paintTime(); paintVol();
+  };
+
+  /* Halftone: a imagem refeita como uma grade de pontos (o tamanho vem do tom, a cor da própria imagem).
+     data-images="a.jpg|b.jpg" e data-labels="A|B" trocam de imagem com os pontos se transformando em onda;
+     o mouse funciona como lente (pontos crescem e se afastam) e o clique solta uma onda. Canvas, sem dependência. */
+  C.halftone = el => {
+    const srcs = (el.dataset.images || el.dataset.src || '').split('|').filter(Boolean); if (!srcs.length) return;
+    const labels = (el.dataset.labels || '').split('|'), alts = (el.dataset.alts || '').split('|');
+    el.classList.add('ac-halftone');
+    const cv = document.createElement('canvas'); cv.className = 'ac-halftone__canvas'; cv.setAttribute('role', 'img'); el.appendChild(cv);
+    let tabs = null;
+    if (srcs.length > 1) { tabs = document.createElement('div'); tabs.className = 'ac-segmented ac-halftone__tabs'; tabs.setAttribute('aria-label', 'Imagem'); tabs.innerHTML = srcs.map((_, i) => `<button type="button" aria-pressed="${!i}" value="${i}">${esc(labels[i] || 'Imagem ' + (i + 1))}</button>`).join(''); el.appendChild(tabs); tabs.dataset.ac = 'segmented'; tabs.dataset.acInitsegmented = '1'; C.segmented(tabs); }
+    cv.style.aspectRatio = String(+el.dataset.ratio || 4 / 3);
+    const ctx = cv.getContext('2d'), CELL = +el.dataset.cell || 7;
+    // o hexRgb fica içado (function) para a amostragem usar
+    let cols = 0, rows = 0, W = 0, H = 0, cur = null, from = null, to = null, t0 = 0, raf = 0, mx = -1e4, my = -1e4, lens = 0, lensT = 0, ripples = [], visible = true, cache = {};
+    const load = src => cache[src] || (cache[src] = new Promise((ok, bad) => { const im = new Image(); im.decoding = 'async'; im.onload = () => ok(im); im.onerror = bad; im.src = src; }));
+    const sample = im => {
+      const c = document.createElement('canvas'); c.width = cols; c.height = rows; const x = c.getContext('2d', { willReadFrequently: true });
+      const s = Math.max(cols / im.naturalWidth, rows / im.naturalHeight), w = im.naturalWidth * s, h = im.naturalHeight * s;
+      x.drawImage(im, (cols - w) / 2, (rows - h) / 2, w, h);
+      const d = x.getImageData(0, 0, cols, rows).data, n = cols * rows, r = new Float32Array(n), rgb = new Float32Array(n * 3), al = new Float32Array(n);
+      // figura com fundo transparente: o fundo vira pontinhos claros ("papel") e a figura ganha o degradê, se houver
+      const paper = hexRgb(getComputedStyle(el).getPropertyValue('--ac-text-3').trim()) || [136, 136, 136], grad = (el.dataset.gradient || '').split(',').map(c => hexRgb(c.trim())).filter(Boolean);
+      for (let i = 0; i < n; i++) {
+        const R = d[i * 4], G = d[i * 4 + 1], B = d[i * 4 + 2], A = d[i * 4 + 3] / 255, L = (.2126 * R + .7152 * G + .0722 * B) / 255;
+        if (A < .06) { r[i] = .16; rgb.set(paper, i * 3); al[i] = .35; continue; }
+        r[i] = (.18 + .82 * Math.pow(1 - L * .82, 1.35)) * (.45 + .55 * A); al[i] = 1;
+        if (grad.length > 1) { const k = ((i / cols) | 0) / rows, a = grad[0], b = grad[1]; rgb[i * 3] = a[0] + (b[0] - a[0]) * k; rgb[i * 3 + 1] = a[1] + (b[1] - a[1]) * k; rgb[i * 3 + 2] = a[2] + (b[2] - a[2]) * k; }
+        else { rgb[i * 3] = R; rgb[i * 3 + 1] = G; rgb[i * 3 + 2] = B; }
+      }
+      return { r, rgb, al };
+    };
+    const size = () => {
+      // a altura vem do aspect-ratio (definido uma vez): mudar o tamanho dentro do ResizeObserver criaria um laço
+      const w = cv.clientWidth || el.clientWidth, ratio = +el.dataset.ratio || 4 / 3, dpr = Math.min(2, devicePixelRatio || 1);
+      W = w; H = Math.round(w / ratio); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cols = Math.max(8, Math.floor(W / CELL)); rows = Math.max(8, Math.floor(H / CELL));
+    };
+    const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    function hexRgb(h) { const m = /^#?([0-9a-f]{6})$/i.exec(h || ''); if (m) { const n = parseInt(m[1], 16); return [n >> 16, n >> 8 & 255, n & 255]; } const c = /rgba?\(([^)]+)\)/.exec(h || ''); return c ? c[1].split(/[ ,/]+/).slice(0, 3).map(Number) : null; }
+    const draw = now => {
+      raf = 0; if (!cur) return;
+      const n = cols * rows, maxR = CELL * .5, dur = 900; let busy = false;
+      ctx.clearRect(0, 0, W, H);
+      lens += (lensT - lens) * .18; if (Math.abs(lensT - lens) > .01) busy = true;
+      ripples = ripples.filter(r => now - r.t < 900); if (ripples.length) busy = true;
+      for (let i = 0; i < n; i++) {
+        const c = i % cols, rI = (i / cols) | 0; let x = (c + .5) * CELL, y = (rI + .5) * CELL;
+        let rad = cur.r[i], R = cur.rgb[i * 3], G = cur.rgb[i * 3 + 1], B = cur.rgb[i * 3 + 2], Al = cur.al[i];
+        if (to) { const k = Math.min(1, Math.max(0, (now - t0 - c / cols * 350) / (dur - 350))); if (k < 1) busy = true; const e = ease(k), dip = Math.sin(e * Math.PI) * .5;
+          rad = (from.r[i] * (1 - e) + to.r[i] * e) * (1 - dip); R = from.rgb[i * 3] * (1 - e) + to.rgb[i * 3] * e; G = from.rgb[i * 3 + 1] * (1 - e) + to.rgb[i * 3 + 1] * e; B = from.rgb[i * 3 + 2] * (1 - e) + to.rgb[i * 3 + 2] * e; Al = from.al[i] * (1 - e) + to.al[i] * e; }
+        if (lens > .01) { const dx = x - mx, dy = y - my, d = Math.hypot(dx, dy), f = Math.max(0, 1 - d / 70) * lens; if (f > 0) { rad *= 1 + f * .6; const push = (el.hasAttribute('data-displace') ? 9 : 4) * f; x += dx / (d || 1) * push; y += dy / (d || 1) * push; } }
+        for (const rp of ripples) { const age = (now - rp.t) / 900, ring = age * 260, dx = x - rp.x, dy = y - rp.y, d = Math.hypot(dx, dy), f = Math.max(0, 1 - Math.abs(d - ring) / 30) * (1 - age); if (f > 0) { x += dx / (d || 1) * 6 * f; y += dy / (d || 1) * 6 * f; rad *= 1 + f * .4; } }
+        const r = rad * maxR; if (r < .35) continue;
+        ctx.fillStyle = `rgb(${R | 0} ${G | 0} ${B | 0} / ${Al.toFixed(2)})`; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill();
+      }
+      if (to && !busy) { cur = to; to = from = null; }
+      if (busy && visible) raf = requestAnimationFrame(draw);
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(draw); };
+    const show = async i => {
+      const im = await load(srcs[i]).catch(() => null); if (!im) return;
+      cv.setAttribute('aria-label', alts[i] || labels[i] || 'Imagem em pontos');
+      const next = sample(im);
+      if (!cur || reduce()) { cur = next; to = from = null; } else { from = to ? to : cur; to = next; t0 = performance.now(); }
+      kick();
+    };
+    let at = 0;
+    tabs && tabs.addEventListener('ac:change', () => { const b = tabs.querySelector('[aria-pressed="true"]'); if (b && +b.value !== at) { at = +b.value; show(at); } });
+    cv.addEventListener('pointermove', e => { if (reduce()) return; const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; lensT = 1; kick(); });
+    cv.addEventListener('pointerleave', () => { lensT = 0; kick(); });
+    cv.addEventListener('click', e => { if (reduce()) return; const r = cv.getBoundingClientRect(); ripples.push({ x: e.clientX - r.left, y: e.clientY - r.top, t: performance.now() }); kick(); });
+    if (window.IntersectionObserver) new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; if (visible) kick(); })).observe(el);
+    let lastW = 0; new ResizeObserver(() => { if (cv.clientWidth === lastW) return; lastW = cv.clientWidth; size(); cur = null; show(at); }).observe(cv);
+    el._halftone = { show: i => { at = i; show(i); } };
+  };
+
+  /* Ícone que se transforma: um botão com dois <svg> (data-off e data-on). Ao trocar, os traços do ícone atual
+     se apagam e os do próximo se desenham, com um giro curto. aria-pressed e o rótulo acompanham o estado;
+     data-revert="1500" volta sozinho (bom para "copiado"). Funciona com qualquer conjunto de ícones de traço. */
+  C['morph-icon'] = el => {
+    const off = $('svg[data-off]', el), on = $('svg[data-on]', el); if (!off || !on) return;
+    el.classList.add('ac-morph');
+    $$('path, circle, rect, line, polyline, ellipse', el).forEach(p => p.setAttribute('pathLength', '1'));
+    [off, on].forEach(s => { s.setAttribute('aria-hidden', 'true'); s.setAttribute('viewBox', s.getAttribute('viewBox') || '0 0 24 24'); });
+    const lOff = el.dataset.labelOff || el.getAttribute('aria-label') || '', lOn = el.dataset.labelOn || lOff;
+    let timer = 0;
+    const set = v => { el.setAttribute('aria-pressed', v); el.setAttribute('aria-label', v ? lOn : lOff); };
+    el.addEventListener('click', () => {
+      const v = el.getAttribute('aria-pressed') !== 'true'; set(v);
+      el.dispatchEvent(new CustomEvent('ac:change', { detail: { on: v }, bubbles: true }));
+      clearTimeout(timer); if (v && el.dataset.revert) timer = setTimeout(() => set(false), +el.dataset.revert);
+    });
+    set(el.getAttribute('aria-pressed') === 'true');
+  };
+
+  /* Editor com IA: ao selecionar texto, aparece a barra com "Perguntar à IA" e formatação (negrito, itálico,
+     sublinhado, tachado, código). "Perguntar" vira um campo; ao enviar, um cartão mostra o pedido e a resposta
+     chegando palavra por palavra, com Substituir, Inserir abaixo e Descartar. A resposta vem do evento ac:ask
+     (detail.respond(texto | Promise)) ou, na demo, de data-answer. Esc fecha e devolve a seleção. */
+  C['ai-editor'] = el => {
+    const doc = $('.ac-ai-editor__doc', el); if (!doc) return;
+    el.classList.add('ac-ai-editor');
+    doc.contentEditable = 'true'; doc.setAttribute('role', 'textbox'); doc.setAttribute('aria-multiline', 'true');
+    if (!doc.getAttribute('aria-label')) doc.setAttribute('aria-label', 'Documento');
+    const orb = '<span class="ac-ai-orb" aria-hidden="true"></span>';
+    const pop = document.createElement('div'); pop.className = 'ac-ai-pop'; pop.hidden = true; el.appendChild(pop);
+    const FMT = [['bold', 'Negrito', '<b>B</b>'], ['italic', 'Itálico', '<i>I</i>'], ['underline', 'Sublinhado', '<u>U</u>'], ['strikeThrough', 'Tachado', '<s>S</s>'], ['code', 'Código', '<code>&lt;/&gt;</code>']];
+    let range = null, mode = '', streamT = 0;
+    const hl = (r) => { try { if (!window.Highlight || !CSS.highlights) return; if (r) CSS.highlights.set('ac-ai', new Highlight(r)); else CSS.highlights.delete('ac-ai'); } catch (_) {} };
+    const place = () => {
+      if (!range) return; const r = range.getBoundingClientRect(), e = el.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+      // acima da seleção (pode passar do editor); só desce se faltar espaço na tela
+      let top = r.top - e.top - h - 8; if (r.top - h - 8 < 8) top = r.bottom - e.top + 8;
+      pop.style.left = Math.max(4, Math.min(e.width - w - 4, r.left - e.left + r.width / 2 - w / 2)) + 'px'; pop.style.top = top + 'px';
+    };
+    const close = (restore) => { clearTimeout(streamT); pop.hidden = true; mode = ''; hl(null); if (restore && range) { doc.focus(); const s = getSelection(); s.removeAllRanges(); s.addRange(range); } };
+    const bar = () => {
+      mode = 'bar'; pop.className = 'ac-ai-pop ac-ai-pop--bar'; pop.setAttribute('role', 'toolbar'); pop.setAttribute('aria-label', 'Seleção');
+      pop.innerHTML = `<button type="button" class="ac-ai-ask-btn" data-ai="ask">${orb}Perguntar à IA</button><span class="ac-ai-sep" aria-hidden="true"></span>` + FMT.map(([c, l, g]) => `<button type="button" class="ac-ai-fmt" data-ai="${c}" aria-label="${l}" aria-pressed="${c !== 'code' && document.queryCommandState && document.queryCommandState(c)}">${g}</button>`).join('');
+      pop.hidden = false; place();
+    };
+    const ask = () => {
+      mode = 'ask'; pop.className = 'ac-ai-pop ac-ai-pop--ask'; pop.removeAttribute('role');
+      pop.innerHTML = `<form class="ac-ai-form">${orb}<input class="ac-ai-input" placeholder="Pergunte qualquer coisa…" aria-label="Pedido para a IA sobre o trecho selecionado" autocomplete="off"><button type="submit" class="ac-ai-send" aria-label="Enviar">${icon('right')}</button></form>`;
+      hl(range); pop.hidden = false; place(); $('input', pop).focus();
+    };
+    const answer = prompt => {
+      mode = 'card'; pop.className = 'ac-ai-pop ac-ai-pop--card'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Resposta da IA');
+      pop.innerHTML = `<div class="ac-ai-card__q">${orb}<span>${esc(prompt)}</span></div><p class="ac-ai-card__a" aria-live="polite"><span class="ac-ai-thinking">Pensando…</span></p><div class="ac-ai-card__actions" hidden><button type="button" class="ac-btn ac-btn--sm" data-ai="replace">Substituir</button><button type="button" class="ac-btn ac-btn--sm ac-btn--secondary" data-ai="insert">Inserir abaixo</button><button type="button" class="ac-btn ac-btn--sm ac-btn--ghost" data-ai="discard">Descartar</button></div>`;
+      place();
+      const out = $('.ac-ai-card__a', pop), acts = $('.ac-ai-card__actions', pop);
+      let text = null;
+      const finish = txt => {
+        text = String(txt || '').trim(); const words = text.split(/(\s+)/); out.textContent = '';
+        if (reduce()) { out.textContent = text; acts.hidden = false; place(); return; }
+        out.setAttribute('aria-busy', 'true'); let i = 0;
+        const step = () => { if (mode !== 'card') return; out.querySelectorAll('.is-new').forEach(s => s.classList.remove('is-new')); const s = document.createElement('span'); s.className = 'is-new'; s.textContent = words.slice(i, i + 2).join(''); out.appendChild(s); i += 2; place();
+          if (i < words.length) streamT = setTimeout(step, 45); else { setTimeout(() => out.querySelectorAll('.is-new').forEach(n => n.classList.remove('is-new')), 400); out.removeAttribute('aria-busy'); acts.hidden = false; place(); $('button', acts).focus(); } };
+        step();
+      };
+      pop._text = () => text;
+      const ev = new CustomEvent('ac:ask', { cancelable: true, bubbles: true, detail: { prompt, text: range.toString(), respond: v => Promise.resolve(v).then(finish) } });
+      el.dispatchEvent(ev);
+      if (!ev.defaultPrevented) setTimeout(() => finish(el.dataset.answer || 'Sem resposta configurada (use o evento ac:ask).'), 700);
+    };
+    const apply = cmd => {
+      doc.focus(); const s = getSelection(); s.removeAllRanges(); s.addRange(range);
+      if (cmd === 'code') { const c = document.createElement('code'); try { range.surroundContents(c); } catch (_) { c.textContent = range.toString(); range.deleteContents(); range.insertNode(c); } range = document.createRange(); range.selectNodeContents(c); s.removeAllRanges(); s.addRange(range); }
+      else document.execCommand(cmd);
+      range = s.getRangeAt(0).cloneRange(); bar();
+    };
+    const blockOf = n => { while (n && n.parentNode !== doc) n = n.parentNode; return n; };
+    pop.addEventListener('mousedown', e => { if (!e.target.closest('input')) e.preventDefault(); }); // não perde a seleção ao clicar na barra
+    pop.addEventListener('click', e => {
+      const b = e.target.closest('[data-ai]'); if (!b) return; const k = b.dataset.ai;
+      if (k === 'ask') ask(); else if (FMT.some(f => f[0] === k)) apply(k);
+      else if (k === 'replace') { const t = pop._text(); range.deleteContents(); range.insertNode(document.createTextNode(t)); close(false); doc.dispatchEvent(new Event('input', { bubbles: true })); }
+      else if (k === 'insert') { const p = document.createElement('p'); p.textContent = pop._text(); const blk = blockOf(range.endContainer); blk ? blk.after(p) : doc.appendChild(p); close(false); p.classList.add('ac-ai-new'); doc.dispatchEvent(new Event('input', { bubbles: true })); }
+      else if (k === 'discard') close(true);
+    });
+    pop.addEventListener('submit', e => { e.preventDefault(); const v = $('input', pop).value.trim(); if (v) answer(v); });
+    el.addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) { e.preventDefault(); close(true); } });
+    const onSel = () => {
+      if (!el.isConnected) { document.removeEventListener('selectionchange', onSel); return; }
+      if (mode === 'ask' || mode === 'card') return;
+      const s = getSelection(); if (!s.rangeCount || s.isCollapsed || !doc.contains(s.anchorNode) || !doc.contains(s.focusNode)) { if (mode === 'bar' && !pop.contains(document.activeElement)) close(false); return; }
+      range = s.getRangeAt(0).cloneRange(); bar();
+    };
+    document.addEventListener('selectionchange', onSel);
+    doc.addEventListener('keydown', e => { if (e.key === 'F10' && e.altKey && mode === 'bar') { e.preventDefault(); $('button', pop).focus(); } }); // Alt+F10 leva à barra
+    el.addEventListener('focusout', e => { if (mode === 'card' || el.contains(e.relatedTarget)) return; setTimeout(() => { if (!el.contains(document.activeElement) && mode !== 'card') close(false); }, 0); });
+  };
+
+  /* Conversa em sequência: lista de mensagens (os balões da Conversa) que entram uma a uma quando aparecem na tela,
+     com "digitando…" antes de cada resposta e um desfoque na chegada. Tocar no balão mostra a hora (data-time).
+     data-play liga a sequência; .ac-conversation--ios usa o azul do iMessage. Movimento reduzido: tudo de uma vez. */
+  C.conversation = el => {
+    el.classList.add('ac-conversation'); if (!el.hasAttribute('role')) el.setAttribute('role', 'log');
+    const msgs = $$('.ac-msg', el), wait = ms => new Promise(r => setTimeout(r, ms));
+    msgs.forEach(m => {
+      const b = $('.ac-msg__bubble', m); if (!b || !m.dataset.time || $('.ac-msg__time', m)) return;
+      m.insertAdjacentHTML('beforeend', `<div class="ac-msg__time"><div><time>${esc(m.dataset.time)}</time></div></div>`);
+      b.tabIndex = 0; b.setAttribute('role', 'button'); b.setAttribute('aria-expanded', 'false');
+      const t = () => { const o = !m.hasAttribute('data-open'); m.toggleAttribute('data-open', o); b.setAttribute('aria-expanded', o); };
+      b.addEventListener('click', t); b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); t(); } });
+    });
+    if (!el.hasAttribute('data-play') || reduce() || !msgs.length) return;
+    let run = 0;
+    const play = async () => {
+      const id = ++run; msgs.forEach(m => { m.classList.add('is-waiting'); m.classList.remove('is-arriving'); });
+      for (const m of msgs) {
+        if (id !== run || !el.isConnected) return;
+        if (m.classList.contains('ac-msg--in')) { const ty = document.createElement('div'); ty.className = 'ac-msg ac-msg--in ac-conversation__typing is-arriving'; ty.innerHTML = '<div class="ac-msg__bubble"><span class="ac-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ac-sr">digitando</span></div>'; m.before(ty); await wait(+el.dataset.typing || 1000); ty.remove(); }
+        else await wait(500);
+        if (id !== run) return;
+        m.classList.remove('is-waiting'); m.classList.add('is-arriving'); await wait(250);
+      }
+    };
+    const replay = $('[data-replay]', el.parentElement); if (replay) replay.addEventListener('click', play);
+    if (window.IntersectionObserver) { const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { io.disconnect(); play(); } }, { threshold: .3 }); io.observe(el); } else play();
+    el._conversation = { play };
   };
 
   /* ---------- Mais efeitos 3D ---------- */
@@ -5152,7 +5533,7 @@ ${inner}
       desc: 'App shell com menu lateral, topo com busca, quatro números com tendência, gráfico principal com painel de apoio ao lado (padrão “supporting pane” do Material 3) e a tabela das últimas movimentações. Abaixo de 720 px o menu sai e a tabela vira cartões.',
       ref: { nome: 'NN/g · Dashboards e Material 3 · Layouts canônicos', url: 'https://m3.material.io/foundations/adaptive-design/canonical-layouts' },
       wide: true,
-      html: device('full', `<div class="ac-shell">
+      html: device('full', `<div class="ac-shell"><div class="ac-shell__in">
   <nav class="ac-sidebar ac-shell__side" data-ac="sidebar" aria-label="Principal">
     <div class="ac-sidebar__head"><span class="ac-sidebar__brand"><span class="ac-sidebar__logo"></span><span>Finanças</span></span></div>
     <a class="ac-sidebar__item" href="#" aria-current="page">${ico(P.home)}<span class="ac-sidebar__text">Início</span></a>
@@ -5192,15 +5573,15 @@ ${inner}
       </tbody>
     </table></div></div>
   </main>
-</div>`),
-      api: [['.ac-shell', 'div', '—', 'Grade menu + conteúdo; reage à largura do próprio contêiner'], ['.ac-shell__top / __kpis / __grid', 'div', '—', 'Topo, linha de números (4 → 2 → 1 colunas) e gráfico com painel de apoio (2/3 + 1/3)'], ['.ac-shell__brand-m', 'span', '—', 'Marca que aparece quando o menu lateral sai (abaixo de 720 px)']],
+</div></div>`),
+      api: [['.ac-shell > .ac-shell__in', 'div', '—', 'O .ac-shell é medido (container query) e o __in é a grade menu + conteúdo'], ['.ac-shell__top / __kpis / __grid', 'div', '—', 'Topo, linha de números (4 → 2 → 1 colunas) e gráfico com painel de apoio (2/3 + 1/3)'], ['.ac-shell__brand-m', 'span', '—', 'Marca que aparece quando o menu lateral sai (abaixo de 720 px)']],
       a11y: ['Um <h2> por tela e regiões com nome (menu “Principal”).', 'Números sempre com o texto da tendência, não só a cor.', 'Gráficos com rótulo e a tabela com <caption> para leitor de tela.'] },
 
     { id: 'tpl-login', grupo: 'Modelos', nome: 'Entrar', novo: '2026-10-28',
       desc: 'Tela de entrada com foto e depoimento ao lado do formulário. Segue o GOV.UK e a NN/g: e-mail e senha com “mostrar senha” (o campo de senha do Orthos), colar permitido, “Esqueci a senha” à vista e a opção de entrar com um código por e-mail (Input OTP), sem senha.',
       ref: { nome: 'GOV.UK · Senhas e NN/g · Login sem senha', url: 'https://design-system.service.gov.uk/patterns/passwords/' },
       wide: true,
-      html: device('full', `<div class="ac-auth">
+      html: device('full', `<div class="ac-auth"><div class="ac-auth__in">
   <aside class="ac-auth__panel"><img src="${F}montanhas-neve.jpg" alt=""><span style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:var(--ac-fs-lg)"><span class="ac-sidebar__logo"></span>Finanças</span>
     <blockquote class="ac-auth__quote">“Fechamos o mês em dois dias, não em duas semanas. A equipe só aprova o que o sistema já conciliou.”<cite>Marina Teles, diretora financeira na Vértice</cite></blockquote></aside>
   <div class="ac-auth__form">
@@ -5221,15 +5602,15 @@ ${inner}
       <p class="ac-hint" style="margin:0;text-align:center">Não tem conta? <a href="#">Criar conta</a></p>
     </form>
   </div>
-</div>`),
-      api: [['.ac-auth', 'div', '—', 'Painel de imagem + formulário; abaixo de 720 px fica só o formulário'], ['.ac-auth__panel', 'aside', '—', 'Foto de fundo (img) com depoimento em .ac-auth__quote'], ['.ac-auth__box', 'form', '—', 'Coluna do formulário (até 380 px)'], ['.ac-auth__or', 'div', '—', 'Divisor “ou”']],
+</div></div>`),
+      api: [['.ac-auth > .ac-auth__in', 'div', '—', 'Painel de imagem + formulário; abaixo de 720 px fica só o formulário'], ['.ac-auth__panel', 'aside', '—', 'Foto de fundo (img) com depoimento em .ac-auth__quote'], ['.ac-auth__box', 'form', '—', 'Coluna do formulário (até 380 px)'], ['.ac-auth__or', 'div', '—', 'Divisor “ou”']],
       a11y: ['Rótulos visíveis e autocomplete (username, current-password) para gerenciadores de senha.', 'Mostrar senha e colar permitidos (GOV.UK).', 'O código chega num campo único com one-time-code; o erro é anunciado.'] },
 
     { id: 'tpl-checkout', grupo: 'Modelos', nome: 'Pagamento (checkout)', novo: '2026-10-28',
       desc: 'Checkout no padrão Baymard: poucos campos, compra sem cadastro, bandeira do cartão detectada e número espaçado enquanto digita, área de pagamento destacada e o resumo com o total sempre à vista (no celular, o resumo vem primeiro). Com erro, o que foi digitado continua lá.',
       ref: { nome: 'Baymard · Checkout e formulário de cartão', url: 'https://baymard.com/blog/payment-ux' },
       wide: true,
-      html: device('full', `<div class="ac-checkout">
+      html: device('full', `<div class="ac-checkout"><div class="ac-checkout__in">
   <form class="ac-checkout__form" data-ac="validate" data-tpl="checkout" novalidate>
     <fieldset class="ac-checkout__section"><legend>Contato e entrega</legend>
       <div class="ac-field"><label class="ac-label" for="tc-mail">E-mail</label><input class="ac-input" id="tc-mail" type="email" autocomplete="email" required><span class="ac-hint">Para o recibo e o código de rastreio. Não precisa criar conta.</span></div>
@@ -5259,8 +5640,8 @@ ${inner}
     <dl class="ac-checkout__lines"><div><dt>Subtotal</dt><dd>R$ 1.270,00</dd></div><div><dt>Taxa de serviço</dt><dd>R$ 17,90</dd></div><div class="ac-checkout__total"><dt>Total</dt><dd>R$ 1.287,90</dd></div></dl>
     <details><summary class="ac-hint" style="cursor:pointer">Tem um cupom?</summary><div style="display:flex;gap:8px;margin-top:8px"><input class="ac-input" aria-label="Cupom"><button class="ac-btn ac-btn--secondary" type="button">Aplicar</button></div></details>
   </aside>
-</div>`),
-      api: [['.ac-checkout', 'div', '—', 'Formulário + resumo fixo ao lado; abaixo de 760 px o resumo vem primeiro'], ['.ac-checkout__secure', 'div', '—', 'Área do cartão destacada (aumenta a sensação de segurança, segundo a Baymard)'], ['data-ac="card-number"', 'div', '—', 'Espaça o número e mostra a bandeira (Visa, Mastercard, Elo, Amex, Hipercard) em data-brand'], ['.ac-checkout__lines', 'dl', '—', 'Linhas do resumo; .ac-checkout__total no total']],
+</div></div>`),
+      api: [['.ac-checkout > .ac-checkout__in', 'div', '—', 'Formulário + resumo fixo ao lado; abaixo de 760 px o resumo vem primeiro'], ['.ac-checkout__secure', 'div', '—', 'Área do cartão destacada (aumenta a sensação de segurança, segundo a Baymard)'], ['data-ac="card-number"', 'div', '—', 'Espaça o número e mostra a bandeira (Visa, Mastercard, Elo, Amex, Hipercard) em data-brand'], ['.ac-checkout__lines', 'dl', '—', 'Linhas do resumo; .ac-checkout__total no total']],
       a11y: ['Campos com autocomplete de cartão e endereço (cc-number, cc-exp, cc-csc, postal-code).', 'Erros em texto ao lado do campo, sem apagar o que foi digitado.', 'A bandeira detectada é anunciada (aria-live).'] },
 
     { id: 'tpl-pricing', grupo: 'Modelos', nome: 'Preços', novo: '2026-10-28',
@@ -5308,6 +5689,98 @@ ${inner}
   };
   H['tpl-dashboard'] = root => H.device(root);
   H['tpl-login'] = login; H['tpl-checkout'] = checkout; H['tpl-pricing'] = pricing;
+})();
+
+</script>
+<script>
+/* Peças estudadas na Kobra (29/10/2026): player de vídeo, halftone e ícones que se transformam.
+   Reimplementadas em JS puro; vídeo do Pexels e fotos da Unsplash (licenças em assets/). Ícones: Hugeicons (MIT). */
+(function () {
+  const F = (/\/(tests|dist)\//.test(location.pathname) ? '../' : '') + 'assets/';
+  const H = {"Copy01": "<path d=\"M7.5 14.5C7.5 11.2002 7.5 9.55025 8.52513 8.52513C9.55025 7.5 11.2002 7.5 14.5 7.5C17.7998 7.5 19.4497 7.5 20.4749 8.52513C21.5 9.55025 21.5 11.2002 21.5 14.5C21.5 17.7998 21.5 19.4497 20.4749 20.4749C19.4497 21.5 17.7998 21.5 14.5 21.5C11.2002 21.5 9.55025 21.5 8.52513 20.4749C7.5 19.4497 7.5 17.7998 7.5 14.5Z\"/><path d=\"M7.5 16.5C6.10355 16.5 5.40533 16.5 4.84402 16.3036C3.83866 15.9518 3.0482 15.1613 2.69641 14.156C2.5 13.5947 2.5 12.8964 2.5 11.5V9.5C2.5 6.20017 2.5 4.55025 3.52513 3.52513C4.55025 2.5 6.20017 2.5 9.5 2.5H11.5C12.8964 2.5 13.5947 2.5 14.156 2.69641C15.1613 3.0482 15.9518 3.83866 16.3036 4.84402C16.5 5.40533 16.5 6.10355 16.5 7.5\"/>", "Tick02": "<path d=\"M5 14L8.5 17.5L19 6.5\"/>", "Play": "<path d=\"M18.8906 12.846C18.5371 14.189 16.8667 15.138 13.5257 17.0361C10.296 18.8709 8.6812 19.7884 7.37983 19.4196C6.8418 19.2671 6.35159 18.9776 5.95624 18.5787C5 17.6139 5 15.7426 5 12C5 8.2574 5 6.3861 5.95624 5.42132C6.35159 5.02245 6.8418 4.73288 7.37983 4.58042C8.6812 4.21165 10.296 5.12907 13.5257 6.96393C16.8667 8.86197 18.5371 9.811 18.8906 11.154C19.0365 11.7084 19.0365 12.2916 18.8906 12.846Z\"/>", "Pause": "<path d=\"M4 7C4 5.58579 4 4.87868 4.43934 4.43934C4.87868 4 5.58579 4 7 4C8.41421 4 9.12132 4 9.56066 4.43934C10 4.87868 10 5.58579 10 7V17C10 18.4142 10 19.1213 9.56066 19.5607C9.12132 20 8.41421 20 7 20C5.58579 20 4.87868 20 4.43934 19.5607C4 19.1213 4 18.4142 4 17V7Z\"/><path d=\"M14 7C14 5.58579 14 4.87868 14.4393 4.43934C14.8787 4 15.5858 4 17 4C18.4142 4 19.1213 4 19.5607 4.43934C20 4.87868 20 5.58579 20 7V17C20 18.4142 20 19.1213 19.5607 19.5607C19.1213 20 18.4142 20 17 20C15.5858 20 14.8787 20 14.4393 19.5607C14 19.1213 14 18.4142 14 17V7Z\"/>", "Menu01": "<path d=\"M4 5L20 5\"/><path d=\"M4 12L20 12\"/><path d=\"M4 19L20 19\"/>", "Cancel01": "<path d=\"M18 6L6.00081 17.9992M17.9992 18L6 6.00085\"/>", "Sun03": "<path d=\"M17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12Z\"/><path d=\"M12 2V3.5M12 20.5V22M19.0708 19.0713L18.0101 18.0106M5.98926 5.98926L4.9286 4.9286M22 12H20.5M3.5 12H2M19.0713 4.92871L18.0106 5.98937M5.98975 18.0107L4.92909 19.0714\"/>", "Moon02": "<path d=\"M21.5 14.0784C20.3003 14.7189 18.9301 15.0821 17.4751 15.0821C12.7491 15.0821 8.91792 11.2509 8.91792 6.52485C8.91792 5.06986 9.28105 3.69968 9.92163 2.5C5.66765 3.49698 2.5 7.31513 2.5 11.8731C2.5 17.1899 6.8101 21.5 12.1269 21.5C16.6849 21.5 20.503 18.3324 21.5 14.0784Z\"/>", "View": "<path d=\"M21.544 11.045C21.848 11.4713 22 11.6845 22 12C22 12.3155 21.848 12.5287 21.544 12.955C20.1779 14.8706 16.6892 19 12 19C7.31078 19 3.8221 14.8706 2.45604 12.955C2.15201 12.5287 2 12.3155 2 12C2 11.6845 2.15201 11.4713 2.45604 11.045C3.8221 9.12944 7.31078 5 12 5C16.6892 5 20.1779 9.12944 21.544 11.045Z\"/><path d=\"M15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12Z\"/>", "ViewOff": "<path d=\"M22 8C22 8 18 14 12 14C6 14 2 8 2 8\"/><path d=\"M15 13.5L16.5 16\"/><path d=\"M20 11L22 13\"/><path d=\"M2 13L4 11\"/><path d=\"M9 13.5L7.5 16\"/>", "SquareUnlock02": "<path d=\"M12 14.5V17.5M13 14.5C13 15.0523 12.5523 15.5 12 15.5C11.4477 15.5 11 15.0523 11 14.5C11 13.9477 11.4477 13.5 12 13.5C12.5523 13.5 13 13.9477 13 14.5Z\"/><path d=\"M7.5 9V6.5C7.5 4.01472 9.51472 2 12 2C13.9593 2 15.8664 3.25221 16.5 5\"/><path d=\"M4.26781 18.8447C4.49269 20.515 5.87613 21.8235 7.55966 21.9009C8.97627 21.966 10.4153 22 12 22C13.5847 22 15.0237 21.966 16.4403 21.9009C18.1239 21.8235 19.5073 20.515 19.7322 18.8447C19.879 17.7547 20 16.6376 20 15.5C20 14.3624 19.879 13.2453 19.7322 12.1553C19.5073 10.485 18.1239 9.17649 16.4403 9.09909C15.0237 9.03397 13.5847 9 12 9C10.4153 9 8.97627 9.03397 7.55966 9.09909C5.87613 9.17649 4.49269 10.485 4.26781 12.1553C4.12104 13.2453 4 14.3624 4 15.5C4 16.6376 4.12104 17.7547 4.26781 18.8447Z\"/>", "SquareLock02": "<path d=\"M12 14.5V17.5M13 14.5C13 15.0523 12.5523 15.5 12 15.5C11.4477 15.5 11 15.0523 11 14.5C11 13.9477 11.4477 13.5 12 13.5C12.5523 13.5 13 13.9477 13 14.5Z\"/><path d=\"M16.5 9V6.5C16.5 4.01472 14.4853 2 12 2C9.51471 2 7.49999 4.01472 7.49999 6.5V9\"/><path d=\"M4.2678 18.8447C4.49268 20.515 5.87612 21.8235 7.55965 21.9009C8.97627 21.966 10.4153 22 12 22C13.5847 22 15.0237 21.966 16.4403 21.9009C18.1239 21.8235 19.5073 20.515 19.7322 18.8447C19.8789 17.7547 20 16.6376 20 15.5C20 14.3624 19.8789 13.2453 19.7322 12.1553C19.5073 10.485 18.1239 9.17649 16.4403 9.09909C15.0237 9.03397 13.5847 9 12 9C10.4153 9 8.97627 9.03397 7.55965 9.09909C5.87612 9.17649 4.49268 10.485 4.2678 12.1553C4.12104 13.2453 3.99999 14.3624 3.99999 15.5C3.99999 16.6376 4.12104 17.7547 4.2678 18.8447Z\"/>", "VolumeHigh": "<path d=\"M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z\"/><path d=\"M17 9C17.6254 9.81968 18 10.8634 18 12C18 13.1366 17.6254 14.1803 17 15\"/><path d=\"M20 7C21.2508 8.36613 22 10.1057 22 12C22 13.8943 21.2508 15.6339 20 17\"/>", "VolumeMute02": "<path d=\"M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z\"/><path d=\"M18 10L22 14M18 14L22 10\"/>", "Download04": "<path d=\"M16.9504 12.1817C17.1981 12.814 16.5076 13.5726 15.1267 15.0899C13.6702 16.6902 12.9201 17.4904 12 17.5C11.0799 17.4904 10.3298 16.6902 8.87331 15.0899C7.49239 13.5726 6.80193 12.814 7.04964 12.1817C7.05868 12.1586 7.06851 12.1359 7.0791 12.1135C7.34928 11.542 8.24477 11.5029 10 11.5002V4.99998C10 4.53501 10 4.30253 10.0511 4.11179C10.1898 3.59414 10.5941 3.1898 11.1118 3.05111C11.3025 3 11.535 3 12 3C12.4649 3 12.6974 3 12.8882 3.05111C13.4058 3.1898 13.8102 3.59414 13.9489 4.11179C14 4.30253 14 4.53501 14 4.99998V11.5002C15.7552 11.5029 16.6507 11.542 16.9209 12.1135C16.9315 12.1359 16.9413 12.1586 16.9504 12.1817Z\"/><path d=\"M5.00006 21H19.0001\"/>", "CheckmarkCircle02": "<path d=\"M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z\"/><path d=\"M8 12.5L10.5 15L16 9\"/>", "Notification01": "<path d=\"M15.5 18C15.5 19.933 13.933 21.5 12 21.5C10.067 21.5 8.5 19.933 8.5 18\"/><path d=\"M19.2311 18H4.76887C3.79195 18 3 17.208 3 16.2311C3 15.762 3.18636 15.3121 3.51809 14.9803L4.12132 14.3771C4.68393 13.8145 5 13.0514 5 12.2558V9.5C5 5.63401 8.13401 2.5 12 2.5C15.866 2.5 19 5.634 19 9.5V12.2558C19 13.0514 19.3161 13.8145 19.8787 14.3771L20.4819 14.9803C20.8136 15.3121 21 15.762 21 16.2311C21 17.208 20.208 18 19.2311 18Z\"/>", "NotificationOff01": "<path d=\"M15.5 18C15.5 19.933 13.933 21.5 12 21.5C10.067 21.5 8.5 19.933 8.5 18\"/><path d=\"M2 2L22 22\"/><path d=\"M21 16.2311C21 15.762 20.8136 15.3121 20.4819 14.9803L19.8787 14.3771C19.3161 13.8145 19 13.0514 19 12.2558V9.5C19 5.634 15.866 2.5 12 2.5C10.4497 2.5 9.01706 3.00399 7.85707 3.85707M4.76887 18C3.79195 18 3 17.208 3 16.2311C3 15.762 3.18636 15.3121 3.51809 14.9803L4.12132 14.3771C4.68393 13.8145 5 13.0514 5 12.2558V9.5C5 8.20839 5.34981 6.99849 5.95987 5.95987L18 18H4.76887Z\"/>", "Bookmark01": "<path d=\"M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z\"/><path d=\"M4 7H20\"/>", "BookmarkCheck01": "<path d=\"M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z\"/><path d=\"M10 13.7143C10 13.7143 11 14.2357 11.5 15C11.5 15 13 12 15 11\"/><path d=\"M4 7H20\"/>", "Wifi01": "<path d=\"M8.25 14.5C10.25 12.5 13.75 12.5 15.75 14.5\"/><path d=\"M18.5 11.5C14.7324 8.16667 9.5 8.16667 5.5 11.5\"/><path d=\"M2 8.5C8.31579 3.16669 15.6842 3.16668 22 8.49989\"/><circle cx=\"12\" cy=\"18\" r=\"1.5\"/>", "WifiOff01": "<path d=\"M8.5 14.5C9.62137 13.3944 10.9643 12.887 12.5 13.0212\"/><path d=\"M18.5 11.5C17.0073 10.1794 15.2848 9.27433 13.5 9.00012\"/><path d=\"M5.5 11.4999C6.59299 10.5891 7.778 9.91296 9 9.49989\"/><path d=\"M22 8.49989C18.0717 5.18273 13.7362 3.92879 9.5 4.73808\"/><path d=\"M2 8.5C3.22409 7.46632 4.5 6.5 5.5 6\"/><circle cx=\"12\" cy=\"18\" r=\"1.5\"/><path d=\"M2 2L22 22\"/>", "Mic01": "<path d=\"M7 6.5C7 4.01472 9.01472 2 11.5 2C13.9853 2 16 4.01472 16 6.5V11.5C16 13.9853 13.9853 16 11.5 16C9.01472 16 7 13.9853 7 11.5V6.5Z\"/><path d=\"M11.5 19H11.0828C7.57267 19 4.57706 16.4623 4 13M11.5 19H11.9172C15.4273 19 18.4229 16.4623 19 13M11.5 19V22\"/>", "MicOff01": "<path d=\"M8.1572 4.1572C8.94761 2.86349 10.373 2 12 2C14.4853 2 16.5 4.01472 16.5 6.5V11.5C16.5 11.8111 16.4684 12.1149 16.4083 12.4083M7.5 7.5V11.5C7.5 13.9853 9.51472 16 12 16C13.1154 16 14.136 15.5942 14.9222 14.9222\"/><path d=\"M2 2L22 22\"/><path d=\"M12 19H11.5828C8.07267 19 5.07706 16.4623 4.5 13M12 19H12.4172C14.2325 19 15.9102 18.3213 17.1869 17.1869M12 19V22M19.5 13C19.3878 13.6733 19.1841 14.3116 18.903 14.903\"/>"};
+  const FIG = {"Coffee02": "<path d=\"M18.2505 10.5H19.6403C21.4918 10.5 22.0421 10.7655 21.9975 12.0838C21.9237 14.2674 20.939 16.8047 17 17.5\"/><path d=\"M5.94627 20.6145C2.57185 18.02 2.07468 14.3401 2.00143 10.5001C1.96979 8.8413 2.45126 8.5 4.65919 8.5H15.3408C17.5487 8.5 18.0302 8.8413 17.9986 10.5001C17.9253 14.3401 17.4281 18.02 14.0537 20.6145C13.0934 21.3528 12.2831 21.5 10.9194 21.5H9.08064C7.71686 21.5 6.90658 21.3528 5.94627 20.6145Z\"/><path d=\"M11.3089 2.5C10.7622 2.83861 10.0012 4 10.0012 5.5M7.53971 4C7.53971 4 7 4.5 7 5.5M14.0012 4C13.7279 4.1693 13.5 5 13.5 5.5\"/>", "Plant01": "<path d=\"M18 10C18 10 12 14 12 21\"/><path d=\"M9.34882 11.1825C7.73784 12.3891 5.44323 12.26 3.9785 10.7953C1.55484 8.37164 2.03957 3.03957 2.03957 3.03957C2.03957 3.03957 7.37164 2.55484 9.7953 4.9785C10.7548 5.93803 11.1412 7.25369 10.9543 8.5\"/><path d=\"M14.9638 12.8175C13.644 11.3832 13.6797 9.14983 15.0708 7.75867C17.2252 5.6043 21.9648 6.03517 21.9648 6.03517C21.9648 6.03517 22.3957 10.7748 20.2413 12.9292C19.4877 13.6828 18.487 14.0386 17.5 13.9967\"/><path d=\"M6 7C6 7 12 12 12 21\"/>", "Headphones": "<path d=\"M20.0849 17C20.5849 15.5 21 13.4368 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 13.4368 3.41512 15.5 3.91512 17\"/><path d=\"M8.97651 19.6043L7.23857 14.6127C7.05341 14.1466 6.4617 13.9131 5.97493 14.0297C4.46441 14.5333 3.6462 16.1718 4.14742 17.6895L4.58543 19.0158C5.08664 20.5334 6.71747 21.3555 8.22799 20.8519C8.68896 20.6556 9.10449 20.0897 8.97651 19.6043Z\"/><path d=\"M15.0235 19.6043L16.7614 14.6127C16.9466 14.1466 17.5383 13.9131 18.0251 14.0297C19.5356 14.5333 20.3538 16.1718 19.8526 17.6895L19.4146 19.0158C18.9134 20.5334 17.2825 21.3555 15.772 20.8519C15.311 20.6556 14.8955 20.0897 15.0235 19.6043Z\"/>"};
+  // figura do Hugeicons desenhada grande, com traço grosso e fundo transparente, para virar pontos
+  const fig = k => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 26 26" width="520" height="520" fill="none" stroke="#000" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">${FIG[k]}</svg>`);
+  // símbolo do Orthos sem o fundo: três quadrados vazados e um cheio, para a demo do halftone
+  const LOGO = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 10 44 44" width="520" height="520"><g fill="none" stroke="#000" stroke-width="4"><rect x="15.25" y="15.25" width="13.5" height="13.5" rx="2.25"/><rect x="15.25" y="35.25" width="13.5" height="13.5" rx="2.25"/><rect x="35.25" y="35.25" width="13.5" height="13.5" rx="2.25"/></g><rect x="34" y="14" width="16" height="16" rx="3.5" fill="#000"/></svg>');
+  const svg = (k, attr) => `<svg ${attr} viewBox="0 0 24 24">${H[k]}</svg>`;
+  const MORPH = [
+    ['Copy01', 'Tick02', 'Copiar', 'Copiado', 1500],
+    ['Play', 'Pause', 'Tocar', 'Pausar', 0],
+    ['Menu01', 'Cancel01', 'Abrir o menu', 'Fechar o menu', 0],
+    ['Sun03', 'Moon02', 'Usar tema escuro', 'Usar tema claro', 0],
+    ['View', 'ViewOff', 'Esconder', 'Mostrar', 0],
+    ['SquareUnlock02', 'SquareLock02', 'Trancar', 'Destrancar', 0],
+    ['VolumeHigh', 'VolumeMute02', 'Tirar o som', 'Ligar o som', 0],
+    ['Download04', 'CheckmarkCircle02', 'Baixar', 'Baixado', 1800],
+    ['Notification01', 'NotificationOff01', 'Silenciar avisos', 'Ativar avisos', 0],
+    ['Bookmark01', 'BookmarkCheck01', 'Salvar', 'Salvo', 0],
+    ['Wifi01', 'WifiOff01', 'Desligar o Wi-Fi', 'Ligar o Wi-Fi', 0],
+    ['Mic01', 'MicOff01', 'Silenciar o microfone', 'Ligar o microfone', 0]
+  ];
+
+  const NOVOS = [
+    { id: 'ai-editor', grupo: 'Formulários', nome: 'Editor com IA', novo: '2026-10-29',
+      desc: 'Um documento editável em que a IA trabalha junto: selecione um trecho e aparece a barra com “Perguntar à IA” e formatação. O pedido vira um cartão com a resposta chegando palavra por palavra e as opções Substituir, Inserir abaixo e Descartar. A resposta vem do seu backend pelo evento ac:ask.',
+      ref: { nome: 'Kobra · AI Editor', url: 'https://kobra.systems/components/ai-editor' },
+      html: `<div data-ac="ai-editor" data-answer="Quase todo minificador apaga os comentários por padrão. Ninguém decidiu escondê-los: é uma opção que quase ninguém desliga." style="width:min(520px,100%)">
+  <h3 class="ac-ai-editor__title">Os comentários que sumiram da web</h3>
+  <div class="ac-ai-editor__doc" aria-label="Rascunho do artigo">
+    <p>O comentário em HTML praticamente sumiu da web. As páginas ficaram mais leves por isso, e junto foi embora tudo o que uma página não era: um parágrafo repensado, um layout que nunca foi ao ar, um bilhete para quem viesse depois.</p>
+    <p>Selecione um trecho acima para ver a barra. Tente “deixe mais curto”.</p>
+  </div>
+</div>`,
+      api: [['data-ac="ai-editor"', 'div', '—', 'Precisa de .ac-ai-editor__doc (vira contenteditable)'], ['.ac-ai-editor__title', 'h3', '—', 'Título opcional'], ['ac:ask', 'evento', '—', 'detail: { prompt, text, respond(texto | Promise) }; chame preventDefault() e responda com o seu modelo'], ['data-answer', 'texto', '—', 'Resposta fixa (para demos, sem backend)'], ['Alt+F10', 'teclado', '—', 'Com texto selecionado, leva o foco à barra'], ['Esc', 'teclado', '—', 'Fecha e devolve a seleção']],
+      a11y: ['O documento é role="textbox" multilinha com rótulo.', 'A barra é role="toolbar" (Alt+F10 chega nela); os botões de formatação têm aria-pressed.', 'A resposta é anunciada (aria-live) e o foco vai para “Substituir” quando termina.', 'Clicar na barra não perde a seleção; Esc devolve a seleção ao texto.'] },
+
+    { id: 'conversation', grupo: 'Dados', nome: 'Conversa em sequência', novo: '2026-10-29',
+      desc: 'As mensagens dos dois lados entram uma a uma quando a conversa aparece na tela: “digitando…” antes de cada resposta e um desfoque na chegada. Tocar no balão mostra a hora. Usa os mesmos balões da Conversa; .ac-conversation--ios aplica o azul do iMessage. Bom para landing pages, onboarding e demonstração de assistentes.',
+      ref: { nome: 'Kobra · Conversation', url: 'https://kobra.systems/components/conversation' },
+      html: `<div style="display:grid;gap:14px;justify-items:center;width:min(420px,100%)">
+  <div class="ac-conversation--ios" data-ac="conversation" data-play aria-label="Conversa com o assistente" style="width:100%">
+    <div class="ac-msg ac-msg--out" data-time="Hoje, 10:02"><div class="ac-msg__bubble">O que mudou na galeria esta semana?</div></div>
+    <div class="ac-msg ac-msg--in" data-time="Hoje, 10:02"><div class="ac-msg__bubble">Conferi todas as prévias atrás dos estados que ainda faltavam.</div></div>
+    <div class="ac-msg ac-msg--in" data-time="Hoje, 10:03"><div class="ac-msg__bubble"><span class="ac-msg__icon">${window.Orthos.icon('check')}</span>Achei 3 sem prévia</div></div>
+    <div class="ac-msg ac-msg--out" data-time="Hoje, 10:03"><div class="ac-msg__bubble">Pode completar e publicar.</div></div>
+  </div>
+  <button class="ac-btn ac-btn--secondary ac-btn--sm" type="button" data-replay>Ver de novo</button>
+</div>`,
+      api: [['data-ac="conversation"', 'div', '—', 'Lista de .ac-msg (--in / --out) com .ac-msg__bubble'], ['data-play', 'atributo', '—', 'Entrada em sequência quando aparece na tela'], ['data-typing', 'ms', '1000', 'Tempo do “digitando…” antes de cada resposta'], ['data-time', 'texto', '—', 'Hora mostrada ao tocar no balão'], ['.ac-msg__icon', 'span', '—', 'Ícone à esquerda dentro do balão'], ['.ac-conversation--ios', 'classe', '—', 'Azul do iMessage para quem envia'], ['[data-replay]', 'botão ao lado', '—', 'Toca a sequência de novo'], ['el._conversation.play()', 'função', '—', 'Toca a sequência pelo código']],
+      a11y: ['role="log": o leitor de tela acompanha as mensagens que chegam.', '“digitando” é lido como texto; os pontinhos são aria-hidden.', 'O balão com hora é um botão com aria-expanded.', 'Com movimento reduzido, todas aparecem de uma vez.'] },
+
+    { id: 'video', grupo: 'Dados', nome: 'Player de vídeo', novo: '2026-10-29',
+      desc: 'Controles próprios sobre o <video> nativo, em vidro: título e “Assistir no YouTube” no alto; voltar 10 s, tocar e avançar 10 s no meio; barra com o tempo ao passar o mouse, som, velocidade, legendas, picture-in-picture e tela cheia. Os controles somem enquanto toca e voltam ao mexer o mouse. Duas aparências: “líquido” (brilho de borda e saturação) e “blur”.',
+      ref: { nome: 'Kobra · Video', url: 'https://kobra.systems/components/video' },
+      wide: true,
+      html: `<div style="display:grid;gap:18px;width:min(820px,100%);margin:0 auto">
+  <div data-ac="video" data-title="Recife de coral visto do alto" data-youtube="https://www.youtube.com/" data-glass="liquid">
+    <video src="${F}video/oceano-recife.mp4#t=0.1" preload="metadata" playsinline></video>
+  </div>
+  <div data-ac="video" data-title="Mesmo vídeo, vidro com blur" data-glass="blur" style="width:min(420px,100%);justify-self:center">
+    <video src="${F}video/oceano-recife.mp4#t=0.1" preload="metadata" playsinline muted></video>
+  </div>
+</div>`,
+      api: [['data-ac="video"', 'div', '—', 'Envolve um <video>; os controles nativos saem e entram os do Orthos'], ['data-title', 'texto', '—', 'Rótulo no canto de cima'], ['data-youtube', 'URL', '—', 'Mostra o botão “Assistir no YouTube”'], ['data-glass', 'texto', 'liquid', 'liquid ou blur'], ['<track kind="captions">', 'HTML', '—', 'Liga o botão de legendas'], ['teclado', '—', '—', 'Espaço/K tocar, J/L 10 s, ← → 5 s, ↑ ↓ volume, M som, F tela cheia, C legendas']],
+      a11y: ['Região com nome; todos os botões têm rótulo que muda com o estado (Tocar/Pausar, Tirar o som/Ligar o som).', 'A posição é um range nativo: setas avançam e o leitor ouve “0:42 de 2:45”.', 'Os controles não somem com o foco dentro do player.', 'Com movimento reduzido, sem fades.'] },
+
+    { id: 'halftone', grupo: 'Movimento', nome: 'Halftone (imagem em pontos)', novo: '2026-10-29',
+      desc: 'A imagem refeita como uma grade de pontos: o tamanho vem do tom e a cor vem da imagem ou de um degradê. Com figura de fundo transparente (PNG ou SVG), o fundo vira pontinhos discretos. Trocar de imagem faz os pontos encolherem e crescerem em onda; o mouse é uma lente que aumenta e afasta os pontos, e o clique solta uma onda. Canvas, sem biblioteca.',
+      ref: { nome: 'Kobra · Halftone Dots', url: 'https://kobra.systems/components/halftone-dots' },
+      html: `<div data-ac="halftone" data-images="${[LOGO, ...['Coffee02', 'Plant01', 'Headphones'].map(fig)].join('|')}" data-labels="Orthos|Café|Planta|Fones" data-alts="Símbolo do Orthos em pontos|Xícara de café em pontos|Planta num vaso em pontos|Fones de ouvido em pontos" data-gradient="#2563eb,#14b8a6" data-ratio="1" style="width:min(380px,100%)"></div>`,
+      api: [['data-ac="halftone"', 'div', '—', 'Desenha a imagem em pontos num <canvas>'], ['data-images / data-labels', 'lista com |', '—', 'Imagens e nomes das abas'], ['data-alts', 'lista com |', '—', 'Descrição de cada imagem para o leitor de tela'], ['data-gradient', 'cor,cor', '—', 'Pinta a figura com um degradê de cima para baixo (senão usa as cores da imagem)'], ['fundo transparente', 'imagem', '—', 'PNG ou SVG sem fundo: o fundo vira pontinhos discretos'], ['data-ratio', 'número', '4/3', 'Proporção da área'], ['data-cell', 'px', '7', 'Tamanho da célula de cada ponto'], ['data-displace', 'atributo', '—', 'A lente afasta mais os pontos'], ['el._halftone.show(i)', 'função', '—', 'Troca para a imagem i']],
+      a11y: ['O canvas é role="img" com a descrição da imagem atual.', 'As abas são o segmented do Orthos (teclado e aria-pressed).', 'Com movimento reduzido: sem lente, sem onda, troca instantânea.'] },
+
+    { id: 'morph-icons', grupo: 'Fundamentos', nome: 'Ícones que se transformam', novo: '2026-10-29',
+      desc: 'Botões de ícone com dois estados: ao clicar, os traços do ícone atual se apagam e os do próximo se desenham, com um giro curto. Copiar e Baixar voltam sozinhos depois de um instante. Ícones do Hugeicons; serve para qualquer conjunto de ícones de traço.',
+      ref: { nome: 'Kobra · Morphing Icons', url: 'https://kobra.systems/components/morphing-icons' },
+      html: `<div style="display:grid;grid-template-columns:repeat(4,auto);gap:22px 36px;justify-content:center;--size:30px">
+  ${MORPH.map(([a, b, la, lb, rv]) => `<button type="button" data-ac="morph-icon" data-label-off="${la}" data-label-on="${lb}"${rv ? ` data-revert="${rv}"` : ''}>${svg(a, 'data-off')}${svg(b, 'data-on')}</button>`).join('\n  ')}
+</div>`,
+      api: [['data-ac="morph-icon"', 'button', '—', 'Precisa de dois <svg>: data-off e data-on'], ['data-label-off / data-label-on', 'texto', '—', 'Rótulo de cada estado (vira o aria-label)'], ['data-revert', 'ms', '—', 'Volta ao primeiro estado sozinho (ex.: “Copiado”)'], ['--size / --stroke', 'CSS', '24px / 1.5', 'Tamanho e espessura do traço'], ['ac:change', 'evento', '—', 'detail: { on }']],
+      a11y: ['Botão com aria-pressed e rótulo que muda com o estado.', 'Os desenhos são aria-hidden; o rótulo é o que o leitor ouve.', 'Com movimento reduzido, a troca é instantânea.'] }
+  ];
+  const D = window.DEMOS;
+  NOVOS.forEach(n => { let at = -1; D.forEach((d, i) => { if (d.grupo === n.grupo) at = i; }); D.splice(at + 1, 0, n); });
 })();
 
 </script>
@@ -5364,6 +5837,11 @@ window.GUIA = {
   'tpl-login': { usar: ['Entrar em produtos com conta.'], evitar: ['Pedir cadastro antes de mostrar valor.', 'Dizer se o erro foi no e-mail ou na senha.'], dicas: ['Mostrar senha e colar sempre permitidos.', 'Ofereça entrar com código por e-mail ou passkey.', '“Criar conta” bem separado de “Entrar”.'] },
   'tpl-checkout': { usar: ['Pagamento de compra, assinatura ou reserva.'], evitar: ['Campos que não são necessários (a média é 11, o ideal é ~8).', 'Obrigar a criar conta antes de pagar.'], dicas: ['Total final antes do cartão e resumo sempre visível.', 'Detecte a bandeira; não peça para escolher.', 'Com erro, mantenha tudo que foi digitado.'] },
   'tpl-pricing': { usar: ['Página de planos de um produto por assinatura.'], evitar: ['Esconder o preço atrás de “fale conosco”.', 'Mais de 3 ou 4 planos.'], dicas: ['Destaque um plano (o mais escolhido).', 'Mostre o desconto do anual em valor e em porcentagem.', 'Responda as dúvidas de cobrança logo abaixo.'] },
+  'ai-editor': { usar: ['Editores de texto, e-mail, descrição de produto e documentos em que a IA reescreve trechos.'], evitar: ['Campos curtos (nome, título): use sugestões simples.', 'Substituir sem a pessoa ver a resposta antes.'], dicas: ['Mostre o pedido junto com a resposta.', 'Deixe sempre “Descartar” à mão e devolva a seleção.', 'Responda por streaming: a pessoa vê o progresso.'] },
+  conversation: { usar: ['Mostrar um assistente ou chat numa landing page, onboarding ou anúncio.'], evitar: ['Chat de verdade com composer (use a Conversa).', 'Conversas longas: 3 a 6 mensagens bastam.'], dicas: ['Mensagens curtas, como num chat real.', 'Ponha um botão “Ver de novo”.'] },
+  video: { usar: ['Vídeos de produto, aulas, depoimentos e tours dentro do seu site.'], evitar: ['Vídeo de fundo decorativo (use um <video> mudo, sem controles).', 'Tocar sozinho com som.'], dicas: ['Ponha legendas (<track>) em vídeos com fala.', 'Comprima para a web (720p ou 540p costuma bastar) e use preload="metadata".'] },
+  halftone: { usar: ['Ilustração de destaque: capa, página de produto, estado vazio.'], evitar: ['Fotos que a pessoa precisa ver em detalhe.', 'Telas de trabalho.'], dicas: ['Imagens com contraste forte ficam melhores em pontos.', 'Retrato ou quadrado funciona melhor que paisagem larga.'] },
+  'morph-icons': { usar: ['Botões de ícone com dois estados: tocar/pausar, som, salvar, copiar.'], evitar: ['Ações sem estado (use um botão comum).', 'Ícones sem rótulo de texto em lugar nenhum da tela, quando o significado não for óbvio.'], dicas: ['Escolha pares do mesmo conjunto e da mesma espessura.', 'Use data-revert em confirmações como “Copiado”.'] },
   'flip-card': { usar: ['Frente com imagem ou pergunta, verso com detalhe ou resposta: roteiros, flashcards, cartões de produto.'], evitar: ['Informação essencial só no verso.', 'Formulários longos no verso.'], dicas: ['Mesma altura nos dois lados.', 'O botão do canto deixa claro que dá para virar.'] },
   marquee3d: { usar: ['Topo de landing page, portfólio, “quem já usa”.'], evitar: ['Conteúdo que a pessoa precisa ler ou clicar.', 'Telas de trabalho.'], dicas: ['Imagens na mesma proporção.', 'Mantenha o botão de pausa.'] },
   'retro-grid': { usar: ['Fundo de anúncio, lançamento ou página de evento.'], evitar: ['Atrás de texto longo ou de formulário.'], dicas: ['Linhas sutis (15% a 20% da cor do texto).', 'Uma área animada por tela.'] },
@@ -5457,14 +5935,20 @@ window.PADROES = `
   const isNew = d => { const t = Date.parse(d.novo || ''); return !isNaN(t) && Date.now() - t < NOVO_DIAS * 864e5; };
 
   /* ---------- navegação ---------- */
+  // o menu é montado uma vez; nas trocas de página só muda o item marcado (mais leve e não mexe na rolagem do menu)
   function renderNav(cur) {
-    let h = `<a class="nav__a" href="#/" ${!cur ? 'aria-current="page"' : ''}><i></i>Introdução</a><a class="nav__a" href="#/padroes" ${cur === 'padroes' ? 'aria-current="page"' : ''}><i></i>Padrões</a>`;
-    groups.forEach(g => {
-      h += `<div class="nav__g">${esc(g)}</div>`;
-      D.filter(d => d.grupo === g).forEach(d => { h += `<a class="nav__a" href="#/${d.id}" ${cur === d.id ? 'aria-current="page"' : ''}><i></i>${esc(d.nome)}${isNew(d) ? '<span class="n">novo</span>' : ''}</a>`; });
-    });
-    $('#nav').innerHTML = h;
-    A.reveal($('#nav [aria-current]'));
+    const nav = $('#nav');
+    if (!nav.firstChild) {
+      let h = `<a class="nav__a" href="#/"><i></i>Introdução</a><a class="nav__a" href="#/padroes"><i></i>Padrões</a>`;
+      groups.forEach(g => {
+        h += `<div class="nav__g">${esc(g)}</div>`;
+        D.filter(d => d.grupo === g).forEach(d => { h += `<a class="nav__a" href="#/${d.id}"><i></i>${esc(d.nome)}${isNew(d) ? '<span class="n">novo</span>' : ''}</a>`; });
+      });
+      nav.innerHTML = h;
+    }
+    const href = '#/' + (cur || '');
+    nav.querySelector('[aria-current]')?.removeAttribute('aria-current');
+    const on = nav.querySelector(`a[href="${href}"]`); if (on) { on.setAttribute('aria-current', 'page'); A.reveal(on); }
   }
 
   /* ---------- página de componente ---------- */
@@ -5633,8 +6117,8 @@ window.PADROES = `
     else { renderHome(); document.title = 'Orthos UI — biblioteca de componentes'; }
     closeSide(); scrollTo({ top: 0 }); main.focus({ preventScroll: true });
   }
-  // troca de página com View Transitions (fade curto), onde o navegador suporta
-  addEventListener('hashchange', () => A.transition ? A.transition(route) : route());
+  // sem View Transition na navegação: a foto da página e o fade deixavam a troca pelo menu com cara de travada
+  addEventListener('hashchange', route);
   route();
 })();
 

@@ -640,7 +640,9 @@
     const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
     const gid = id('ac-spark-grad');
     el.innerHTML = `<svg class="ac-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${gid}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".14"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path class="a" d="${d} L${w} ${h} L0 ${h} Z"/><path class="l" d="${d}"/></svg>`;
-    const l = $('path.l', el); l.style.setProperty('--len', Math.ceil(l.getTotalLength()));
+    // comprimento da linha pela soma dos segmentos (getTotalLength forçava um layout por gráfico)
+    const len = pts.reduce((a, p, i) => i ? a + Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) : 0, 0);
+    $('path.l', el).style.setProperty('--len', Math.ceil(len));
   };
 
   C.bars = el => {
@@ -1814,6 +1816,273 @@
       if (document.activeElement === inp) inp.setSelectionRange(at, at);
     };
     inp.addEventListener('input', fmt); fmt();
+  };
+
+  /* ---------- Peças estudadas na Kobra (29/10/2026): vídeo, halftone e ícones que se transformam ---------- */
+  // Hugeicons (stroke rounded)
+  Object.assign(ICONS, { back10: '<path d="M12 5L10.8961 3.45459C10.4851 2.87911 10.2795 2.59137 10.4093 2.32411C10.5391 2.05684 10.8689 2.04153 11.5286 2.01092C11.6848 2.00367 11.842 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 8.72836 3.57111 5.82368 6 3.99927"/><path d="M7.99219 11.004C8.52019 10.584 9.00019 9.89143 9.30019 10.02C9.60019 10.1486 9.50419 10.572 9.50419 11.232C9.50419 11.892 9.50419 14.6847 9.50419 16.008"/><path d="M16.0022 12.6C16.0022 11.22 16.0682 10.848 15.8042 10.404C15.5402 9.96001 14.8802 9.99841 14.2202 9.99841C13.5602 9.99841 13.0802 9.96001 12.7622 10.32C12.3722 10.74 12.5402 11.52 12.4922 12.6C12.6002 14.04 12.3062 15.18 12.7562 15.66C13.0802 16.056 13.6553 15.996 14.3402 16.008C15.0201 15.9997 15.4322 16.032 15.7682 15.648C16.1402 15.312 15.9602 13.98 16.0022 12.6Z"/>', fwd10: '<path d="M12 5L13.1039 3.45459C13.5149 2.87911 13.7205 2.59137 13.5907 2.32411C13.4609 2.05684 13.1311 2.04153 12.4714 2.01092C12.3152 2.00367 12.158 2 12 2C6.4772 2 2 6.47715 2 12C2 17.5228 6.4772 22 12 22C17.5229 22 22 17.5228 22 12C22 8.72836 20.4289 5.82368 18 3.99927"/><path d="M7.99219 11.004C8.52019 10.584 9.00019 9.89143 9.30019 10.02C9.60019 10.1486 9.50419 10.572 9.50419 11.232C9.50419 11.892 9.50419 14.6847 9.50419 16.008"/><path d="M16.0022 12.6C16.0022 11.22 16.0682 10.848 15.8042 10.404C15.5402 9.96001 14.8802 9.99841 14.2202 9.99841C13.5602 9.99841 13.0802 9.96001 12.7622 10.32C12.3722 10.74 12.5402 11.52 12.4922 12.6C12.6002 14.04 12.3062 15.18 12.7562 15.66C13.0802 16.056 13.6553 15.996 14.3402 16.008C15.0201 15.9997 15.4322 16.032 15.7682 15.648C16.1402 15.312 15.9602 13.98 16.0022 12.6Z"/>', vol: '<path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z"/><path d="M17 9C17.6254 9.81968 18 10.8634 18 12C18 13.1366 17.6254 14.1803 17 15"/><path d="M20 7C21.2508 8.36613 22 10.1057 22 12C22 13.8943 21.2508 15.6339 20 17"/>', mute: '<path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z"/><path d="M18 10L22 14M18 14L22 10"/>', full: '<path d="M19.9264 22.2516V20.691C19.9264 20.288 20.0525 19.8966 20.2639 19.5531C21.7583 17.1245 22.2279 14.5196 21.9002 13.505C20.857 11.3418 17.3758 10.4907 15.76 10.2878L16.7966 5.12292C16.9705 4.30387 16.3513 3.47938 15.4135 3.28136C14.4758 3.08334 13.5746 3.58679 13.4007 4.40583L11.3462 14.0815L8.77462 12.4424C8.77462 12.4424 7.47969 11.406 6.44041 12.4424C5.40114 13.4788 6.44041 14.7701 6.44041 14.7701L10.3488 19.7776C10.6003 20.0997 10.7468 20.4908 10.7688 20.8984L10.8401 22.2177"/><path d="M7.32936 1.85194C7.32936 1.85194 9.54861 1.58797 9.867 1.90156C10.1124 2.14335 9.867 4.36134 9.867 4.36134M9.867 1.90156L6.89808 4.84002M4.6477 9.59694C4.6477 9.59694 2.42845 9.86092 2.11005 9.54732C1.86463 9.30553 2.11005 7.08754 2.11005 7.08754M2.11005 9.54732L5.07898 6.60886"/>', unfull: '<path d="M19.9264 22.2502V20.6912C19.9264 20.2886 20.0525 19.8976 20.2639 19.5545C21.7583 17.1282 22.2279 14.5259 21.9002 13.5123C20.857 11.3512 17.3758 10.5009 15.76 10.2983L16.7966 5.13851C16.9705 4.32028 16.3513 3.4966 15.4135 3.29877C14.4758 3.10095 13.5746 3.6039 13.4007 4.42213L11.3462 14.0882L8.77462 12.4508C8.77462 12.4508 7.47969 11.4154 6.44041 12.4508C5.40114 13.4861 6.44041 14.7762 6.44041 14.7762L10.3488 19.7787C10.6003 20.1005 10.7468 20.4912 10.7688 20.8984L10.8401 22.2164"/><path d="M6.95693 2.2382C6.95693 2.2382 6.7053 4.50936 6.95693 4.75695M6.95693 4.75695C7.28338 5.07806 9.55878 4.80775 9.55878 4.80775M6.95693 4.75695L10.001 1.74805M5.04502 9.24998C5.04502 9.24998 5.29665 6.97882 5.04502 6.73124M5.04502 6.73124C4.71857 6.41012 2.44317 6.68043 2.44317 6.68043M5.04502 6.73124L2.00098 9.74014"/>', pip: '<path d="M11.5 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C21.947 6.29018 21.9976 8.05974 21.9999 11.5"/><path d="M20.5 14H15.5C14.6716 14 14 14.6716 14 15.5V18.5C14 19.3284 14.6716 20 15.5 20H20.5C21.3284 20 22 19.3284 22 18.5V15.5C22 14.6716 21.3284 14 20.5 14Z"/><path d="M11 9.5V12C11.0475 12.5744 10.6034 13.0238 10 13H7.5M6 8L10 12"/>', cc: '<path d="M2 12C2 8.02033 2 6.03049 3.0528 4.70201C3.22119 4.48953 3.40678 4.29302 3.60746 4.11473C4.86213 3 6.74142 3 10.5 3H13.5C17.2586 3 19.1379 3 20.3925 4.11473C20.5932 4.29302 20.7788 4.48953 20.9472 4.70201C22 6.03049 22 8.02033 22 12C22 15.9797 22 17.9695 20.9472 19.298C20.7788 19.5105 20.5932 19.707 20.3925 19.8853C19.1379 21 17.2586 21 13.5 21H10.5C6.74142 21 4.86213 21 3.60746 19.8853C3.40678 19.707 3.22119 19.5105 3.0528 19.298C2 17.9695 2 15.9797 2 12Z"/><path d="M10.5 9H10C9.06812 9 8.60218 9 8.23463 9.15224C7.74458 9.35523 7.35523 9.74458 7.15224 10.2346C7 10.6022 7 11.0681 7 12C7 12.9319 7 13.3978 7.15224 13.7654C7.35523 14.2554 7.74458 14.6448 8.23463 14.8478C8.60218 15 9.06812 15 10 15H10.5M17 9H16.5C15.5681 9 15.1022 9 14.7346 9.15224C14.2446 9.35523 13.8552 9.74458 13.6522 10.2346C13.5 10.6022 13.5 11.0681 13.5 12C13.5 12.9319 13.5 13.3978 13.6522 13.7654C13.8552 14.2554 14.2446 14.6448 14.7346 14.8478C15.1022 15 15.5681 15 16.5 15H17"/>', youtube: '<path d="M12 20.5C13.8097 20.5 15.5451 20.3212 17.1534 19.9934C19.1623 19.5839 20.1668 19.3791 21.0834 18.2006C22 17.0221 22 15.6693 22 12.9635V11.0365C22 8.33073 22 6.97787 21.0834 5.79937C20.1668 4.62088 19.1623 4.41613 17.1534 4.00662C15.5451 3.67877 13.8097 3.5 12 3.5C10.1903 3.5 8.45489 3.67877 6.84656 4.00662C4.83766 4.41613 3.83321 4.62088 2.9166 5.79937C2 6.97787 2 8.33073 2 11.0365V12.9635C2 15.6693 2 17.0221 2.9166 18.2006C3.83321 19.3791 4.83766 19.5839 6.84656 19.9934C8.45489 20.3212 10.1903 20.5 12 20.5Z"/><path d="M15.9621 12.3129C15.8137 12.9187 15.0241 13.3538 13.4449 14.2241C11.7272 15.1705 10.8684 15.6438 10.1728 15.4615C9.9372 15.3997 9.7202 15.2911 9.53799 15.1438C9 14.7089 9 13.8059 9 12C9 10.1941 9 9.29112 9.53799 8.85618C9.7202 8.70886 9.9372 8.60029 10.1728 8.53854C10.8684 8.35621 11.7272 8.82945 13.4449 9.77593C15.0241 10.6462 15.8137 11.0813 15.9621 11.6871C16.0126 11.8933 16.0126 12.1067 15.9621 12.3129Z"/>' });
+  const clock = s => { s = Math.max(0, Math.floor(s || 0)); const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, ss = String(s % 60).padStart(2, '0'); return h ? `${h}:${String(m).padStart(2, '0')}:${ss}` : `${m}:${ss}`; };
+
+  /* Player de vídeo: controles próprios sobre um <video> nativo, em "vidro" (data-glass="liquid" ou "blur").
+     Título e link para o YouTube no alto; voltar 10 s, tocar e avançar 10 s no meio; embaixo, a barra com o tempo
+     ao passar o mouse, som, tempo, velocidade, legendas, picture-in-picture e tela cheia. Teclado: espaço/K tocar,
+     J/L 10 s, ← → 5 s, ↑ ↓ volume, M som, F tela cheia, C legendas. Os controles somem tocando, sem mexer o mouse. */
+  C.video = el => {
+    const v = $('video', el); if (!v) return;
+    el.classList.add('ac-video'); el.classList.add('ac-video--' + (el.dataset.glass || 'liquid'));
+    el.tabIndex = 0; el.setAttribute('role', 'region'); el.setAttribute('aria-label', 'Player de vídeo' + (el.dataset.title ? ': ' + el.dataset.title : ''));
+    v.removeAttribute('controls'); v.playsInline = true; v.preload = v.preload || 'metadata';
+    const hasCC = !!v.querySelector('track'), canPip = document.pictureInPictureEnabled && !v.disablePictureInPicture;
+    const btn = (k, label, cls = '') => `<button type="button" class="ac-video__btn ${cls}" data-v="${k}" aria-label="${label}">${icon(k)}</button>`;
+    const ui = document.createElement('div'); ui.className = 'ac-video__ui';
+    ui.innerHTML = `<div class="ac-video__top">${el.dataset.title ? `<span class="ac-video__pill ac-video__title">${esc(el.dataset.title)}</span>` : '<span></span>'}${el.dataset.youtube ? `<a class="ac-video__pill" href="${esc(el.dataset.youtube)}" target="_blank" rel="noopener noreferrer">${icon('youtube')}Assistir no YouTube</a>` : ''}</div>`
+      + `<div class="ac-video__mid">${btn('back10', 'Voltar 10 segundos', 'ac-video__round')}${btn('play', 'Tocar', 'ac-video__round ac-video__big')}${btn('fwd10', 'Avançar 10 segundos', 'ac-video__round')}</div>`
+      + `<div class="ac-video__bottom"><div class="ac-video__track"><span class="ac-video__buffer"></span><span class="ac-video__fill"></span><span class="ac-video__tip" aria-hidden="true">0:00</span><input class="ac-video__seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Posição do vídeo"></div>`
+      + `<div class="ac-video__row">${btn('play', 'Tocar', 'ac-video__toggle')}<span class="ac-video__vol">${btn('vol', 'Tirar o som')}<input class="ac-video__volume" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volume"></span><span class="ac-video__time"><span data-v-now>0:00</span> / <span data-v-dur>0:00</span></span><span class="ac-video__space"></span>`
+      + `<button type="button" class="ac-video__btn ac-video__speed" data-v="speed" aria-label="Velocidade: 1×">1×</button>${hasCC ? btn('cc', 'Mostrar legendas') : ''}${canPip ? btn('pip', 'Picture-in-picture') : ''}${btn('full', 'Tela cheia')}</div></div>`;
+    el.appendChild(ui);
+    const q = s => $(s, el), seek = q('.ac-video__seek'), fill = q('.ac-video__fill'), buf = q('.ac-video__buffer'), tip = q('.ac-video__tip'), vol = q('.ac-video__volume');
+    const plays = $$('[data-v="play"]', el), now = q('[data-v-now]'), dur = q('[data-v-dur]'), speedBtn = q('[data-v="speed"]'), volBtn = q('[data-v="vol"]');
+    const SPEEDS = [1, 1.25, 1.5, 2, .5]; let idle = 0;
+    const setIcon = (b, k, label) => { b.innerHTML = icon(k); b.setAttribute('aria-label', label); };
+    const paintPlay = () => { el.dataset.state = v.paused ? 'paused' : 'playing'; plays.forEach(b => setIcon(b, v.paused ? 'play' : 'pause', v.paused ? 'Tocar' : 'Pausar')); };
+    const paintTime = () => { const d = v.duration || 0, p = d ? v.currentTime / d : 0; fill.style.transform = `scaleX(${p})`; if (document.activeElement !== seek) seek.value = Math.round(p * 1000); now.textContent = clock(v.currentTime); dur.textContent = clock(d); seek.setAttribute('aria-valuetext', `${clock(v.currentTime)} de ${clock(d)}`); try { buf.style.transform = `scaleX(${d && v.buffered.length ? v.buffered.end(v.buffered.length - 1) / d : 0})`; } catch (_) {} };
+    const paintVol = () => { const m = v.muted || v.volume === 0; setIcon(volBtn, m ? 'mute' : 'vol', m ? 'Ligar o som' : 'Tirar o som'); vol.value = m ? 0 : v.volume; };
+    const wake = () => { el.classList.remove('is-idle'); clearTimeout(idle); if (!v.paused) idle = setTimeout(() => { if (!el.contains(document.activeElement) || document.activeElement === el) el.classList.add('is-idle'); }, 2500); };
+    const toggle = () => { v.paused ? v.play().catch(() => {}) : v.pause(); };
+    const jump = s => { v.currentTime = Math.max(0, Math.min((v.duration || 0), v.currentTime + s)); wake(); };
+    const full = () => { const doc = document; if (doc.fullscreenElement) doc.exitFullscreen?.(); else (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el); };
+    const cc = () => { const t = v.textTracks[0]; if (!t) return; t.mode = t.mode === 'showing' ? 'hidden' : 'showing'; const b = q('[data-v="cc"]'); b.setAttribute('aria-pressed', t.mode === 'showing'); b.setAttribute('aria-label', t.mode === 'showing' ? 'Esconder legendas' : 'Mostrar legendas'); };
+    ui.addEventListener('click', e => {
+      const b = e.target.closest('[data-v]'); if (!b) { if (e.target === ui || e.target.closest('.ac-video__mid') === e.target) toggle(); return; }
+      const k = b.dataset.v;
+      if (k === 'play') toggle(); else if (k === 'back10') jump(-10); else if (k === 'fwd10') jump(10);
+      else if (k === 'vol') { v.muted = !v.muted; if (!v.muted && v.volume === 0) v.volume = .6; }
+      else if (k === 'speed') { const i = (SPEEDS.indexOf(v.playbackRate) + 1) % SPEEDS.length; v.playbackRate = SPEEDS[i]; const t = String(SPEEDS[i]).replace('.', ',') + '×'; b.textContent = t; b.setAttribute('aria-label', 'Velocidade: ' + t); }
+      else if (k === 'cc') cc(); else if (k === 'pip') (document.pictureInPictureElement ? document.exitPictureInPicture() : v.requestPictureInPicture()).catch(() => {});
+      else if (k === 'full') full();
+    });
+    ui.addEventListener('dblclick', e => { if (!e.target.closest('button, input, a')) full(); });
+    seek.addEventListener('input', () => { if (v.duration) { v.currentTime = seek.value / 1000 * v.duration; paintTime(); } });
+    vol.addEventListener('input', () => { v.volume = +vol.value; v.muted = v.volume === 0; });
+    const track = q('.ac-video__track');
+    track.addEventListener('pointermove', e => { const r = track.getBoundingClientRect(), p = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); tip.textContent = clock(p * (v.duration || 0)); tip.style.left = p * 100 + '%'; });
+    el.addEventListener('keydown', e => {
+      if (e.target.matches('input[type=range]') && /Arrow/.test(e.key)) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const k = e.key.toLowerCase(), act = { ' ': toggle, k: toggle, j: () => jump(-10), l: () => jump(10), arrowleft: () => jump(-5), arrowright: () => jump(5), arrowup: () => { v.volume = Math.min(1, v.volume + .1); v.muted = false; }, arrowdown: () => { v.volume = Math.max(0, v.volume - .1); }, m: () => { v.muted = !v.muted; }, f: full, c: cc }[k];
+      if (!act || (k === ' ' && e.target.matches('button, a'))) return;
+      e.preventDefault(); act(); wake();
+    });
+    ['play', 'pause', 'ended'].forEach(t => v.addEventListener(t, () => { paintPlay(); wake(); }));
+    ['timeupdate', 'loadedmetadata', 'durationchange', 'progress', 'seeked'].forEach(t => v.addEventListener(t, paintTime));
+    v.addEventListener('volumechange', paintVol);
+    document.addEventListener('fullscreenchange', () => { const on = document.fullscreenElement === el; const b = q('[data-v="full"]'); setIcon(b, on ? 'unfull' : 'full', on ? 'Sair da tela cheia' : 'Tela cheia'); });
+    el.addEventListener('pointermove', wake); el.addEventListener('focusin', wake);
+    paintPlay(); paintTime(); paintVol();
+  };
+
+  /* Halftone: a imagem refeita como uma grade de pontos (o tamanho vem do tom, a cor da própria imagem).
+     data-images="a.jpg|b.jpg" e data-labels="A|B" trocam de imagem com os pontos se transformando em onda;
+     o mouse funciona como lente (pontos crescem e se afastam) e o clique solta uma onda. Canvas, sem dependência. */
+  C.halftone = el => {
+    const srcs = (el.dataset.images || el.dataset.src || '').split('|').filter(Boolean); if (!srcs.length) return;
+    const labels = (el.dataset.labels || '').split('|'), alts = (el.dataset.alts || '').split('|');
+    el.classList.add('ac-halftone');
+    const cv = document.createElement('canvas'); cv.className = 'ac-halftone__canvas'; cv.setAttribute('role', 'img'); el.appendChild(cv);
+    let tabs = null;
+    if (srcs.length > 1) { tabs = document.createElement('div'); tabs.className = 'ac-segmented ac-halftone__tabs'; tabs.setAttribute('aria-label', 'Imagem'); tabs.innerHTML = srcs.map((_, i) => `<button type="button" aria-pressed="${!i}" value="${i}">${esc(labels[i] || 'Imagem ' + (i + 1))}</button>`).join(''); el.appendChild(tabs); tabs.dataset.ac = 'segmented'; tabs.dataset.acInitsegmented = '1'; C.segmented(tabs); }
+    cv.style.aspectRatio = String(+el.dataset.ratio || 4 / 3);
+    const ctx = cv.getContext('2d'), CELL = +el.dataset.cell || 7;
+    // o hexRgb fica içado (function) para a amostragem usar
+    let cols = 0, rows = 0, W = 0, H = 0, cur = null, from = null, to = null, t0 = 0, raf = 0, mx = -1e4, my = -1e4, lens = 0, lensT = 0, ripples = [], visible = true, cache = {};
+    const load = src => cache[src] || (cache[src] = new Promise((ok, bad) => { const im = new Image(); im.decoding = 'async'; im.onload = () => ok(im); im.onerror = bad; im.src = src; }));
+    const sample = im => {
+      const c = document.createElement('canvas'); c.width = cols; c.height = rows; const x = c.getContext('2d', { willReadFrequently: true });
+      const s = Math.max(cols / im.naturalWidth, rows / im.naturalHeight), w = im.naturalWidth * s, h = im.naturalHeight * s;
+      x.drawImage(im, (cols - w) / 2, (rows - h) / 2, w, h);
+      const d = x.getImageData(0, 0, cols, rows).data, n = cols * rows, r = new Float32Array(n), rgb = new Float32Array(n * 3), al = new Float32Array(n);
+      // figura com fundo transparente: o fundo vira pontinhos claros ("papel") e a figura ganha o degradê, se houver
+      const paper = hexRgb(getComputedStyle(el).getPropertyValue('--ac-text-3').trim()) || [136, 136, 136], grad = (el.dataset.gradient || '').split(',').map(c => hexRgb(c.trim())).filter(Boolean);
+      for (let i = 0; i < n; i++) {
+        const R = d[i * 4], G = d[i * 4 + 1], B = d[i * 4 + 2], A = d[i * 4 + 3] / 255, L = (.2126 * R + .7152 * G + .0722 * B) / 255;
+        if (A < .06) { r[i] = .16; rgb.set(paper, i * 3); al[i] = .35; continue; }
+        r[i] = (.18 + .82 * Math.pow(1 - L * .82, 1.35)) * (.45 + .55 * A); al[i] = 1;
+        if (grad.length > 1) { const k = ((i / cols) | 0) / rows, a = grad[0], b = grad[1]; rgb[i * 3] = a[0] + (b[0] - a[0]) * k; rgb[i * 3 + 1] = a[1] + (b[1] - a[1]) * k; rgb[i * 3 + 2] = a[2] + (b[2] - a[2]) * k; }
+        else { rgb[i * 3] = R; rgb[i * 3 + 1] = G; rgb[i * 3 + 2] = B; }
+      }
+      return { r, rgb, al };
+    };
+    const size = () => {
+      // a altura vem do aspect-ratio (definido uma vez): mudar o tamanho dentro do ResizeObserver criaria um laço
+      const w = cv.clientWidth || el.clientWidth, ratio = +el.dataset.ratio || 4 / 3, dpr = Math.min(2, devicePixelRatio || 1);
+      W = w; H = Math.round(w / ratio); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cols = Math.max(8, Math.floor(W / CELL)); rows = Math.max(8, Math.floor(H / CELL));
+    };
+    const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    function hexRgb(h) { const m = /^#?([0-9a-f]{6})$/i.exec(h || ''); if (m) { const n = parseInt(m[1], 16); return [n >> 16, n >> 8 & 255, n & 255]; } const c = /rgba?\(([^)]+)\)/.exec(h || ''); return c ? c[1].split(/[ ,/]+/).slice(0, 3).map(Number) : null; }
+    const draw = now => {
+      raf = 0; if (!cur) return;
+      const n = cols * rows, maxR = CELL * .5, dur = 900; let busy = false;
+      ctx.clearRect(0, 0, W, H);
+      lens += (lensT - lens) * .18; if (Math.abs(lensT - lens) > .01) busy = true;
+      ripples = ripples.filter(r => now - r.t < 900); if (ripples.length) busy = true;
+      for (let i = 0; i < n; i++) {
+        const c = i % cols, rI = (i / cols) | 0; let x = (c + .5) * CELL, y = (rI + .5) * CELL;
+        let rad = cur.r[i], R = cur.rgb[i * 3], G = cur.rgb[i * 3 + 1], B = cur.rgb[i * 3 + 2], Al = cur.al[i];
+        if (to) { const k = Math.min(1, Math.max(0, (now - t0 - c / cols * 350) / (dur - 350))); if (k < 1) busy = true; const e = ease(k), dip = Math.sin(e * Math.PI) * .5;
+          rad = (from.r[i] * (1 - e) + to.r[i] * e) * (1 - dip); R = from.rgb[i * 3] * (1 - e) + to.rgb[i * 3] * e; G = from.rgb[i * 3 + 1] * (1 - e) + to.rgb[i * 3 + 1] * e; B = from.rgb[i * 3 + 2] * (1 - e) + to.rgb[i * 3 + 2] * e; Al = from.al[i] * (1 - e) + to.al[i] * e; }
+        if (lens > .01) { const dx = x - mx, dy = y - my, d = Math.hypot(dx, dy), f = Math.max(0, 1 - d / 70) * lens; if (f > 0) { rad *= 1 + f * .6; const push = (el.hasAttribute('data-displace') ? 9 : 4) * f; x += dx / (d || 1) * push; y += dy / (d || 1) * push; } }
+        for (const rp of ripples) { const age = (now - rp.t) / 900, ring = age * 260, dx = x - rp.x, dy = y - rp.y, d = Math.hypot(dx, dy), f = Math.max(0, 1 - Math.abs(d - ring) / 30) * (1 - age); if (f > 0) { x += dx / (d || 1) * 6 * f; y += dy / (d || 1) * 6 * f; rad *= 1 + f * .4; } }
+        const r = rad * maxR; if (r < .35) continue;
+        ctx.fillStyle = `rgb(${R | 0} ${G | 0} ${B | 0} / ${Al.toFixed(2)})`; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill();
+      }
+      if (to && !busy) { cur = to; to = from = null; }
+      if (busy && visible) raf = requestAnimationFrame(draw);
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(draw); };
+    const show = async i => {
+      const im = await load(srcs[i]).catch(() => null); if (!im) return;
+      cv.setAttribute('aria-label', alts[i] || labels[i] || 'Imagem em pontos');
+      const next = sample(im);
+      if (!cur || reduce()) { cur = next; to = from = null; } else { from = to ? to : cur; to = next; t0 = performance.now(); }
+      kick();
+    };
+    let at = 0;
+    tabs && tabs.addEventListener('ac:change', () => { const b = tabs.querySelector('[aria-pressed="true"]'); if (b && +b.value !== at) { at = +b.value; show(at); } });
+    cv.addEventListener('pointermove', e => { if (reduce()) return; const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; lensT = 1; kick(); });
+    cv.addEventListener('pointerleave', () => { lensT = 0; kick(); });
+    cv.addEventListener('click', e => { if (reduce()) return; const r = cv.getBoundingClientRect(); ripples.push({ x: e.clientX - r.left, y: e.clientY - r.top, t: performance.now() }); kick(); });
+    if (window.IntersectionObserver) new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; if (visible) kick(); })).observe(el);
+    let lastW = 0; new ResizeObserver(() => { if (cv.clientWidth === lastW) return; lastW = cv.clientWidth; size(); cur = null; show(at); }).observe(cv);
+    el._halftone = { show: i => { at = i; show(i); } };
+  };
+
+  /* Ícone que se transforma: um botão com dois <svg> (data-off e data-on). Ao trocar, os traços do ícone atual
+     se apagam e os do próximo se desenham, com um giro curto. aria-pressed e o rótulo acompanham o estado;
+     data-revert="1500" volta sozinho (bom para "copiado"). Funciona com qualquer conjunto de ícones de traço. */
+  C['morph-icon'] = el => {
+    const off = $('svg[data-off]', el), on = $('svg[data-on]', el); if (!off || !on) return;
+    el.classList.add('ac-morph');
+    $$('path, circle, rect, line, polyline, ellipse', el).forEach(p => p.setAttribute('pathLength', '1'));
+    [off, on].forEach(s => { s.setAttribute('aria-hidden', 'true'); s.setAttribute('viewBox', s.getAttribute('viewBox') || '0 0 24 24'); });
+    const lOff = el.dataset.labelOff || el.getAttribute('aria-label') || '', lOn = el.dataset.labelOn || lOff;
+    let timer = 0;
+    const set = v => { el.setAttribute('aria-pressed', v); el.setAttribute('aria-label', v ? lOn : lOff); };
+    el.addEventListener('click', () => {
+      const v = el.getAttribute('aria-pressed') !== 'true'; set(v);
+      el.dispatchEvent(new CustomEvent('ac:change', { detail: { on: v }, bubbles: true }));
+      clearTimeout(timer); if (v && el.dataset.revert) timer = setTimeout(() => set(false), +el.dataset.revert);
+    });
+    set(el.getAttribute('aria-pressed') === 'true');
+  };
+
+  /* Editor com IA: ao selecionar texto, aparece a barra com "Perguntar à IA" e formatação (negrito, itálico,
+     sublinhado, tachado, código). "Perguntar" vira um campo; ao enviar, um cartão mostra o pedido e a resposta
+     chegando palavra por palavra, com Substituir, Inserir abaixo e Descartar. A resposta vem do evento ac:ask
+     (detail.respond(texto | Promise)) ou, na demo, de data-answer. Esc fecha e devolve a seleção. */
+  C['ai-editor'] = el => {
+    const doc = $('.ac-ai-editor__doc', el); if (!doc) return;
+    el.classList.add('ac-ai-editor');
+    doc.contentEditable = 'true'; doc.setAttribute('role', 'textbox'); doc.setAttribute('aria-multiline', 'true');
+    if (!doc.getAttribute('aria-label')) doc.setAttribute('aria-label', 'Documento');
+    const orb = '<span class="ac-ai-orb" aria-hidden="true"></span>';
+    const pop = document.createElement('div'); pop.className = 'ac-ai-pop'; pop.hidden = true; el.appendChild(pop);
+    const FMT = [['bold', 'Negrito', '<b>B</b>'], ['italic', 'Itálico', '<i>I</i>'], ['underline', 'Sublinhado', '<u>U</u>'], ['strikeThrough', 'Tachado', '<s>S</s>'], ['code', 'Código', '<code>&lt;/&gt;</code>']];
+    let range = null, mode = '', streamT = 0;
+    const hl = (r) => { try { if (!window.Highlight || !CSS.highlights) return; if (r) CSS.highlights.set('ac-ai', new Highlight(r)); else CSS.highlights.delete('ac-ai'); } catch (_) {} };
+    const place = () => {
+      if (!range) return; const r = range.getBoundingClientRect(), e = el.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+      // acima da seleção (pode passar do editor); só desce se faltar espaço na tela
+      let top = r.top - e.top - h - 8; if (r.top - h - 8 < 8) top = r.bottom - e.top + 8;
+      pop.style.left = Math.max(4, Math.min(e.width - w - 4, r.left - e.left + r.width / 2 - w / 2)) + 'px'; pop.style.top = top + 'px';
+    };
+    const close = (restore) => { clearTimeout(streamT); pop.hidden = true; mode = ''; hl(null); if (restore && range) { doc.focus(); const s = getSelection(); s.removeAllRanges(); s.addRange(range); } };
+    const bar = () => {
+      mode = 'bar'; pop.className = 'ac-ai-pop ac-ai-pop--bar'; pop.setAttribute('role', 'toolbar'); pop.setAttribute('aria-label', 'Seleção');
+      pop.innerHTML = `<button type="button" class="ac-ai-ask-btn" data-ai="ask">${orb}Perguntar à IA</button><span class="ac-ai-sep" aria-hidden="true"></span>` + FMT.map(([c, l, g]) => `<button type="button" class="ac-ai-fmt" data-ai="${c}" aria-label="${l}" aria-pressed="${c !== 'code' && document.queryCommandState && document.queryCommandState(c)}">${g}</button>`).join('');
+      pop.hidden = false; place();
+    };
+    const ask = () => {
+      mode = 'ask'; pop.className = 'ac-ai-pop ac-ai-pop--ask'; pop.removeAttribute('role');
+      pop.innerHTML = `<form class="ac-ai-form">${orb}<input class="ac-ai-input" placeholder="Pergunte qualquer coisa…" aria-label="Pedido para a IA sobre o trecho selecionado" autocomplete="off"><button type="submit" class="ac-ai-send" aria-label="Enviar">${icon('right')}</button></form>`;
+      hl(range); pop.hidden = false; place(); $('input', pop).focus();
+    };
+    const answer = prompt => {
+      mode = 'card'; pop.className = 'ac-ai-pop ac-ai-pop--card'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Resposta da IA');
+      pop.innerHTML = `<div class="ac-ai-card__q">${orb}<span>${esc(prompt)}</span></div><p class="ac-ai-card__a" aria-live="polite"><span class="ac-ai-thinking">Pensando…</span></p><div class="ac-ai-card__actions" hidden><button type="button" class="ac-btn ac-btn--sm" data-ai="replace">Substituir</button><button type="button" class="ac-btn ac-btn--sm ac-btn--secondary" data-ai="insert">Inserir abaixo</button><button type="button" class="ac-btn ac-btn--sm ac-btn--ghost" data-ai="discard">Descartar</button></div>`;
+      place();
+      const out = $('.ac-ai-card__a', pop), acts = $('.ac-ai-card__actions', pop);
+      let text = null;
+      const finish = txt => {
+        text = String(txt || '').trim(); const words = text.split(/(\s+)/); out.textContent = '';
+        if (reduce()) { out.textContent = text; acts.hidden = false; place(); return; }
+        out.setAttribute('aria-busy', 'true'); let i = 0;
+        const step = () => { if (mode !== 'card') return; out.querySelectorAll('.is-new').forEach(s => s.classList.remove('is-new')); const s = document.createElement('span'); s.className = 'is-new'; s.textContent = words.slice(i, i + 2).join(''); out.appendChild(s); i += 2; place();
+          if (i < words.length) streamT = setTimeout(step, 45); else { setTimeout(() => out.querySelectorAll('.is-new').forEach(n => n.classList.remove('is-new')), 400); out.removeAttribute('aria-busy'); acts.hidden = false; place(); $('button', acts).focus(); } };
+        step();
+      };
+      pop._text = () => text;
+      const ev = new CustomEvent('ac:ask', { cancelable: true, bubbles: true, detail: { prompt, text: range.toString(), respond: v => Promise.resolve(v).then(finish) } });
+      el.dispatchEvent(ev);
+      if (!ev.defaultPrevented) setTimeout(() => finish(el.dataset.answer || 'Sem resposta configurada (use o evento ac:ask).'), 700);
+    };
+    const apply = cmd => {
+      doc.focus(); const s = getSelection(); s.removeAllRanges(); s.addRange(range);
+      if (cmd === 'code') { const c = document.createElement('code'); try { range.surroundContents(c); } catch (_) { c.textContent = range.toString(); range.deleteContents(); range.insertNode(c); } range = document.createRange(); range.selectNodeContents(c); s.removeAllRanges(); s.addRange(range); }
+      else document.execCommand(cmd);
+      range = s.getRangeAt(0).cloneRange(); bar();
+    };
+    const blockOf = n => { while (n && n.parentNode !== doc) n = n.parentNode; return n; };
+    pop.addEventListener('mousedown', e => { if (!e.target.closest('input')) e.preventDefault(); }); // não perde a seleção ao clicar na barra
+    pop.addEventListener('click', e => {
+      const b = e.target.closest('[data-ai]'); if (!b) return; const k = b.dataset.ai;
+      if (k === 'ask') ask(); else if (FMT.some(f => f[0] === k)) apply(k);
+      else if (k === 'replace') { const t = pop._text(); range.deleteContents(); range.insertNode(document.createTextNode(t)); close(false); doc.dispatchEvent(new Event('input', { bubbles: true })); }
+      else if (k === 'insert') { const p = document.createElement('p'); p.textContent = pop._text(); const blk = blockOf(range.endContainer); blk ? blk.after(p) : doc.appendChild(p); close(false); p.classList.add('ac-ai-new'); doc.dispatchEvent(new Event('input', { bubbles: true })); }
+      else if (k === 'discard') close(true);
+    });
+    pop.addEventListener('submit', e => { e.preventDefault(); const v = $('input', pop).value.trim(); if (v) answer(v); });
+    el.addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) { e.preventDefault(); close(true); } });
+    const onSel = () => {
+      if (!el.isConnected) { document.removeEventListener('selectionchange', onSel); return; }
+      if (mode === 'ask' || mode === 'card') return;
+      const s = getSelection(); if (!s.rangeCount || s.isCollapsed || !doc.contains(s.anchorNode) || !doc.contains(s.focusNode)) { if (mode === 'bar' && !pop.contains(document.activeElement)) close(false); return; }
+      range = s.getRangeAt(0).cloneRange(); bar();
+    };
+    document.addEventListener('selectionchange', onSel);
+    doc.addEventListener('keydown', e => { if (e.key === 'F10' && e.altKey && mode === 'bar') { e.preventDefault(); $('button', pop).focus(); } }); // Alt+F10 leva à barra
+    el.addEventListener('focusout', e => { if (mode === 'card' || el.contains(e.relatedTarget)) return; setTimeout(() => { if (!el.contains(document.activeElement) && mode !== 'card') close(false); }, 0); });
+  };
+
+  /* Conversa em sequência: lista de mensagens (os balões da Conversa) que entram uma a uma quando aparecem na tela,
+     com "digitando…" antes de cada resposta e um desfoque na chegada. Tocar no balão mostra a hora (data-time).
+     data-play liga a sequência; .ac-conversation--ios usa o azul do iMessage. Movimento reduzido: tudo de uma vez. */
+  C.conversation = el => {
+    el.classList.add('ac-conversation'); if (!el.hasAttribute('role')) el.setAttribute('role', 'log');
+    const msgs = $$('.ac-msg', el), wait = ms => new Promise(r => setTimeout(r, ms));
+    msgs.forEach(m => {
+      const b = $('.ac-msg__bubble', m); if (!b || !m.dataset.time || $('.ac-msg__time', m)) return;
+      m.insertAdjacentHTML('beforeend', `<div class="ac-msg__time"><div><time>${esc(m.dataset.time)}</time></div></div>`);
+      b.tabIndex = 0; b.setAttribute('role', 'button'); b.setAttribute('aria-expanded', 'false');
+      const t = () => { const o = !m.hasAttribute('data-open'); m.toggleAttribute('data-open', o); b.setAttribute('aria-expanded', o); };
+      b.addEventListener('click', t); b.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); t(); } });
+    });
+    if (!el.hasAttribute('data-play') || reduce() || !msgs.length) return;
+    let run = 0;
+    const play = async () => {
+      const id = ++run; msgs.forEach(m => { m.classList.add('is-waiting'); m.classList.remove('is-arriving'); });
+      for (const m of msgs) {
+        if (id !== run || !el.isConnected) return;
+        if (m.classList.contains('ac-msg--in')) { const ty = document.createElement('div'); ty.className = 'ac-msg ac-msg--in ac-conversation__typing is-arriving'; ty.innerHTML = '<div class="ac-msg__bubble"><span class="ac-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="ac-sr">digitando</span></div>'; m.before(ty); await wait(+el.dataset.typing || 1000); ty.remove(); }
+        else await wait(500);
+        if (id !== run) return;
+        m.classList.remove('is-waiting'); m.classList.add('is-arriving'); await wait(250);
+      }
+    };
+    const replay = $('[data-replay]', el.parentElement); if (replay) replay.addEventListener('click', play);
+    if (window.IntersectionObserver) { const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { io.disconnect(); play(); } }, { threshold: .3 }); io.observe(el); } else play();
+    el._conversation = { play };
   };
 
   /* ---------- Mais efeitos 3D ---------- */

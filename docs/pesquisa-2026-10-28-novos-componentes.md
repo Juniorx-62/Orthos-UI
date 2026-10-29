@@ -157,7 +157,7 @@ Também corrigido: chamar `Orthos.skeleton(el, true)` com o esqueleto já ligado
 | Cartão com inclinação 3D | `data-ac="tilt"`, `data-depth` | desligado em toque e com movimento reduzido |
 | Revelar ao rolar | `data-ac="reveal"`, `data-ac="scroll-progress"` | `animation-timeline: view()`; IntersectionObserver no Firefox |
 | Fundo animado | `.ac-aurora` | `@property` + `conic-gradient` |
-| View Transitions | `Orthos.transition(fn)`; o site usa na troca de página | fade de .22 s |
+| View Transitions | `Orthos.transition(fn)` | fade de .22 s; tirado da navegação do site em 29/10 (dava sensação de travamento ao trocar de página) |
 | Campo de cartão | `data-ac="card-number"` | bandeira (Visa, Mastercard, Elo, Amex, Hipercard) e número espaçado |
 | Modelos | `.ac-shell`, `.ac-auth`, `.ac-checkout`, `.ac-pricing` | container queries: reagem à largura do contêiner |
 
@@ -182,4 +182,19 @@ Catálogos revisitados: Aceternity UI (3D Card, 3D Marquee, 3D Pin, Parallax Her
 
 Ficaram para depois: 3D Pin, cubos em grade que ondulam sob o cursor (Background Cubes Grid), globo 3D (precisa de WebGL) e partículas 3D.
 Também nesta rodada: rodapé da página inicial compacto (marca à esquerda, links à direita), "Ver todos" na lista de componentes e nenhuma menção a 4squad ou 4Selet no site e na biblioteca publicada.
+
+## 9. Peças da Kobra (29/10/2026)
+
+Estudadas em kobra.systems (seção grátis) e reimplementadas em JS puro, sem React, Loomix nem Motion:
+
+| Peça | Uso | Observação |
+|---|---|---|
+| Player de vídeo | `data-ac="video"` (`data-title`, `data-youtube`, `data-glass="liquid|blur"`) | controles em vidro, barra com tempo no hover, velocidade, legendas, PiP, tela cheia, teclado |
+| Halftone | `data-ac="halftone"` (`data-images`, `data-labels`, `data-gradient`) | canvas; figuras com fundo transparente viram pontos em degradê; a demo usa o símbolo do Orthos e ícones do Hugeicons |
+| Ícones que se transformam | `data-ac="morph-icon"` com `<svg data-off>` e `<svg data-on>` | traços se apagam e se desenham; 12 pares do Hugeicons na demo |
+| Editor com IA | `data-ac="ai-editor"` + evento `ac:ask` | barra na seleção, pedido, resposta em streaming, Substituir/Inserir/Descartar |
+| Conversa em sequência | `data-ac="conversation"` (`data-play`, `.ac-conversation--ios`) | reaproveita os balões da Conversa; “digitando…” e entrada com desfoque |
+
+O vídeo da demo é do Pexels (licença conferida; crédito em `assets/video/CREDITOS.md`).
+Também nesta rodada: a navegação pelo menu ficou sem View Transition (dava sensação de travamento), o menu não é mais redesenhado a cada página e o sparkline não força layout; os modelos de tela corrigidos no celular (a container query não alcança o próprio contêiner, então a grade foi para um elemento interno).
 
