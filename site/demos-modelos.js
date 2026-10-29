@@ -40,7 +40,7 @@ ${inner}
       desc: 'App shell com menu lateral, topo com busca, quatro números com tendência, gráfico principal com painel de apoio ao lado (padrão “supporting pane” do Material 3) e a tabela das últimas movimentações. Abaixo de 720 px o menu sai e a tabela vira cartões.',
       ref: { nome: 'NN/g · Dashboards e Material 3 · Layouts canônicos', url: 'https://m3.material.io/foundations/adaptive-design/canonical-layouts' },
       wide: true,
-      html: device('full', `<div class="ac-shell">
+      html: device('full', `<div class="ac-shell"><div class="ac-shell__in">
   <nav class="ac-sidebar ac-shell__side" data-ac="sidebar" aria-label="Principal">
     <div class="ac-sidebar__head"><span class="ac-sidebar__brand"><span class="ac-sidebar__logo"></span><span>Finanças</span></span></div>
     <a class="ac-sidebar__item" href="#" aria-current="page">${ico(P.home)}<span class="ac-sidebar__text">Início</span></a>
@@ -80,15 +80,15 @@ ${inner}
       </tbody>
     </table></div></div>
   </main>
-</div>`),
-      api: [['.ac-shell', 'div', '—', 'Grade menu + conteúdo; reage à largura do próprio contêiner'], ['.ac-shell__top / __kpis / __grid', 'div', '—', 'Topo, linha de números (4 → 2 → 1 colunas) e gráfico com painel de apoio (2/3 + 1/3)'], ['.ac-shell__brand-m', 'span', '—', 'Marca que aparece quando o menu lateral sai (abaixo de 720 px)']],
+</div></div>`),
+      api: [['.ac-shell > .ac-shell__in', 'div', '—', 'O .ac-shell é medido (container query) e o __in é a grade menu + conteúdo'], ['.ac-shell__top / __kpis / __grid', 'div', '—', 'Topo, linha de números (4 → 2 → 1 colunas) e gráfico com painel de apoio (2/3 + 1/3)'], ['.ac-shell__brand-m', 'span', '—', 'Marca que aparece quando o menu lateral sai (abaixo de 720 px)']],
       a11y: ['Um <h2> por tela e regiões com nome (menu “Principal”).', 'Números sempre com o texto da tendência, não só a cor.', 'Gráficos com rótulo e a tabela com <caption> para leitor de tela.'] },
 
     { id: 'tpl-login', grupo: 'Modelos', nome: 'Entrar', novo: '2026-10-28',
       desc: 'Tela de entrada com foto e depoimento ao lado do formulário. Segue o GOV.UK e a NN/g: e-mail e senha com “mostrar senha” (o campo de senha do Orthos), colar permitido, “Esqueci a senha” à vista e a opção de entrar com um código por e-mail (Input OTP), sem senha.',
       ref: { nome: 'GOV.UK · Senhas e NN/g · Login sem senha', url: 'https://design-system.service.gov.uk/patterns/passwords/' },
       wide: true,
-      html: device('full', `<div class="ac-auth">
+      html: device('full', `<div class="ac-auth"><div class="ac-auth__in">
   <aside class="ac-auth__panel"><img src="${F}montanhas-neve.jpg" alt=""><span style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:var(--ac-fs-lg)"><span class="ac-sidebar__logo"></span>Finanças</span>
     <blockquote class="ac-auth__quote">“Fechamos o mês em dois dias, não em duas semanas. A equipe só aprova o que o sistema já conciliou.”<cite>Marina Teles, diretora financeira na Vértice</cite></blockquote></aside>
   <div class="ac-auth__form">
@@ -109,15 +109,15 @@ ${inner}
       <p class="ac-hint" style="margin:0;text-align:center">Não tem conta? <a href="#">Criar conta</a></p>
     </form>
   </div>
-</div>`),
-      api: [['.ac-auth', 'div', '—', 'Painel de imagem + formulário; abaixo de 720 px fica só o formulário'], ['.ac-auth__panel', 'aside', '—', 'Foto de fundo (img) com depoimento em .ac-auth__quote'], ['.ac-auth__box', 'form', '—', 'Coluna do formulário (até 380 px)'], ['.ac-auth__or', 'div', '—', 'Divisor “ou”']],
+</div></div>`),
+      api: [['.ac-auth > .ac-auth__in', 'div', '—', 'Painel de imagem + formulário; abaixo de 720 px fica só o formulário'], ['.ac-auth__panel', 'aside', '—', 'Foto de fundo (img) com depoimento em .ac-auth__quote'], ['.ac-auth__box', 'form', '—', 'Coluna do formulário (até 380 px)'], ['.ac-auth__or', 'div', '—', 'Divisor “ou”']],
       a11y: ['Rótulos visíveis e autocomplete (username, current-password) para gerenciadores de senha.', 'Mostrar senha e colar permitidos (GOV.UK).', 'O código chega num campo único com one-time-code; o erro é anunciado.'] },
 
     { id: 'tpl-checkout', grupo: 'Modelos', nome: 'Pagamento (checkout)', novo: '2026-10-28',
       desc: 'Checkout no padrão Baymard: poucos campos, compra sem cadastro, bandeira do cartão detectada e número espaçado enquanto digita, área de pagamento destacada e o resumo com o total sempre à vista (no celular, o resumo vem primeiro). Com erro, o que foi digitado continua lá.',
       ref: { nome: 'Baymard · Checkout e formulário de cartão', url: 'https://baymard.com/blog/payment-ux' },
       wide: true,
-      html: device('full', `<div class="ac-checkout">
+      html: device('full', `<div class="ac-checkout"><div class="ac-checkout__in">
   <form class="ac-checkout__form" data-ac="validate" data-tpl="checkout" novalidate>
     <fieldset class="ac-checkout__section"><legend>Contato e entrega</legend>
       <div class="ac-field"><label class="ac-label" for="tc-mail">E-mail</label><input class="ac-input" id="tc-mail" type="email" autocomplete="email" required><span class="ac-hint">Para o recibo e o código de rastreio. Não precisa criar conta.</span></div>
@@ -147,8 +147,8 @@ ${inner}
     <dl class="ac-checkout__lines"><div><dt>Subtotal</dt><dd>R$ 1.270,00</dd></div><div><dt>Taxa de serviço</dt><dd>R$ 17,90</dd></div><div class="ac-checkout__total"><dt>Total</dt><dd>R$ 1.287,90</dd></div></dl>
     <details><summary class="ac-hint" style="cursor:pointer">Tem um cupom?</summary><div style="display:flex;gap:8px;margin-top:8px"><input class="ac-input" aria-label="Cupom"><button class="ac-btn ac-btn--secondary" type="button">Aplicar</button></div></details>
   </aside>
-</div>`),
-      api: [['.ac-checkout', 'div', '—', 'Formulário + resumo fixo ao lado; abaixo de 760 px o resumo vem primeiro'], ['.ac-checkout__secure', 'div', '—', 'Área do cartão destacada (aumenta a sensação de segurança, segundo a Baymard)'], ['data-ac="card-number"', 'div', '—', 'Espaça o número e mostra a bandeira (Visa, Mastercard, Elo, Amex, Hipercard) em data-brand'], ['.ac-checkout__lines', 'dl', '—', 'Linhas do resumo; .ac-checkout__total no total']],
+</div></div>`),
+      api: [['.ac-checkout > .ac-checkout__in', 'div', '—', 'Formulário + resumo fixo ao lado; abaixo de 760 px o resumo vem primeiro'], ['.ac-checkout__secure', 'div', '—', 'Área do cartão destacada (aumenta a sensação de segurança, segundo a Baymard)'], ['data-ac="card-number"', 'div', '—', 'Espaça o número e mostra a bandeira (Visa, Mastercard, Elo, Amex, Hipercard) em data-brand'], ['.ac-checkout__lines', 'dl', '—', 'Linhas do resumo; .ac-checkout__total no total']],
       a11y: ['Campos com autocomplete de cartão e endereço (cc-number, cc-exp, cc-csc, postal-code).', 'Erros em texto ao lado do campo, sem apagar o que foi digitado.', 'A bandeira detectada é anunciada (aria-live).'] },
 
     { id: 'tpl-pricing', grupo: 'Modelos', nome: 'Preços', novo: '2026-10-28',

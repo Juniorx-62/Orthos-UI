@@ -36,14 +36,20 @@
   const isNew = d => { const t = Date.parse(d.novo || ''); return !isNaN(t) && Date.now() - t < NOVO_DIAS * 864e5; };
 
   /* ---------- navegação ---------- */
+  // o menu é montado uma vez; nas trocas de página só muda o item marcado (mais leve e não mexe na rolagem do menu)
   function renderNav(cur) {
-    let h = `<a class="nav__a" href="#/" ${!cur ? 'aria-current="page"' : ''}><i></i>Introdução</a><a class="nav__a" href="#/padroes" ${cur === 'padroes' ? 'aria-current="page"' : ''}><i></i>Padrões</a>`;
-    groups.forEach(g => {
-      h += `<div class="nav__g">${esc(g)}</div>`;
-      D.filter(d => d.grupo === g).forEach(d => { h += `<a class="nav__a" href="#/${d.id}" ${cur === d.id ? 'aria-current="page"' : ''}><i></i>${esc(d.nome)}${isNew(d) ? '<span class="n">novo</span>' : ''}</a>`; });
-    });
-    $('#nav').innerHTML = h;
-    A.reveal($('#nav [aria-current]'));
+    const nav = $('#nav');
+    if (!nav.firstChild) {
+      let h = `<a class="nav__a" href="#/"><i></i>Introdução</a><a class="nav__a" href="#/padroes"><i></i>Padrões</a>`;
+      groups.forEach(g => {
+        h += `<div class="nav__g">${esc(g)}</div>`;
+        D.filter(d => d.grupo === g).forEach(d => { h += `<a class="nav__a" href="#/${d.id}"><i></i>${esc(d.nome)}${isNew(d) ? '<span class="n">novo</span>' : ''}</a>`; });
+      });
+      nav.innerHTML = h;
+    }
+    const href = '#/' + (cur || '');
+    nav.querySelector('[aria-current]')?.removeAttribute('aria-current');
+    const on = nav.querySelector(`a[href="${href}"]`); if (on) { on.setAttribute('aria-current', 'page'); A.reveal(on); }
   }
 
   /* ---------- página de componente ---------- */
@@ -212,7 +218,7 @@
     else { renderHome(); document.title = 'Orthos UI — biblioteca de componentes'; }
     closeSide(); scrollTo({ top: 0 }); main.focus({ preventScroll: true });
   }
-  // troca de página com View Transitions (fade curto), onde o navegador suporta
-  addEventListener('hashchange', () => A.transition ? A.transition(route) : route());
+  // sem View Transition na navegação: a foto da página e o fade deixavam a troca pelo menu com cara de travada
+  addEventListener('hashchange', route);
   route();
 })();
