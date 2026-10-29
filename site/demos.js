@@ -344,14 +344,18 @@
     { id: 'skeleton', grupo: 'Feedback', nome: 'Skeleton automático', desc: 'Gera o esqueleto medindo a interface real, como o boneyard: os blocos batem com o layout final.',
       ref: { nome: 'boneyard', url: 'https://boneyard.vercel.app/overview' },
       html: `<div style="display:grid;gap:14px;width:min(460px,100%)">
-  <div class="ac-segmented" data-ac="segmented" id="skel-toggle" aria-label="Estado"><button type="button" aria-pressed="true" value="real">Interface real</button><button type="button" value="skel">Skeleton</button></div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+    <div class="ac-segmented" data-ac="segmented" id="skel-toggle" aria-label="Estado"><button type="button" aria-pressed="true" value="real">Interface real</button><button type="button" value="skel">Skeleton</button></div>
+    <div class="ac-segmented" data-ac="segmented" id="skel-anim" aria-label="Animação"><button type="button" aria-pressed="true" value="shimmer">Brilho</button><button type="button" value="pulse">Pulso</button><button type="button" value="static">Parado</button></div>
+    <label class="ac-check"><input type="checkbox" id="skel-cascade" checked> Cascata</label>
+  </div>
   <article class="ac-card" id="skel-card"><div class="ac-card__body" style="display:grid;gap:14px">
     <div style="display:flex;gap:12px;align-items:center"><span class="ac-avatar">AR</span><div><div style="font-weight:600">Ana Ribeiro</div><div class="ac-hint">publicou há 2 horas</div></div><span class="ac-badge ac-badge--success" style="margin-left:auto">Ativo</span></div>
     <p style="margin:0;color:var(--ac-text-2);font-size:14px;line-height:1.55">Finalizamos a nova versão do painel. As métricas agora carregam três vezes mais rápido.</p>
     <div data-ac="bars" data-values="4,7,5,9,6,11,8,12" style="height:80px"></div>
   </div></article>
 </div>`,
-      api: [['Orthos.skeleton(el, true|false)', 'função', '—', 'Liga/desliga o esqueleto medido do conteúdo de el']],
+      api: [['Orthos.skeleton(el, true|false, opções)', 'função', '—', 'Liga/desliga o esqueleto medido do conteúdo de el'], ['animation', 'opção', 'shimmer', 'shimmer (brilho), pulse (pulso, mais calmo) ou static (parado); ou data-skeleton-animation'], ['cascade', 'opção', 'false', 'Cada osso começa 80 ms depois do de cima; ou data-skeleton-cascade'], ['delay', 'opção', '0', 'Espera menor que isso nem mostra o esqueleto; ou data-skeleton-delay'], ['.ac-skel--pulse / .ac-skel--static', 'classe', '—', 'As mesmas variantes no .ac-skel avulso'], ['ao desligar', 'comportamento', '—', 'Se o esqueleto chegou a aparecer, o conteúdo entra com fade de .3 s']],
       a11y: ['Marca aria-busy="true" enquanto carrega; os ossos ficam aria-hidden.'] },
 
     { id: 'empty', grupo: 'Feedback', nome: 'Empty state', desc: 'Estado vazio que explica o que falta e oferece o próximo passo.',
@@ -425,6 +429,13 @@
     command: root => { const b = root.querySelector('#cmd-demo'); b && b.addEventListener('click', () => window.openSiteCommand && window.openSiteCommand()); },
     palette: root => { const p = root.querySelector('#pal-demo'), o = root.querySelector('#pal-out'); p && p.addEventListener('ac:change', e => { o.innerHTML = `Selecionada: <b style="color:var(--ac-text)">${e.detail.name}</b> <code>${e.detail.color}</code>`; }); },
     progress: root => { const b = root.querySelector('#pg-run'), bar = root.querySelector('#pg-bar'), v = root.querySelector('#pg-v'); b && b.addEventListener('click', () => { let x = 0; b.disabled = true; const t = setInterval(() => { x = Math.min(100, x + 4 + Math.random() * 9); bar.style.setProperty('--v', x + '%'); bar.setAttribute('aria-valuenow', Math.round(x)); v.textContent = Math.round(x) + '%'; if (x >= 100) { clearInterval(t); b.disabled = false; Orthos.toast({ type: 'success', title: '1.284 contatos importados' }); } }, 160); }); },
-    skeleton: root => { const seg = root.querySelector('#skel-toggle'), card = root.querySelector('#skel-card'); seg && seg.addEventListener('ac:change', e => Orthos.skeleton(card, e.detail === 'skel' || e.detail === 'Skeleton')); }
+    skeleton: root => {
+      const seg = root.querySelector('#skel-toggle'), card = root.querySelector('#skel-card'), anim = root.querySelector('#skel-anim'), cas = root.querySelector('#skel-cascade'); if (!seg) return;
+      let on = false, animation = 'shimmer';
+      const paint = () => Orthos.skeleton(card, on, { animation, cascade: cas.checked });
+      seg.addEventListener('ac:change', e => { on = e.detail === 'skel' || e.detail === 'Skeleton'; paint(); });
+      anim.addEventListener('ac:change', e => { animation = { Brilho: 'shimmer', Pulso: 'pulse', Parado: 'static' }[e.detail] || e.detail; if (on) paint(); });
+      cas.addEventListener('change', () => { if (on) paint(); });
+    }
   };
 })();

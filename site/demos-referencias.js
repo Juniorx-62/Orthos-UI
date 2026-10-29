@@ -1,5 +1,4 @@
-/* Componentes vindos do levantamento de 28/10/2026 nos projetos 4squad, zero-7-global e 4selet-v2 (padrões reimplementados,
-   sem copiar React nem Blade). Cada um entra logo depois do último item do seu grupo, como em demos-novos.js. */
+/* Componentes vindos do levantamento de 28/10/2026 (padrões reimplementados, sem copiar React nem Blade). Cada um entra logo depois do último item do seu grupo, como em demos-novos.js. */
 (function () {
   const I = n => window.Orthos.icon(n);
   const ico = p => `<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
@@ -17,9 +16,9 @@
 
   const REFS = [
     /* ---------- Formulários ---------- */
-    { id: 'password', grupo: 'Formulários', nome: 'Campo de senha', novo: true,
+    { id: 'password', grupo: 'Formulários', nome: 'Campo de senha', novo: '2026-10-28',
       desc: 'Botão para mostrar e esconder, regras que se marcam enquanto a pessoa digita (somem com os campos vazios) e “as senhas conferem”. A validade fica no próprio campo, então o formulário com data-ac="validate" não envia senha fraca. Modo segredo para chaves de API.',
-      ref: { nome: '4squad · Campos.tsx (CampoSenha) e zero-7 · password-rules', url: '' },
+      ref: { nome: 'zero-7 · password-rules', url: '' },
       html: `<form class="ac-card" data-ac="validate" id="pw-form" style="width:min(400px,100%)">
   <div class="ac-card__head"><h3 class="ac-card__title">Trocar senha</h3><p class="ac-card__desc">Use uma senha que você não usa em outro site.</p></div>
   <div class="ac-card__body" style="display:grid;gap:16px">
@@ -35,7 +34,7 @@
       api: [['data-ac="password"', 'div com <input type=password>', '—', 'Põe o botão Mostrar/Esconder (aria-pressed)'], ['data-rules', 'lista', '—', 'min:8, numero, maiuscula, minuscula, especial'], ['data-confirm', 'seletor', '—', 'Campo de confirmação; acrescenta “as senhas conferem”'], ['data-secret', 'atributo', '—', 'Chave de API: autocomplete=new-password, spellcheck=false, data-1p-ignore, data-lpignore'], ['setCustomValidity', 'validade', '—', 'Senha fraca ou diferente deixa o campo inválido; o data-ac="validate" barra o envio e mostra a mensagem']],
       a11y: ['O botão tem nome fixo (“Mostrar senha”) e o estado em aria-pressed; a dica visível troca entre Mostrar e Esconder.', 'A lista de regras descreve o campo (aria-describedby) e cada item diz “atendido” ou “falta”.', 'Um só anúncio educado, 400 ms depois que a pessoa para de digitar, e não um por tecla.'] },
 
-    { id: 'copyfield', grupo: 'Formulários', nome: 'Campo copiável', novo: true,
+    { id: 'copyfield', grupo: 'Formulários', nome: 'Campo copiável', novo: '2026-10-28',
       desc: 'Valor só de leitura, cortado com reticências, com o botão de copiar colado. Copia o valor inteiro de data-copy (a chave sem máscara), não o texto da tela. Se a área de transferência falhar, o valor aparece selecionado com a dica do atalho.',
       ref: { nome: 'zero-7 · clipboard-text (porte do Kumo)', url: '' },
       html: `<div style="display:grid;gap:18px;width:min(420px,100%)">
@@ -46,9 +45,9 @@
       api: [['data-ac="copyfield"', 'div', '—', 'Monta o botão e o aviso'], ['.ac-copyfield__value', 'span', 'texto do div', 'O que aparece (pode estar mascarado)'], ['data-copy', 'texto', 'o texto visível', 'O que vai para a área de transferência'], ['data-label', 'texto', 'Copiar', 'Nome do botão (“Copiar chave da API”)'], ['.ac-copyfield--sm / --lg', 'classe', 'base', 'Alturas 32, 40 e 48 px'], ['ac:copy', 'evento', '—', 'detail: { text }']],
       a11y: ['Depois de copiar, o botão passa a se chamar “Copiado” por 1,5 s e uma região educada anuncia.', 'Os ícones trocam de lugar por escala e desfoque; com movimento reduzido, a troca é seca.', 'Se copiar falhar, o texto fica selecionado e a dica diz o atalho (Ctrl+C ou ⌘C).'] },
 
-    { id: 'choice-cards', grupo: 'Formulários', nome: 'Escolha em cartões', novo: true,
+    { id: 'choice-cards', grupo: 'Formulários', nome: 'Escolha em cartões', novo: '2026-10-28',
       desc: 'Rádios desenhados como cartões, com título, linha de apoio e ícone opcional. O rádio nativo continua por baixo: setas, leitor de tela e formulário funcionam como num grupo de rádios comum.',
-      ref: { nome: '4squad · Campos.tsx (EscolhaCartoes)', url: '' },
+      ref: { nome: '', url: '' },
       html: `<form style="display:grid;gap:22px;width:min(540px,100%)" onsubmit="return false">
   <fieldset class="ac-choice-cards">
     <legend>Formato do post</legend>
@@ -66,9 +65,9 @@
       a11y: ['É um grupo de rádios nativo: Tab entra no escolhido e as setas trocam a opção.', 'A legenda do <fieldset> nomeia o grupo.', 'Foco visível no cartão inteiro; opção indisponível fica esmaecida e não recebe foco.'] },
 
     /* ---------- Feedback ---------- */
-    { id: 'banners', grupo: 'Feedback', nome: 'Faixas de aviso em fila', novo: true,
+    { id: 'banners', grupo: 'Feedback', nome: 'Faixas de aviso em fila', novo: '2026-10-28',
       desc: 'Aviso que vale para a conta inteira (pagamento recusado, integração desconectada), preso no topo, um por vez, do mais grave ao mais leve. Com mais de um aparecem as setas e eles trocam a cada 10 s, parando com o mouse ou o foco em cima.',
-      ref: { nome: '4squad · Faixas.tsx (FaixasTopo)', url: '' },
+      ref: { nome: '', url: '' },
       wide: true,
       html: `<div class="ac-card" style="width:100%;overflow:hidden">
   <div class="ac-banners" data-ac="banners" aria-label="Avisos da conta">
@@ -82,9 +81,9 @@
       api: [['data-ac="banners"', 'div', '—', 'Fila de .ac-banners__item; mostra um por vez'], ['data-tone', '"critico" | "perigo" | "atencao" | "ok" | "neutro"', 'neutro', 'Cor da faixa e ordem padrão (do mais grave ao mais leve)'], ['data-priority', 'número', 'o tom', 'Ordem explícita (menor primeiro)'], ['data-dismissible', 'atributo', '—', 'Mostra o X; evento ac:dismiss com detail: { id }'], ['.ac-banners__long / __short', 'span', '—', 'Texto do computador e o curto, do celular (< 640 px)'], ['.ac-banners__icon / __text / __action', 'classes', '—', 'Ícone num quadrado translúcido, texto centralizado e ação sublinhada'], ['data-interval', 'ms', '10000', 'Tempo da troca automática']],
       a11y: ['Região nomeada (“Avisos da conta”); cada aviso começa com “Aviso 2 de 3” para o leitor de tela.', 'Trocar pelas setas ou dispensar anuncia o aviso novo numa região educada; a troca automática não interrompe ninguém.', 'Sem troca automática com movimento reduzido; ela também para com o mouse ou o foco em cima.'] },
 
-    { id: 'sheet-mobile', grupo: 'Feedback', nome: 'Diálogo em bottom sheet', novo: true,
+    { id: 'sheet-mobile', grupo: 'Feedback', nome: 'Diálogo em bottom sheet', novo: '2026-10-28',
       desc: 'No celular (abaixo de 640 px), todo .ac-dialog sobe da borda de baixo, ocupa a largura toda e só os cantos de cima são arredondados. O conteúdo rola dentro dele e as ações ficam sempre à vista; quando o teclado virtual abre, o sheet sobe junto e o campo focado continua visível.',
-      ref: { nome: 'zero-7 · dialogo-teclado.js e 4squad · Janela.tsx', url: '' },
+      ref: { nome: 'zero-7 · dialogo-teclado.js', url: '' },
       html: `<div style="display:grid;gap:12px;justify-items:center;text-align:center">
   <button class="ac-btn ac-btn--secondary" type="button" data-ac-open="#bs-end">Novo endereço</button>
   <p class="ac-hint" style="max-width:42ch;margin:0">No computador, é o diálogo de sempre. Abra numa tela estreita (ou no modo celular do navegador) para ver o sheet.</p>
@@ -102,9 +101,9 @@
       api: [['automático', '.ac-dialog', '< 640 px', 'Vira bottom sheet; o computador não muda'], ['--ac-keyboard-h / --ac-visible-h', 'CSS no <html>', '—', 'Postos pelo JS quando o teclado virtual cobre mais de 120 px com um campo do diálogo focado'], ['.ac-command', 'classe', '—', 'A paleta de comandos continua no topo (não vira sheet)']],
       a11y: ['É o mesmo <dialog> modal: foco preso, Esc e clique fora fecham.', 'Entra subindo em 400 ms e sai em 250 ms; com movimento reduzido, sem animação.', 'Com o teclado aberto, o campo focado rola para a área visível (sem scrollIntoView).'] },
 
-    { id: 'confirm', grupo: 'Feedback', nome: 'Confirmar e alertar', novo: true,
+    { id: 'confirm', grupo: 'Feedback', nome: 'Confirmar e alertar', novo: '2026-10-28',
       desc: 'Orthos.confirm() monta o diálogo na hora e devolve uma promessa: título, a consequência em texto, botão que repete o nome da ação e Cancelar com o foco inicial. Se onConfirm devolver uma promessa, o botão carrega e o diálogo espera; com erro, a mensagem aparece dentro dele. Orthos.alert() tem um OK só.',
-      ref: { nome: '4squad · Janela.tsx (Confirmar e Alerta)', url: '' },
+      ref: { nome: '', url: '' },
       html: `<div style="display:grid;gap:16px;justify-items:center">
   <div class="ac-btn-group" style="justify-content:center">
     <button class="ac-btn ac-btn--danger" type="button" id="cf-del">${I('trash')}Excluir 3 arquivos</button>
@@ -118,25 +117,63 @@
       a11y: ['role="alertdialog" com título e consequência ligados por aria-labelledby/describedby.', 'O foco começa em Cancelar e volta para quem abriu ao fechar.', 'Enquanto a ação roda, o diálogo fica aria-busy e não fecha; o erro entra em role="alert".'] },
 
     /* ---------- Dados ---------- */
-    { id: 'table-stack', grupo: 'Dados', nome: 'Tabela em cartões no celular', novo: true,
-      desc: 'Abaixo de 640 px, cada linha vira um cartão e cada célula uma linha “rótulo: valor”, com o rótulo vindo de data-label. A célula sem rótulo vira o título do cartão e a coluna de ações vai para o fim, à direita. O Data table (data-ac="table") já faz isso sozinho.',
+    { id: 'orbit', grupo: 'Feedback', nome: 'Quatro pontos e carregando na área', novo: '2026-10-28',
+      desc: 'Quatro bolinhas nos cantos de um quadrado, cada uma mais clara, girando com um pulso a cada quarto de volta. Sozinho é o indicador de espera dentro de uma área; com .ac-loading-area vira o “carregando” centralizado de uma tela que está abrindo, com o texto embaixo.',
+      ref: { nome: 'Uiverse · loader de AbanoubMagdy1 (licença MIT)', url: 'https://uiverse.io/' },
+      html: `<div style="display:grid;gap:18px;width:min(520px,100%)">
+  <div class="ac-card"><div class="ac-loading-area" role="status"><span data-ac="orbit"></span><span class="ac-loading-area__text">Carregando o relatório de outubro…</span></div></div>
+  <div class="ac-btn-group" style="gap:28px;justify-content:center;align-items:center">
+    <span data-ac="orbit" data-size="24" role="status" aria-label="Carregando"></span>
+    <span data-ac="orbit" data-size="36" role="status" aria-label="Carregando" style="color:var(--ac-success)"></span>
+    <span class="ac-btn ac-btn--secondary" style="pointer-events:none"><span data-ac="orbit" class="ac-orbit--inherit" data-size="16"></span>Atualizando</span>
+  </div>
+</div>`,
+      api: [['data-ac="orbit"', 'span', '—', 'Monta as 4 bolinhas; sem role fica aria-hidden (quem nomeia a espera é o contêiner)'], ['data-size', 'px', '48', 'Tamanho do quadrado (ou --size no CSS)'], ['.ac-orbit--inherit', 'classe', '—', 'Usa a cor do texto em volta em vez do destaque'], ['.ac-loading-area', 'classe', '—', 'Coluna centralizada, min-height 160px; ponha role="status" e o texto em .ac-loading-area__text (ou .ac-sr)']],
+      a11y: ['O desenho é aria-hidden; o texto da área (ou o aria-label) é o que o leitor de tela anuncia, via role="status".', 'Com movimento reduzido, os pontos ficam parados.'] },
+
+    { id: 'wait-long', grupo: 'Feedback', nome: 'Espera longa', novo: '2026-10-28',
+      desc: 'Para tarefas de 1 a 2 minutos que não travam a tela (gerar uma arte, um relatório, uma pesquisa): um navegador desenhado, com os blocos da página pulsando e a luz correndo pelos traços até ele. O rótulo vai na barra do navegador.',
+      ref: { nome: '', url: '' },
+      html: `<div style="display:grid;gap:14px;width:min(520px,100%);justify-items:center">
+  <div data-ac="wait" data-label="Gerando a arte" data-note="Leva de 1 a 2 minutos. Pode continuar usando o app; avisamos quando ficar pronto."></div>
+</div>`,
+      api: [['data-ac="wait"', 'div', '—', 'Monta o desenho (SVG) e o texto para leitor de tela'], ['data-label', 'texto', 'Gerando', 'Rótulo da barra do navegador, lido pelo leitor de tela'], ['data-note', 'texto', '—', 'Aviso embaixo (ex.: quanto tempo leva)'], ['--light-a / --light-b', 'CSS', 'destaque / sucesso', 'Cores da luz que corre pelos traços']],
+      a11y: ['role="status" com aria-live="polite": o rótulo é anunciado uma vez, sem repetir.', 'O SVG é aria-hidden; o rótulo também vai num .ac-sr.', 'Com movimento reduzido, fica parado: blocos estáticos e traços apagados.'] },
+
+    { id: 'sync', grupo: 'Feedback', nome: 'Sincronizando', novo: '2026-10-28',
+      desc: 'Quando um sistema externo demora (banco, rede social, integração) e a tela tenta de novo sozinha: um sonar com três ondas, título e detalhe. Fica no lugar do aviso de erro enquanto ainda há chance de dar certo; a variante com pontos é mais discreta.',
+      ref: { nome: '', url: '' },
+      html: `<div style="display:grid;gap:16px;width:min(460px,100%)">
+  <div class="ac-card"><div class="ac-card__body"><div data-ac="sync" data-title="Sincronizando com o banco" data-detail="O extrato está demorando para chegar. Tentamos de novo a cada 30 segundos."></div></div></div>
+  <div class="ac-card"><div class="ac-card__body"><div data-ac="sync" data-variant="dots" data-title="Buscando as métricas do Instagram" data-detail="Pode levar alguns segundos."></div></div></div>
+</div>`,
+      api: [['data-ac="sync"', 'div', '—', 'Monta o sonar (ou os pontos), título e detalhe'], ['data-title', 'texto', 'Sincronizando', 'O que está acontecendo'], ['data-detail', 'texto', '—', 'Detalhe: por que demora e o que a tela está fazendo'], ['data-variant="dots"', 'texto', 'sonar', 'Troca o sonar pelos quatro pontos (30 px)']],
+      a11y: ['role="status" com aria-live="polite": título e detalhe são anunciados.', 'Ondas e ícone são aria-hidden.', 'Com movimento reduzido, fica um anel parado.'] },
+
+    { id: 'table-stack', grupo: 'Dados', nome: 'Tabela em cartões', novo: '2026-10-28',
+      desc: 'Quando o espaço da tabela fica abaixo de 640 px (no celular, mas também num painel lateral ou numa coluna estreita), cada linha vira um cartão e cada célula uma linha “rótulo: valor”, com o rótulo vindo de data-label. A célula sem rótulo vira o título do cartão e a coluna de ações vai para o fim, à direita. A demo abre numa tela de celular (375 px); troque o tamanho no seletor para ver a mesma tabela voltar a ser tabela. O Data table (data-ac="table") já faz isso sozinho.',
       ref: { nome: 'zero-7 · table/cell.blade.php', url: '' },
       wide: true,
-      html: `<div class="ac-table-wrap" style="width:100%"><div class="ac-table-scroll"><table class="ac-table ac-table--stack" data-ac="stack">
-  <caption class="ac-sr">Pedidos recentes</caption>
-  <thead><tr><th scope="col">Pedido</th><th scope="col">Cliente</th><th scope="col">E-mail</th><th scope="col">Data</th><th scope="col" class="num">Valor</th><th scope="col">Status</th><th scope="col" class="ac-table__actions"><span class="ac-sr">Ações</span></th></tr></thead>
-  <tbody>
+      html: `<div class="device-demo">
+  <div class="ac-segmented" data-ac="segmented" id="ts-size" aria-label="Tamanho da tela"><button type="button" aria-pressed="true" value="375">Celular · 375 px</button><button type="button" value="768">Tablet · 768 px</button><button type="button" value="full">Computador</button></div>
+  <div class="device-frame" id="ts-frame" data-size="375" style="--w:375px;width:min(var(--w),100%)">
+    <div class="ac-table-wrap"><div class="ac-table-scroll"><table class="ac-table ac-table--stack" data-ac="stack">
+    <caption class="ac-sr">Pedidos recentes</caption>
+    <thead><tr><th scope="col">Pedido</th><th scope="col">Cliente</th><th scope="col">E-mail</th><th scope="col">Data</th><th scope="col" class="num">Valor</th><th scope="col">Status</th><th scope="col" class="ac-table__actions"><span class="ac-sr">Ações</span></th></tr></thead>
+    <tbody>
     <tr><td><b>#4821</b> · Kit café especial</td><td data-label="Cliente">Marina Teles</td><td data-label="E-mail">marina.teles@exemplo.com.br</td><td data-label="Data">27/10/2026</td><td class="num" data-label="Valor">R$ 189,90</td><td data-label="Status"><span class="ac-badge ac-badge--success">Pago</span></td><td class="ac-table__actions"><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button" aria-label="Ver pedido #4821">Ver pedido</button></td></tr>
     <tr><td><b>#4820</b> · Assinatura anual</td><td data-label="Cliente">Ricardo Nogueira Vasconcelos</td><td data-label="E-mail">ricardo.nogueira.vasconcelos@empresa-exemplo.com.br</td><td data-label="Data">27/10/2026</td><td class="num" data-label="Valor">R$ 1.188,00</td><td data-label="Status"><span class="ac-badge ac-badge--warning">Pendente</span></td><td class="ac-table__actions"><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button" aria-label="Ver pedido #4820">Ver pedido</button></td></tr>
     <tr><td><b>#4819</b> · Curso de fotografia</td><td data-label="Cliente">Tatiana Moura</td><td data-label="E-mail">tati.moura@exemplo.com.br</td><td data-label="Data">26/10/2026</td><td class="num" data-label="Valor">R$ 497,00</td><td data-label="Status"><span class="ac-badge">Reembolsado</span></td><td class="ac-table__actions"><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button" aria-label="Ver pedido #4819">Ver pedido</button></td></tr>
-  </tbody>
-</table></div></div>`,
-      api: [['.ac-table--stack', 'classe na <table>', '—', 'Liga o modo cartão abaixo de 640 px'], ['data-label', '<td>', '—', 'Rótulo mostrado antes do valor (::before)'], ['<td> sem data-label', '—', '—', 'Ocupa a linha inteira: use para o título do cartão'], ['.ac-table__actions', '<td>/<th>', '—', 'Vira a última linha, alinhada à direita'], ['.ac-table__select', '<td>/<th>', '—', 'Caixa de seleção no canto do cartão'], ['data-ac="stack"', '<table>', 'opcional', 'Põe a classe e os papéis ARIA de tabela (o Safari perde a tabela com display: block)'], ['data-ac="table"', 'Data table', 'automático', 'Já gera data-label; a coluna name vira o título']],
+    </tbody>
+    </table></div></div>
+  </div>
+</div>`,
+      api: [['.ac-table--stack', 'classe na <table>', '—', 'Liga o modo cartão quando o .ac-table-wrap em volta fica abaixo de 640 px (container query)'], ['data-label', '<td>', '—', 'Rótulo mostrado antes do valor (::before)'], ['<td> sem data-label', '—', '—', 'Ocupa a linha inteira: use para o título do cartão'], ['.ac-table__actions', '<td>/<th>', '—', 'Vira a última linha, alinhada à direita'], ['.ac-table__select', '<td>/<th>', '—', 'Caixa de seleção no canto do cartão'], ['.ac-stack-host', 'classe', '—', 'Marca outro pai como o espaço medido, para tabela sem .ac-table-wrap'], ['data-ac="stack"', '<table>', 'opcional', 'Sem .ac-table-wrap, marca o pai como .ac-stack-host; Põe a classe e os papéis ARIA de tabela (o Safari perde a tabela com display: block)'], ['data-ac="table"', 'Data table', 'automático', 'Já gera data-label; a coluna name vira o título']],
       a11y: ['O cabeçalho some só da tela: continua na tabela para o leitor de tela.', 'Com data-ac="stack" (e no Data table), role="table/row/cell" garante que a tabela siga sendo lida como tabela.', 'Valores longos quebram dentro do cartão (sem rolagem de lado); um elemento ou texto por célula.'] },
 
-    { id: 'timeline', grupo: 'Dados', nome: 'Linha do tempo', novo: true,
+    { id: 'timeline', grupo: 'Dados', nome: 'Linha do tempo', novo: '2026-10-28',
       desc: 'Etapas de um pedido, saque ou aprovação: nó quadrado com ícone, linha fina por trás e estados feito, atual, falhou e próximo (tracejado). Cada item tem data, título com valor opcional à direita e detalhe. A versão horizontal vira vertical no celular.',
-      ref: { nome: '4squad · Exibicao.tsx e base.css (histórico de pedidos)', url: '' },
+      ref: { nome: '', url: '' },
       html: `<div style="display:grid;gap:36px;width:min(640px,100%)">
   <ol class="ac-timeline" aria-label="Andamento do pedido #4821">
     <li class="ac-timeline__item is-done">${node(I('check'), 'Concluído.')}<div class="ac-timeline__body"><time class="ac-timeline__date" datetime="2026-10-27T14:02">27 out · 14:02</time><div class="ac-timeline__head"><span class="ac-timeline__title">Pedido recebido</span><span class="ac-timeline__value">R$ 189,90</span></div><p class="ac-timeline__detail">Pix confirmado pelo banco.</p></div></li>
@@ -154,9 +191,9 @@
       api: [['.ac-timeline', '<ol>', 'vertical', 'Lista de .ac-timeline__item'], ['.ac-timeline--h', 'classe', '—', 'Horizontal; vira vertical abaixo de 640 px'], ['.is-done / .is-current / .is-failed / .is-next', 'no item', 'neutro', 'Feito (verde), atual (âmbar), falhou (vermelho) e próximo (tracejado, texto apagado)'], ['.ac-timeline__node', 'span', '—', 'Quadrado de 32 px com ícone de 16 px'], ['__date / __head / __title / __value / __detail', 'classes', '—', 'Data, título com valor à direita e detalhe']],
       a11y: ['É uma lista ordenada com nome (aria-label); a ordem é a do tempo.', 'O estado não fica só na cor: o ícone muda e um texto oculto (“Concluído.”) diz o estado.', 'aria-current="step" marca a etapa atual.'] },
 
-    { id: 'chat', grupo: 'Dados', nome: 'Conversa', novo: true,
+    { id: 'chat', grupo: 'Dados', nome: 'Conversa', novo: '2026-10-28',
       desc: 'Balões enviados à direita e recebidos à esquerda, colados quando seguidos. Tocar no balão mostra a hora; rascunho da IA, erro com “tentar de novo” e reação presa à borda. Longe do fim, aparece o botão para a mensagem mais nova. Ctrl/⌘+Enter envia.',
-      ref: { nome: '4squad · Conversa.tsx e Extras.tsx (BotaoDescer)', url: '' },
+      ref: { nome: '', url: '' },
       html: `<section class="ac-chat" data-ac="chat" aria-label="Conversa com Marina Teles" style="width:min(420px,100%)">
   <div class="ac-chat__log" aria-label="Mensagens">
     <p class="ac-chat__day">Ontem</p>
@@ -176,7 +213,7 @@
       api: [['.ac-chat + data-ac="chat"', 'section', '—', 'Lista (.ac-chat__log) e campo de escrever (.ac-chat__composer)'], ['.ac-msg--in / --out', 'div', '—', 'Recebida (esquerda) e enviada (direita); o balão é .ac-msg__bubble'], ['.ac-msg--soft / --error', 'classe', '—', 'Rascunho da IA e não enviada (com .ac-msg__retry)'], ['data-time / data-author', 'texto', '—', 'Hora mostrada ao tocar no balão e quem falou (para o leitor de tela)'], ['.ac-msg__reaction', 'span', '—', 'Selo de reação preso à borda'], ['ac:send', 'evento', '—', 'detail: { text }; cancele para manter o texto no campo'], ['ac:retry', 'evento', '—', 'detail: { message } ao tocar em “tentar de novo”']],
       a11y: ['A lista é role="log" com aria-live educado: mensagem nova é lida sem roubar o foco.', 'Cada balão diz quem falou (texto oculto) e a hora está na árvore de acessibilidade mesmo fechada.', 'A lista recebe foco e rola pelo teclado; Ctrl/⌘+Enter envia e Enter quebra a linha.'] },
 
-    { id: 'carousel', grupo: 'Dados', nome: 'Carrossel', novo: true,
+    { id: 'carousel', grupo: 'Dados', nome: 'Carrossel', novo: '2026-10-28',
       desc: 'Trilha com scroll-snap, setas e bolinhas numa cápsula, slides fora da vista fora do Tab e troca automática opcional que para no hover, no foco e no botão Pausar. Sem troca automática com movimento reduzido.',
       ref: { nome: 'WAI-ARIA APG · Carousel', url: 'https://www.w3.org/WAI/ARIA/apg/patterns/carousel/' },
       html: `<div style="display:grid;gap:30px;width:min(560px,100%)">
@@ -211,6 +248,23 @@
   add('dialog', [['< 640 px', 'CSS', 'automático', 'Vira bottom sheet (veja Diálogo em bottom sheet)'], ['Orthos.confirm / Orthos.alert', 'função', '—', 'Confirmação e alerta montados na hora, com promessa (veja Confirmar e alertar)']]);
 
   const H = window.DEMO_HOOKS, O = () => window.Orthos;
+  /* Moldura de aparelho (.device-demo): o seletor troca a largura entre celular, tablet e computador, sempre centralizada.
+     Tamanhos que não cabem na tela de quem vê somem do seletor; se o escolhido sumir, fica o maior que cabe. */
+  H.device = root => {
+    const frame = root.querySelector('.device-frame'), seg = frame && frame.parentElement.querySelector(':scope > .ac-segmented'); if (!seg) return;
+    const host = frame.parentElement, btns = [...seg.querySelectorAll('button')];
+    const set = v => { frame.dataset.size = v; frame.style.setProperty('--w', v === 'full' ? '100%' : v + 'px'); };
+    const fit = () => {
+      const room = host.clientWidth;
+      btns.forEach((b, i) => { b.hidden = i > 0 && (b.value === 'full' ? 900 : +b.value + 24) > room; }); // computador = toda a área, só se houver espaço de verdade
+      const shown = btns.filter(b => !b.hidden); seg.hidden = shown.length < 2;
+      const on = btns.find(b => b.getAttribute('aria-pressed') === 'true');
+      if (on && on.hidden) shown[shown.length - 1].click();
+    };
+    seg.addEventListener('ac:change', () => { const b = btns.find(x => x.getAttribute('aria-pressed') === 'true'); if (b) set(b.value); });
+    set(frame.dataset.size || '375'); new ResizeObserver(fit).observe(host); fit();
+  };
+  H['table-stack'] = root => H.device(root);
   H.password = root => { const f = root.querySelector('#pw-form'); f && f.addEventListener('ac:valid', e => { e.preventDefault(); O().toast({ type: 'success', title: 'Senha alterada', desc: 'Na próxima entrada, use a senha nova.' }); }); };
   H.chat = root => {
     const c = root.querySelector('[data-ac="chat"]'); if (!c) return;

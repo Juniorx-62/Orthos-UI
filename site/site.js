@@ -24,14 +24,23 @@
       .split('\n').map(l => `<span class="ln">${l || ' '}</span>`).join('');
   }
   // remove os <svg> gigantes do código mostrado, para leitura
-  const tidy = h => h.replace(/<svg class="ac-icon"[\s\S]*?<\/svg>/g, '<svg class="ac-icon">…</svg>');
+  // e troca as imagens geradas (data:) por um nome de arquivo
+  const tidy = h => h.replace(/<svg class="ac-icon"[\s\S]*?<\/svg>/g, '<svg class="ac-icon">…</svg>').replace(/data:image\/[^"]+/g, 'foto.jpg');
+
+  const INDEX_FIRST = 12; // a página inicial mostra 12 componentes; "Ver todos" abre o resto
+
+  /* ---------- selo "novo" ----------
+     Cada demo marca a data em que entrou (novo: 'AAAA-MM-DD'); o selo some sozinho depois de NOVO_DIAS.
+     A suíte de testes recusa novo: true sem data, para nenhum componente ficar "novo" para sempre. */
+  const NOVO_DIAS = 30;
+  const isNew = d => { const t = Date.parse(d.novo || ''); return !isNaN(t) && Date.now() - t < NOVO_DIAS * 864e5; };
 
   /* ---------- navegação ---------- */
   function renderNav(cur) {
     let h = `<a class="nav__a" href="#/" ${!cur ? 'aria-current="page"' : ''}><i></i>Introdução</a><a class="nav__a" href="#/padroes" ${cur === 'padroes' ? 'aria-current="page"' : ''}><i></i>Padrões</a>`;
     groups.forEach(g => {
       h += `<div class="nav__g">${esc(g)}</div>`;
-      D.filter(d => d.grupo === g).forEach(d => { h += `<a class="nav__a" href="#/${d.id}" ${cur === d.id ? 'aria-current="page"' : ''}><i></i>${esc(d.nome)}${d.novo ? '<span class="n">novo</span>' : ''}</a>`; });
+      D.filter(d => d.grupo === g).forEach(d => { h += `<a class="nav__a" href="#/${d.id}" ${cur === d.id ? 'aria-current="page"' : ''}><i></i>${esc(d.nome)}${isNew(d) ? '<span class="n">novo</span>' : ''}</a>`; });
     });
     $('#nav').innerHTML = h;
     A.reveal($('#nav [aria-current]'));
@@ -44,7 +53,8 @@
     main.innerHTML = `<div class="doc">
       <section class="stage" aria-label="Demonstração">
         <div class="stage__bar"><span class="stage__crumb">${esc(d.grupo)} / <b>${esc(d.nome)}</b></span>
-          <div class="ac-segmented" data-ac="segmented" id="mode" aria-label="Visualização"><button type="button" value="preview" aria-pressed="${mode === 'preview'}">Preview</button><button type="button" value="code" aria-pressed="${mode === 'code'}">Código</button></div></div>
+          <div class="ac-segmented" data-ac="segmented" id="mode" aria-label="Visualização"><button type="button" value="preview" aria-pressed="${mode === 'preview'}">Preview</button><button type="button" value="code" aria-pressed="${mode === 'code'}">Código</button></div>
+          <button class="ac-btn ac-btn--secondary ac-btn--sm stage__md" type="button" id="md-open">${A.icon('file')}Ver como Markdown</button></div>
         <div class="canvas" ${d.wide ? 'data-wide' : ''} ${mode === 'code' ? 'hidden' : ''}>
           <div class="canvas__tools"><button class="ac-btn ac-btn--secondary ac-btn--icon ac-btn--sm" type="button" id="replay" aria-label="Reiniciar demonstração" data-tip="Reiniciar">${replayIco}</button></div>
           <div class="canvas__inner" id="demo"></div>
@@ -54,7 +64,7 @@
       <aside class="panel" aria-label="Documentação">
         <h1>${esc(d.nome)}</h1>
         <p class="lead">${esc(d.desc)}</p>
-        ${d.ref.url ? `<a class="ref" href="${esc(d.ref.url)}" target="_blank" rel="noopener noreferrer"><span><small>Referência estudada</small><b>${esc(d.ref.nome)}</b></span>${ext}</a>` : `<div class="ref"><span><small>Referência</small><b>${esc(d.ref.nome)}</b></span></div>`}
+        ${!d.ref.nome ? '' : d.ref.url ? `<a class="ref" href="${esc(d.ref.url)}" target="_blank" rel="noopener noreferrer"><span><small>Referência estudada</small><b>${esc(d.ref.nome)}</b></span>${ext}</a>` : `<div class="ref"><span><small>Referência</small><b>${esc(d.ref.nome)}</b></span></div>`}
         ${guide(d)}
         <h2>Instalação</h2>
         <div class="snippet"><code>&lt;link rel="stylesheet" href="orthos.css"&gt; &lt;script src="orthos.js"&gt;&lt;/script&gt;</code><button class="ac-btn ac-btn--ghost ac-btn--icon ac-btn--sm" type="button" data-ac="copy" data-copy='<link rel="stylesheet" href="orthos.css">\n<script src="orthos.js"></script>' aria-label="Copiar instalação">${copyIco}</button></div>
@@ -62,8 +72,6 @@
         <table class="api"><thead><tr><th>Propriedade</th><th>Descrição</th></tr></thead><tbody>${d.api.map(([p, t, def, desc]) => `<tr><td><code>${esc(p)}</code><small>${esc(t)}${def && def !== '—' ? ' · ' + esc(def) : ''}</small></td><td>${esc(desc)}</td></tr>`).join('')}</tbody></table>
         <h2>Acessibilidade</h2>
         <ul class="a11y">${d.a11y.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
-        <h2>Documentação</h2>
-        <button class="ac-btn ac-btn--secondary ac-btn--sm" type="button" id="md-open">Ver como Markdown</button>
         <nav class="pn" aria-label="Anterior e próximo">${prev ? `<a href="#/${prev.id}"><small>Anterior</small>${esc(prev.nome)}</a>` : '<span></span>'}${next ? `<a href="#/${next.id}"><small>Próximo</small>${esc(next.nome)}</a>` : ''}</nav>
       </aside></div>`;
     const mount = () => {
@@ -96,7 +104,7 @@
     const g = G[d.id] || {}, li = a => (a || []).map(x => `- ${x}`).join('\n');
     const code = d.html.replace(/<svg class="ac-icon"[\s\S]*?<\/svg>/g, '<svg class="ac-icon">…</svg>');
     const fence = '```';
-    return [`# ${d.nome}`, '', d.desc, '', `Grupo: ${d.grupo} · Referência estudada: ${d.ref.url ? `[${d.ref.nome}](${d.ref.url})` : d.ref.nome}`, '',
+    return [`# ${d.nome}`, '', d.desc, '', `Grupo: ${d.grupo}${d.ref.nome ? ` · Referência estudada: ${d.ref.url ? `[${d.ref.nome}](${d.ref.url})` : d.ref.nome}` : ''}`, '',
       g.usar ? `## Quando usar\n\n${li(g.usar)}\n` : '', g.evitar ? `## Quando evitar\n\n${li(g.evitar)}\n` : '', g.dicas ? `## Boas práticas\n\n${li(g.dicas)}\n` : '',
       '## Instalação', '', fence + 'html', '<link rel="stylesheet" href="orthos.css">', '<script src="orthos.js"></script>', fence, '',
       '## API', '', '| Propriedade | Tipo | Padrão | Descrição |', '|---|---|---|---|', ...d.api.map(r => `| \`${cell(r[0])}\` | ${cell(r[1])} | ${cell(r[2])} | ${cell(r[3])} |`), '',
@@ -134,16 +142,38 @@
         ${tile('text-shimmer', 't4', '<span class="ac-text-shimmer" style="font:500 18px var(--ac-font)">Gerando relatório…</span>')}
       </section>
       <div class="sec-h"><h2>Todos os componentes</h2><p>${groups.join(' · ')}</p></div>
-      <section class="index" aria-label="Componentes">${D.map(d => `<a href="#/${d.id}"><small>${esc(d.grupo)}</small><b>${esc(d.nome)}</b><span>${esc(d.desc)}</span></a>`).join('')}</section>
+      <section class="index" id="index" aria-label="Componentes">${D.map((d, i) => `<a href="#/${d.id}"${i >= INDEX_FIRST ? ' class="is-more"' : ''}><small>${esc(d.grupo)}</small><b>${esc(d.nome)}</b><span>${esc(d.desc)}</span></a>`).join('')}</section>
+      <div class="index-more"><button class="ac-btn ac-btn--secondary" type="button" id="index-more" aria-controls="index" aria-expanded="false">Ver todos os ${D.length} componentes${A.icon('chevron')}</button></div>
       <div class="sec-h"><h2>Comece em um minuto</h2><p>Copie a pasta <code>src/</code> para o seu projeto.</p></div>
       <section class="start">
         <div class="code"><div class="code__bar"><span>index.html</span></div><pre><code>${highlight(`<link rel="stylesheet" href="orthos.css">\n\n<button class="ac-btn" data-ac-open="#confirm">Excluir</button>\n\n<dialog class="ac ac-dialog" id="confirm">\n  <div class="ac-dialog__in">\n    <h2 class="ac-dialog__title">Excluir projeto?</h2>\n    <button class="ac-btn" data-ac-close>Cancelar</button>\n  </div>\n</dialog>\n\n<script src="orthos.js"></script>`)}</code></pre></div>
         <div class="code"><div class="code__bar"><span>app.js</span></div><pre><code>${highlight(`// componentes declarativos: data-ac="tabs", "otp", "table"…\nOrthos.init(document);\n\n// APIs\nOrthos.toast({ type: 'success', title: 'Salvo' });\nOrthos.command({ items: [{ label: 'Abrir', run() {} }] });\nOrthos.skeleton(card, true);\n\n// eventos\notp.addEventListener('ac:complete', e => e.detail.valid);`)}</code></pre></div>
       </section>
-      <footer class="foot"><span>Orthos UI · HTML, CSS e JS sem dependências</span><span>Referências: shadcn/ui, Radix, Kobra, Motion-Primitives, boneyard, Magic UI, GOV.UK, Carbon · <a href="biblioteca-ui/">Biblioteca de referências UI/UX</a></span></footer>
+      <footer class="foot">
+        <div class="foot__grid">
+          <div class="foot__brand">
+            <a class="brand" href="#/" aria-label="Orthos UI, início"><svg class="brand__mark" aria-hidden="true"><use href="#orthos-mark"/></svg><span>Orthos</span><span class="brand__tag">UI</span></a>
+            <p>HTML, CSS e JavaScript puro, acessível e com tema claro e escuro.</p>
+            <ul class="foot__stats"><li><b>${D.filter(d => d.grupo !== 'Modelos').length}</b> componentes</li><li><b>${D.filter(d => d.grupo === 'Modelos').length}</b> modelos de tela</li><li><b>0</b> dependências</li></ul>
+          </div>
+          <nav class="foot__col" aria-label="Grupos de componentes"><h2>Componentes</h2><ul>${groups.map(g => { const list = D.filter(d => d.grupo === g); return `<li><a href="#/${list[0].id}">${esc(g)}</a> <span>${list.length}</span></li>`; }).join('')}</ul></nav>
+          <nav class="foot__col" aria-label="Recursos"><h2>Recursos</h2><ul><li><a href="#/">Introdução</a></li><li><a href="#/padroes">Padrões</a></li><li><a href="tests/componentes.html">Testes no navegador</a></li><li><button type="button" class="foot__link" id="foot-cmd">Buscar <kbd class="ac-kbd">Ctrl K</kbd></button></li></ul></nav>
+          <nav class="foot__col" aria-label="Referências estudadas"><h2>Referências estudadas</h2><ul>${[['shadcn/ui', 'https://ui.shadcn.com/'], ['Radix', 'https://www.radix-ui.com/'], ['Kobra', 'https://kobra.systems/'], ['Motion-Primitives', 'https://motion-primitives.com/'], ['Magic UI', 'https://magicui.design/'], ['boneyard', 'https://boneyard.vercel.app/'], ['GOV.UK', 'https://design-system.service.gov.uk/'], ['Carbon', 'https://carbondesignsystem.com/']].map(([n, u]) => `<li><a href="${u}" target="_blank" rel="noopener noreferrer">${n}</a></li>`).join('')}</ul></nav>
+        </div>
+        <div class="foot__bottom"><span>© ${new Date().getFullYear()} Orthos UI · padrões estudados e reimplementados do zero, sem copiar código</span><span>Ícones <a href="https://hugeicons.com/" target="_blank" rel="noopener noreferrer">Hugeicons</a> (MIT) · Fotos <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">Unsplash</a></span><a href="#main" class="foot__top" id="foot-top">Voltar ao topo ↑</a></div>
+      </footer>
     </div>`;
     A.init(main); H.toast($('.home', main));
-    $('#hero-cmd').onclick = openSiteCommand;
+    $('#hero-cmd').onclick = openSiteCommand; $('#foot-cmd').onclick = openSiteCommand;
+    // "Ver todos": abre o resto da lista e leva o foco ao primeiro item novo
+    const more = $('#index-more'), idx = $('#index');
+    more.onclick = () => {
+      const open = more.getAttribute('aria-expanded') !== 'true';
+      idx.classList.toggle('is-open', open); more.setAttribute('aria-expanded', open);
+      more.firstChild.textContent = open ? 'Mostrar menos' : `Ver todos os ${D.length} componentes`;
+      if (open) $('.is-more', idx)?.focus(); else idx.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    };
+    $('#foot-top').onclick = e => { e.preventDefault(); scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); main.focus({ preventScroll: true }); };
   }
 
   /* ---------- busca (command palette) ---------- */
@@ -182,6 +212,7 @@
     else { renderHome(); document.title = 'Orthos UI — biblioteca de componentes'; }
     closeSide(); scrollTo({ top: 0 }); main.focus({ preventScroll: true });
   }
-  addEventListener('hashchange', route);
+  // troca de página com View Transitions (fade curto), onde o navegador suporta
+  addEventListener('hashchange', () => A.transition ? A.transition(route) : route());
   route();
 })();

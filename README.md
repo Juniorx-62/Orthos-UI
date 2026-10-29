@@ -20,12 +20,13 @@ orthos-ui/
 ├── tests/
 │   └── componentes.html ← testes automáticos (abra no navegador; também publicado em /tests/componentes.html)
 ├── docs/
-│   ├── pesquisa-referencias.md ← pesquisa em 28 sites + 4squad
+│   ├── pesquisa-referencias.md ← pesquisa em 28 sites
 │   ├── mudancas-2026-10-27.md  ← atualização de 27/10
 │   ├── mudancas-2026-10-28.md  ← navegadores, correções, estrutura e componentes de referência
 │   └── prototipos/color-picker.html ← protótipo que deu origem ao Color palette 3D
 ├── brand/              ← logo e símbolo (SVG)
-├── biblioteca-ui/      ← app separado: biblioteca de referências UI/UX (298 referências + telas do 4squad)
+├── assets/fotos/       ← fotos das demos (Unsplash, licença conferida; créditos em CREDITOS.md)
+├── biblioteca-ui/      ← app separado: biblioteca de referências UI/UX (298 referências e capturas de telas)
 ├── index.html          ← site de documentação
 ├── build.py            ← gera dist/ (python build.py --check avisa se dist/ ficou para trás)
 ├── .vercelignore       ← o que não vai para o site publicado
@@ -52,38 +53,38 @@ Atalho de busca: `Ctrl K`.
 ```
 
 - Tema: `data-theme="light"` ou `"dark"` no `<html>`; sem o atributo, segue o sistema. O CSS declara `color-scheme`, e o tema claro escolhido usa `only light`: o escurecimento automático do Chrome ("Auto Dark Mode") não inverte as cores. No site também há `<meta name="darkreader-lock">` para a extensão Dark Reader.
-- Componentes declarativos: `data-ac="tabs | accordion | segmented | menu | otp | combo | datepicker | dropzone | slider | counter | validate | table | sidebar | stepper | text-effect | number | scramble | magnetic | spotlight | spark | bars | palette | copy | select | popover | hovercard | contextmenu | menubar | toggle | toolbar | number-field | people | tags | daterange | area | collapsible | result | dirty | money | phone | carousel | password | copyfield | banners | chat | stack"`.
+- Componentes declarativos: `data-ac="tabs | accordion | segmented | menu | otp | combo | datepicker | dropzone | slider | counter | validate | table | sidebar | stepper | text-effect | number | scramble | magnetic | spotlight | spark | bars | palette | copy | select | popover | hovercard | contextmenu | menubar | toggle | toolbar | number-field | people | tags | daterange | area | collapsible | result | dirty | money | phone | carousel | password | copyfield | banners | chat | stack | orbit | wait | sync | gallery | coverflow | hero | tilt | reveal | scroll-progress | card-number | flip | marquee3d | sphere | ring3d | flip-words"`.
 - Conteúdo inserido depois do carregamento: `Orthos.init(elemento)`.
-- APIs: `Orthos.toast()` (com `.update()`), `Orthos.toast.promise(promessa, mensagens)`, `Orthos.command()`, `Orthos.skeleton(el, on)`, `Orthos.open(dialog)`, `Orthos.close(dialog)`, `Orthos.results` (textos das páginas de erro), `Orthos.logo.load(el, arquivo)`, `Orthos.logo.replay(el)`, `Orthos.loading({ logo, text })` (tela de carregamento), `Orthos.tour(passos)`, `Orthos.dirty.baseline(form)`, `Orthos.confirm(opções)` e `Orthos.alert(mensagem)` (devolvem Promise; com `onConfirm` assíncrono o botão fica carregando e o erro aparece dentro da janela).
+- APIs: `Orthos.toast()` (com `.update()`), `Orthos.toast.promise(promessa, mensagens)`, `Orthos.command()`, `Orthos.skeleton(el, on, { animation, cascade, delay })`, `Orthos.open(dialog)`, `Orthos.close(dialog)`, `Orthos.results` (textos das páginas de erro), `Orthos.logo.load(el, arquivo)`, `Orthos.logo.replay(el)`, `Orthos.loading({ logo, text })` (tela de carregamento), `Orthos.tour(passos)`, `Orthos.dirty.baseline(form)`, `Orthos.lightbox(itens, início)`, `Orthos.transition(fn)` (View Transitions), `Orthos.confirm(opções)` e `Orthos.alert(mensagem)` (devolvem Promise; com `onConfirm` assíncrono o botão fica carregando e o erro aparece dentro da janela).
 - Atalho global: `Alt+T` leva o foco aos avisos.
 - Escala de texto: `--ac-fs-xs` 12px · `sm` 13 · `base` 14 · `md` 15 · `lg` 17 · `xl` 20 · `2xl` 22 · `3xl` 28 · `touch` 16 (campos em telas de toque, para o Safari do iPhone não dar zoom). 12px é o mínimo; a suíte de testes falha se alguma demo tiver texto menor. Dicas (`.ac-hint`), erros (`.ac-error`) e cabeçalhos de tabela usam 14px. O site de documentação usa `--site-read` (16px) no texto corrido e no menu, e `--site-small` (14px) nos rótulos.
 - Tokens de forma e movimento: `--ac-btn-radius`, `--ac-dur-fast | base | slow | overlay`, `--ac-ease-standard`, `--ac-ease-out`.
 - Eventos: `ac:change`, `ac:select`, `ac:complete`, `ac:valid`.
 - Formulário com `data-ac="validate"`: com erro, o envio é barrado e o foco vai ao primeiro campo inválido. Válido, emite `ac:valid` (cancelável) e o formulário é enviado normalmente; para enviar por `fetch`, chame `e.preventDefault()` nesse evento.
 
-## Componentes (60)
+## Componentes (78) e modelos de tela (4)
 
 **Fundamentos:** Button (variantes, carregando, shimmer), Magnetic button, Badge e Kbd, Avatar, Tooltip, Toggle/Toolbar/grupo de botões/separador.
 **Formulários:** Input e Field, Validação, Input OTP (campo único no modelo do Kobra), Checkbox/Radio/Switch, Slider, Segmented, Combobox, Date picker, File dropzone, Color palette 3D, Select, Number field, Seletor de pessoas e tags, Intervalo de datas, Alterações não salvas, Campo de dinheiro, Telefone com país, Campo de senha (regras ao vivo, modo segredo), Campo copiável, Escolha em cartões.
 **Navegação:** Tabs, Sidebar, Dropdown menu, Command palette, Breadcrumb e Pagination, Stepper, Accordion, Context menu e Menubar, Abas com muitas seções, Tour de apresentação; Sidebar com largura ajustável.
-**Feedback:** Toast (pilha, promessa, arrastar, Alt+T), Alert e Banner, Dialog e confirmação, Sheet, Progress e Spinner, Skeleton automático, Empty state, Popover e Hover card, Páginas de erro e resultado, Carregamento com logo (SVG traçado ou imagem, tela inteira), Faixas de aviso em fila, Diálogo em bottom sheet no celular (com teclado virtual), Confirmar e alertar.
-**Dados:** Data table (busca, filtro, ordenação, seleção em lote com desfazer, paginação), Stat cards e gráficos, Gráficos de área/barras/meta/empilhada, Card e cartão recolhível, Tabela em cartões no celular, Linha do tempo, Conversa (chat), Carrossel acessível.
-**Movimento:** Text effect, Text shimmer e scramble, Marquee.
+**Feedback:** Toast (pilha, promessa, arrastar, Alt+T), Alert e Banner, Dialog e confirmação, Sheet, Progress e Spinner, Skeleton automático (brilho, pulso, parado, cascata, atraso anti-pisca), Quatro pontos e carregando na área, Espera longa, Sincronizando, Empty state, Popover e Hover card, Páginas de erro e resultado, Carregamento com logo (SVG traçado ou imagem, tela inteira), Faixas de aviso em fila, Diálogo em bottom sheet no celular (com teclado virtual), Confirmar e alertar.
+**Dados:** Data table (busca, filtro, ordenação, seleção em lote com desfazer, paginação), Stat cards e gráficos, Gráficos de área/barras/meta/empilhada, Card e cartão recolhível, Tabela em cartões (pelo espaço da tabela, não pela tela), Linha do tempo, Conversa (chat), Carrossel acessível (com miniaturas e lightbox), Galeria e lightbox (grade, destaque, mosaico), Coverflow 3D, Banner com fotos.
+**Movimento:** Text effect, Text shimmer e scramble, Marquee, Cartão com inclinação 3D, Revelar ao rolar (com barra de leitura), Fundo com gradiente animado, Cartão que vira, Marquee 3D, Grade retrô, Nuvem em esfera 3D, Anel 3D, Palavras que viram em 3D; troca de páginas do site com View Transitions.
+**Modelos:** Painel (dashboard), Entrar, Pagamento (checkout, com campo de cartão que detecta a bandeira), Preços. Todos em moldura Celular/Tablet/Computador e com layout por container query.
 
-As 10 peças de 28/10/2026 vieram dos projetos próprios (4squad, zero-7-global, 4selet-v2, 4selet-pay e 4selet.Partners) e foram
-reimplementadas em HTML/CSS/JS puro; o detalhe está em `docs/mudancas-2026-10-28.md`.
+As peças de 28/10/2026 foram reimplementadas em HTML/CSS/JS puro a partir de padrões observados; o detalhe está em `docs/mudancas-2026-10-28.md`.
 
 ## Adicionar um componente
 
 1. Estilos em `src/orthos.css` (prefixo `.ac-`), comportamento em `src/orthos.js` como `C.nome = el => { … }`.
-2. Demonstração em `site/demos.js` ou `site/demos-novos.js` (objeto com `id, grupo, nome, desc, ref, html, api, a11y`).
+2. Demonstração em `site/demos.js` ou `site/demos-novos.js` (objeto com `id, grupo, nome, desc, ref, html, api, a11y`). Para o selo "novo" no menu, `novo: 'AAAA-MM-DD'` com a data de hoje: ele some sozinho depois de 30 dias (`NOVO_DIAS` em `site/site.js`). `novo: true` sem data faz o teste falhar.
 3. Guia em `site/guia.js` (`usar`, `evitar`, `dicas`). O teste falha se faltar.
 4. Teste em `tests/componentes.html` para o comportamento de teclado.
 5. `python build.py` para atualizar `dist/`.
 
 ## Testes
 
-A suíte roda no Chrome e no Safari (WebKit) com 122 testes; a mesma página publicada em https://orthos-ui.vercel.app/tests/componentes.html serve para conferir no Firefox e em aparelhos reais.
+A suíte roda no Chrome e no Safari (WebKit) com 164 testes; a mesma página publicada em https://orthos-ui.vercel.app/tests/componentes.html serve para conferir no Firefox e em aparelhos reais.
 
 Sirva a pasta (`python -m http.server`) e abra `/tests/componentes.html`. A página monta todos os componentes, confere a
 documentação de cada um e testa o teclado dos componentes interativos; o resultado aparece na tela e em `window.RESULTADO`.
