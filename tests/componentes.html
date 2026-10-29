@@ -25,6 +25,9 @@
 <script src="../site/demos.js"></script>
 <script src="../site/demos-novos.js"></script>
 <script src="../site/demos-referencias.js"></script>
+<script src="../site/demos-imagens.js"></script>
+<script src="../site/demos-profundidade.js"></script>
+<script src="../site/demos-modelos.js"></script>
 <script src="../site/guia.js"></script>
 <script>
 /* Abra no navegador (python -m http.server na raiz e /tests/componentes.html). O resultado também fica em window.RESULTADO. */
@@ -93,6 +96,18 @@
   });
   await t('carrossel: Pausar troca o rótulo; sem autoplay não há pausa', () => { mount('carousel'); const [a, b] = $$('[data-ac="carousel"]', palco), p = $('[data-car="pause"]', a); ok(p && p.getAttribute('aria-label') === 'Pausar a troca automática', 'sem botão'); p.click(); ok(p.dataset.paused === 'true' && /Retomar/.test(p.getAttribute('aria-label')), 'não pausou'); ok($('.ac-carousel__track', a).getAttribute('aria-live') === 'polite', 'aria-live'); ok(!$('[data-car="pause"]', b), 'pausa sem autoplay'); });
   await t('tabela: Data table põe data-label, modo cartão e papéis', () => { mount('table'); const tb = $('table', palco), tds = $$('tbody tr:first-child td', tb); ok(tb.classList.contains('ac-table--stack'), 'classe'); ok(tds[0].classList.contains('ac-table__select') && !tds[1].dataset.label && tds[2].dataset.label === 'Função', 'rótulos'); ok(tb.getAttribute('role') === 'table' && tds[2].getAttribute('role') === 'cell', 'papéis'); });
+  await t('tabela em cartões: moldura de celular por padrão; tela maior volta a ser tabela', async () => {
+    mount('table-stack'); await w(30); const tb = $('table', palco), frame = $('#ts-frame', palco), cs = x => getComputedStyle(x);
+    ok($$('table', palco).length === 1 && frame.getBoundingClientRect().width <= 376, 'moldura ' + frame.getBoundingClientRect().width);
+    ok(cs(tb.querySelector('thead')).position === 'absolute' && cs(tb.querySelector('td[data-label]')).display === 'grid', 'não começou em cartões');
+    $('#ts-size button[value="768"]', palco).click(); await w(450); ok(cs(tb.querySelector('td')).display === 'table-cell', 'tablet não virou tabela');
+    const host = document.createElement('div'); host.style.width = '360px'; host.innerHTML = '<table class="ac-table" data-ac="stack"><thead><tr><th>A</th><th>B</th></tr></thead><tbody><tr><td>x</td><td data-label="B">y</td></tr></tbody></table>'; palco.innerHTML = ''; palco.appendChild(host); Orthos.init(palco);
+    ok(host.classList.contains('ac-stack-host') && cs(host.querySelector('td[data-label]')).display === 'grid', 'sem wrap o pai não virou contêiner');
+  });
+  await t('tabela em cartões: num espaço estreito o seletor esconde as telas que não cabem', async () => {
+    palco.style.width = '380px'; mount('table-stack'); await w(60); const btns = $$('#ts-size button', palco);
+    try { ok(!btns[0].hidden && btns[1].hidden && btns[2].hidden && $('#ts-size', palco).hidden, 'seletor ' + btns.map(b => b.hidden).join()); } finally { palco.style.width = ''; }
+  });
   await t('tabela no celular (390 px): cartões, título, ações no fim e sem rolagem lateral', async () => {
     const f = await frame(DEMOS.find(x => x.id === 'table-stack').html), doc = f.contentDocument, cs = x => f.contentWindow.getComputedStyle(x), tds = [...doc.querySelector('tbody tr').children];
     try {
@@ -217,6 +232,128 @@
     await w(800); ok(el.dataset.state === 'pending', 'resolveu sozinho');
     det.resolve(false); ok(el.dataset.state === 'error' && $('.ac-otp__msg', el).textContent === 'Expirou' && inp.value === '', 'resolve(false)');
   });
+  // carregamentos (2ª rodada de 28/10/2026)
+  await t('quatro pontos: 4 bolinhas, desenho escondido sem role, área com status', async () => {
+    mount('orbit'); const all = $$('.ac-orbit', palco), area = $('.ac-loading-area', palco);
+    ok(all.length === 4 && all.every(o => o.children.length === 4), 'bolinhas');
+    ok($('.ac-orbit', area).getAttribute('aria-hidden') === 'true' && area.getAttribute('role') === 'status' && /relatório/.test(area.textContent), 'área');
+    ok(all[1].getAttribute('role') === 'status' && !all[1].hasAttribute('aria-hidden') && all[1].style.getPropertyValue('--size') === '24px', 'tamanho/role');
+  });
+  await t('espera longa: SVG escondido, rótulo na barra e no leitor, aviso embaixo', async () => {
+    mount('wait-long'); const w0 = $('.ac-wait', palco), svg = $('svg', w0);
+    ok(w0.getAttribute('role') === 'status' && w0.getAttribute('aria-live') === 'polite' && svg.getAttribute('aria-hidden') === 'true', 'papéis');
+    ok($$('.ac-wait__trace', svg).length === 4 && $$('.ac-wait__bone', svg).length === 6 && $$('linearGradient', svg).length === 4, 'desenho');
+    ok($('.ac-wait__label', svg).textContent === 'Gerando a arte' && $('.ac-sr', w0).textContent === 'Gerando a arte' && /1 a 2 minutos/.test($('.ac-wait__note', w0).textContent), 'textos');
+    ok(new Set($$('linearGradient', svg).map(g => g.id)).size === 4, 'ids dos gradientes repetidos');
+  });
+  await t('sincronizando: status com título e detalhe; variante com pontos', async () => {
+    mount('sync'); const [a, b] = $$('.ac-sync', palco);
+    ok(a.getAttribute('role') === 'status' && $$('.ac-sync__sonar > i', a).length === 3 && $('.ac-sync__sonar', a).getAttribute('aria-hidden') === 'true', 'sonar');
+    ok($('.ac-sync__title', a).textContent === 'Sincronizando com o banco' && /30 segundos/.test($('.ac-sync__detail', a).textContent), 'textos');
+    ok($('.ac-orbit', b) && !$('.ac-sync__sonar', b), 'variante pontos');
+  });
+  await t('skeleton: pulso, parado, cascata por posição, atraso anti-pisca e fade na volta', async () => {
+    mount('skeleton'); const card = $('#skel-card', palco);
+    Orthos.skeleton(card, true, { animation: 'pulse', cascade: true });
+    const bones = $$('.ac-bones__bone', card); ok(card.classList.contains('ac-bones--pulse') && card.classList.contains('ac-bones--cascade') && bones.length > 3, 'classes');
+    const byTop = [...bones].sort((x, y) => parseFloat(x.style.top) - parseFloat(y.style.top)); ok(byTop[0].style.getPropertyValue('--i') === '0', 'cascata pelo topo');
+    Orthos.skeleton(card, true, { animation: 'static' }); ok(card.classList.contains('ac-bones--static') && !card.classList.contains('ac-bones--pulse') && !card.classList.contains('ac-bones--cascade'), 'trocar animação');
+    Orthos.skeleton(card, false); ok(!$('.ac-bones__layer', card) && card.getAttribute('aria-busy') === 'false', 'desligar');
+    ok(card.classList.contains('ac-bones--in') || matchMedia('(prefers-reduced-motion: reduce)').matches, 'fade na volta'); await w(360); ok(!card.classList.contains('ac-bones--in'), 'fade não saiu');
+    Orthos.skeleton(card, true, { delay: 150 }); ok(card.getAttribute('aria-busy') === 'true' && !$('.ac-bones__layer', card), 'apareceu antes do atraso');
+    await w(60); Orthos.skeleton(card, false); await w(150); ok(!$('.ac-bones__layer', card) && !card.classList.contains('ac-bones--in'), 'piscou numa espera curta');
+    Orthos.skeleton(card, true, { delay: 50 }); await w(120); ok($('.ac-bones__layer', card), 'não apareceu depois do atraso'); Orthos.skeleton(card, false);
+  });
+  // imagens: galeria, lightbox, carrossel com miniaturas e coverflow
+  await t('galeria: abre o lightbox na imagem clicada; setas, contagem, Esc devolve o foco', async () => {
+    mount('gallery'); const items = $$('.ac-gallery__item', palco); ok(items.length === 19 && items.every(i => i.getAttribute('aria-haspopup') === 'dialog'), 'itens');
+    items[2].focus(); items[2].click(); await w(30); const d = $('dialog.ac-lightbox'); ok(d && d.open, 'não abriu');
+    ok($('.ac-lightbox__count', d).textContent === '3 de 9' && $('.ac-lightbox__img', d).alt === items[2].querySelector('img').alt, 'posição ' + $('.ac-lightbox__count', d).textContent);
+    key(d, 'ArrowRight'); ok($('.ac-lightbox__count', d).textContent === '4 de 9' && $$('.ac-lightbox__thumb', d)[3].getAttribute('aria-current') === 'true', 'seta');
+    key(d, 'End'); ok($('.ac-lightbox__count', d).textContent === '9 de 9', 'End'); key(d, 'ArrowRight'); ok($('.ac-lightbox__count', d).textContent === '1 de 9', 'volta ao início');
+    $$('.ac-lightbox__thumb', d)[5].click(); ok($('.ac-lightbox__count', d).textContent === '6 de 9', 'miniatura');
+    d.dispatchEvent(new Event('cancel', { cancelable: true })); await w(450); ok(!d.isConnected && document.activeElement === items[2], 'Esc/foco');
+  });
+  await t('Orthos.lightbox: uma imagem só, sem setas nem miniaturas', async () => { const lb = Orthos.lightbox([{ src: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=', alt: 'Ponto' }]); await w(20); ok(!$('[data-lb="1"]', lb.el) && !$('.ac-lightbox__thumbs', lb.el) && $('.ac-lightbox__count', lb.el).textContent === '1 de 1', 'formato'); lb.close(); await w(450); ok(!lb.el.isConnected, 'não fechou'); });
+  await t('carrossel de imagens: miniaturas acompanham o slide; foto abre o lightbox', async () => {
+    mount('carousel-images'); const el = $('.ac-carousel', palco), th = $$('.ac-carousel__thumb', el);
+    ok(th.length === 6 && th[0].getAttribute('aria-current') === 'true' && /Imagem 1 de 6/.test(th[0].getAttribute('aria-label')), 'miniaturas');
+    el._carousel.go(3); await w(900); ok(th[3].getAttribute('aria-current') === 'true' && !th[0].hasAttribute('aria-current'), 'não acompanhou');
+    $$('.ac-carousel__media img', el)[3].click(); await w(30); const d = $('dialog.ac-lightbox'); ok(d && $('.ac-lightbox__count', d).textContent === '4 de 6', 'lightbox'); d.dispatchEvent(new Event('cancel', { cancelable: true })); await w(450);
+  });
+  await t('coverflow: começa no meio, setas e clique na vizinha trocam, só a da frente é lida', async () => {
+    mount('coverflow'); const el = $('.ac-coverflow', palco), items = $$('.ac-coverflow__item', el), st = $('.ac-coverflow__stage', el), status = $('.ac-coverflow__status', el);
+    const act = () => items.findIndex(i => i.classList.contains('is-active'));
+    ok(act() === 3 && status.textContent === '4 de 7' && items.filter(i => i.getAttribute('aria-hidden') === 'false').length === 1, 'início');
+    key(st, 'ArrowRight'); ok(act() === 4, 'seta'); key(st, 'End'); ok(act() === 6 && $('[data-cf="1"]', el).getAttribute('aria-disabled') === 'true', 'End');
+    items[2].click(); ok(act() === 2 && status.textContent === '3 de 7', 'clique na vizinha');
+    key(st, 'Enter'); await w(30); const d = $('dialog.ac-lightbox'); ok(d && $('.ac-lightbox__count', d).textContent === '3 de 7', 'lightbox'); d.dispatchEvent(new Event('cancel', { cancelable: true })); await w(450);
+  });
+  await t('banner com fotos: barrinhas levam ao slide, pausa congela, só o ativo é lido', async () => {
+    mount('hero'); const el = $('.ac-hero', palco), sl = $$('.ac-hero__slide', el), segs = $$('.ac-hero__seg', el), pb = $('.ac-hero__pause', el);
+    ok(sl.length === 4 && segs.length === 4 && sl[0].classList.contains('is-active') && sl[1].inert && sl[1].getAttribute('aria-hidden') === 'true', 'início');
+    segs[2].click(); ok(sl[2].classList.contains('is-active') && segs[2].getAttribute('aria-current') === 'true' && segs[1].classList.contains('is-done') && !sl[2].inert, 'barrinha');
+    const was = pb.dataset.paused; pb.click(); ok(pb.dataset.paused !== was && el.dataset.paused === 'true', 'pausa');
+    key(segs[2], 'ArrowRight'); ok(sl[3].classList.contains('is-active'), 'seta');
+  });
+  // profundidade e movimento
+  await t('inclinação 3D: camadas com profundidade; o mouse inclina e o brilho acompanha; sair volta ao plano', async () => {
+    mount('tilt'); const c = $('.ac-tilt', palco), layer = $('[data-depth]', c);
+    ok(layer.classList.contains('ac-tilt__layer') && layer.style.getPropertyValue('--z') === '40px', 'camada');
+    const r = c.getBoundingClientRect(); c.dispatchEvent(new PointerEvent('pointermove', { clientX: r.right - 2, clientY: r.top + 2, pointerType: 'mouse', bubbles: true })); await w(40);
+    if (matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) ok(parseFloat(c.style.getPropertyValue('--ry')) > 8 && parseFloat(c.style.getPropertyValue('--rx')) > 8 && c.classList.contains('is-moving'), 'não inclinou');
+    c.dispatchEvent(new PointerEvent('pointerleave')); ok(c.style.getPropertyValue('--ry') === '0deg' && !c.classList.contains('is-moving'), 'não voltou');
+  });
+  await t('revelar ao rolar: filhos marcados em sequência; barra de leitura criada e escondida do leitor', async () => {
+    mount('reveal'); const kids = $$('[data-reveal-children] > *', palco), bar = $('.ac-scroll-progress', palco);
+    ok(kids.length === 3 && kids.every((k, i) => k.classList.contains('ac-reveal') && k.style.getPropertyValue('--i') === String(i)), 'filhos');
+    ok($$('.ac-reveal', palco).length === 7 && $('[data-reveal="scale"]', palco).classList.contains('ac-reveal'), 'blocos');
+    ok(bar && bar.getAttribute('aria-hidden') === 'true', 'barra');
+  });
+  await t('cartão que vira: botão vira, a face escondida fica inert', async () => {
+    mount('flip-card'); const f = $('.ac-flip', palco), b = $('.ac-flip__toggle', f), [fr, bk] = [$('.ac-flip__front', f), $('.ac-flip__back', f)];
+    ok(!f.classList.contains('is-flipped') && bk.inert && !fr.inert && b.getAttribute('aria-pressed') === 'false', 'início');
+    b.click(); ok(f.classList.contains('is-flipped') && fr.inert && !bk.inert && b.getAttribute('aria-pressed') === 'true' && /frente/.test(b.getAttribute('aria-label')), 'virou');
+    $('.ac-flip__inner', f).dispatchEvent(new MouseEvent('click', { bubbles: true })); ok(!f.classList.contains('is-flipped'), 'clique no cartão');
+  });
+  await t('marquee 3D: 4 colunas com cópia escondida e botão de pausa', async () => {
+    mount('marquee3d'); const m = $('.ac-marquee3d', palco), cols = $$('.ac-marquee3d__col', m);
+    ok(cols.length === 4 && cols.every(c => c.children.length === 16) && $$('img[aria-hidden="true"]', m).length === 48, 'colunas');
+    const p = $('.ac-marquee3d__pause', m), was = m.dataset.paused; p.click(); ok(m.dataset.paused !== was || was === 'true', 'pausa');
+  });
+  await t('esfera: cada item ganha posição 3D; os de trás ficam apagados', async () => {
+    mount('sphere'); await w(60); const li = $$('.ac-sphere > li', palco); ok(li.length === 24 && li.every(l => /translate3d/.test(l.style.transform)), 'posições');
+    const ops = li.map(l => +l.style.opacity); ok(Math.min(...ops) < .6 && Math.max(...ops) > .9, 'profundidade');
+  });
+  await t('anel 3D: setas giram e só a imagem da frente é lida', async () => {
+    mount('ring3d'); await w(40); const r = $('.ac-ring3d', palco), st = $('.ac-coverflow__status', r), figs = $$('.ac-ring3d__item', r);
+    ok(figs.length === 9 && st.textContent === '1 de 9' && figs.filter(f => f.getAttribute('aria-hidden') === 'false').length === 1, 'início');
+    $('[data-r="1"]', r).click(); ok(st.textContent === '2 de 9' && figs[1].getAttribute('aria-hidden') === 'false', 'próxima ' + st.textContent);
+    key($('.ac-ring3d__stage', r), 'ArrowLeft'); ok(st.textContent === '1 de 9', 'seta');
+  });
+  await t('palavras que viram: frase inteira para o leitor, letras animadas escondidas', () => {
+    mount('flip-words'); const el = $('.ac-flip-words', palco);
+    ok(/vende mais, organiza tudo/.test($('.ac-sr', el).textContent) && $('.ac-flip-words__w', el).getAttribute('aria-hidden') === 'true' && $$('.ac-flip-words__c', el).length === 'vende mais'.length, 'estrutura');
+  });
+  await t('Orthos.transition: executa a troca (com ou sem View Transitions)', async () => { let n = 0; await Orthos.transition(() => { n++; }); ok(n === 1, 'não executou'); });
+  // modelos de tela e campo de cartão
+  await t('campo de cartão: espaça, detecta Visa/Mastercard/Elo/Amex e mantém só dígitos', () => {
+    palco.innerHTML = '<div data-ac="card-number"><input class="ac-input" aria-label="Cartão"></div>'; Orthos.init(palco); const el = $('[data-ac="card-number"]', palco), i = $('input', el);
+    const type = v => { i.value = v; i.dispatchEvent(new Event('input', { bubbles: true })); };
+    type('4111111111111111'); ok(i.value === '4111 1111 1111 1111' && el.dataset.brand === 'visa' && $('.ac-card-number__brand', el).textContent === 'Visa', 'visa ' + i.value);
+    type('5555 4444-3333 2222'); ok(i.value === '5555 4444 3333 2222' && el.dataset.brand === 'mastercard', 'master');
+    type('6362970000457013'); ok(el.dataset.brand === 'elo', 'elo ' + el.dataset.brand);
+    type('378282246310005'); ok(i.value === '3782 822463 10005' && el.dataset.brand === 'amex', 'amex ' + i.value);
+    type('abc'); ok(i.value === '' && !el.dataset.brand, 'letras'); ok(i.inputMode === 'numeric' && i.autocomplete === 'cc-number', 'atributos');
+  });
+  await t('modelos: abrem em moldura; login troca para o código; preços recalculam no anual', async () => {
+    mount('tpl-login'); const f = $('[data-tpl="login"]', palco); ok($('.device-frame', palco) && !$('[data-tpl-step="senha"]', f).hidden && $('[data-tpl-step="codigo"]', f).hidden, 'início');
+    $('[data-tpl-go="codigo"]', f).click(); ok($('[data-tpl-step="senha"]', f).hidden && !$('[data-tpl-step="codigo"]', f).hidden && !$('#tl-pass', f).required, 'código');
+    mount('tpl-pricing'); const pro = $$('.ac-plan', palco)[1].querySelector('.ac-plan__price'); ok(/R\$ 49/.test(pro.textContent), 'mensal');
+    $('[data-tpl-period] button[value="y"]', palco).click(); await w(20); ok(/R\$ 39/.test(pro.textContent), 'anual ' + pro.textContent);
+    mount('tpl-dashboard'); ok($('.ac-shell', palco) && $$('.ac-shell__kpis > .ac-card', palco).length === 4, 'painel');
+    mount('tpl-checkout'); ok($('.ac-checkout [data-ac="card-number"].ac-card-number', palco), 'checkout');
+  });
   // correções de 28/10/2026 (auditoria e navegadores)
   await t('validate: com erro barra o envio; válido emite ac:valid', async () => {
     const f = document.createElement('form'); f.dataset.ac = 'validate'; f.innerHTML = '<label class="ac-field">Nome <input name="n" required></label><button type="submit">Enviar</button>'; palco.innerHTML = ''; palco.appendChild(f); Orthos.init(palco);
@@ -239,6 +376,7 @@
     ok(!ruins.length, ruins.slice(0, 5).join('; '));
   });
   await t('fontes: escala --ac-fs-* definida e texto do iPhone sem inflar', () => { const cs = getComputedStyle(document.documentElement); ['xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl', '3xl', 'touch'].forEach(k => ok(cs.getPropertyValue('--ac-fs-' + k).trim(), '--ac-fs-' + k)); ok(parseFloat(cs.getPropertyValue('--ac-fs-touch')) >= 16, 'touch < 16px'); });
+  await t('selo "novo": toda demo nova traz a data em que entrou (AAAA-MM-DD)', () => { const ruins = DEMOS.filter(d => d.novo !== undefined && !(typeof d.novo === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.novo) && !isNaN(Date.parse(d.novo)))).map(d => d.id); ok(!ruins.length, 'sem data: ' + ruins.join(', ')); });
   await t('API pública antiga preservada', () => { ['init', 'toast', 'command', 'open', 'close', 'skeleton', 'icon', 'place', 'confirm', 'alert'].forEach(k => ok(typeof Orthos[k] === 'function', k)); ok(window.Acervo === Orthos && window.Seleta === Orthos, 'aliases'); });
 
   palco.innerHTML = '';

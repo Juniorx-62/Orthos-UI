@@ -25,7 +25,7 @@
 
   const NOVOS = [
     /* ---------- Fundamentos ---------- */
-    { id: 'toggle', grupo: 'Fundamentos', nome: 'Toggle, Toolbar e grupos', novo: true,
+    { id: 'toggle', grupo: 'Fundamentos', nome: 'Toggle, Toolbar e grupos', novo: '2026-10-27',
       desc: 'Botões liga/desliga, barra de ferramentas com um só ponto de Tab, grupo de botões unidos e separador.',
       ref: { nome: 'Radix · Toolbar', url: 'https://www.radix-ui.com/primitives/docs/components/toolbar' },
       html: `<div class="ac-toolbar" data-ac="toolbar" aria-label="Formatação">
@@ -47,7 +47,7 @@
       a11y: ['A toolbar tem um só ponto de Tab; ← → Home End andam entre os itens.', 'Toggle anuncia o estado por aria-pressed.', 'Botões só com ícone têm aria-label e dica.'] },
 
     /* ---------- Formulários ---------- */
-    { id: 'select', grupo: 'Formulários', nome: 'Select', novo: true,
+    { id: 'select', grupo: 'Formulários', nome: 'Select', novo: '2026-10-27',
       desc: 'Lista de opções desenhada sobre um <select> nativo: o formulário continua recebendo o valor, com grupos, opção desabilitada e busca por digitação.',
       ref: { nome: 'Radix · Select', url: 'https://www.radix-ui.com/primitives/docs/components/select' },
       html: `<div style="display:grid;gap:16px;width:min(300px,100%)">
@@ -61,7 +61,7 @@
       api: [['data-ac="select"', '<select>', '—', 'Melhora o select nativo; o valor segue no formulário'], ['data-placeholder', 'texto', 'Selecione', 'Texto quando vazio'], ['<optgroup> / disabled', 'HTML', '—', 'Grupos e opções indisponíveis'], ['change', 'evento', '—', 'Disparado no <select> original']],
       a11y: ['Padrão ARIA select-only combobox: ↑ ↓ Home End, Enter escolhe, Esc fecha.', 'Digitar letras pula para a opção.', 'O rótulo do <label> passa para o botão.'] },
 
-    { id: 'number', grupo: 'Formulários', nome: 'Number field', novo: true,
+    { id: 'number', grupo: 'Formulários', nome: 'Number field', novo: '2026-10-27',
       desc: 'Campo numérico com − e +, segurar para repetir, setas, Page Up/Down e formato brasileiro.',
       ref: { nome: 'Base UI · Number Field', url: 'https://base-ui.com/react/components/number-field' },
       html: `<div style="display:grid;gap:18px">
@@ -71,8 +71,8 @@
       api: [['data-min / data-max', 'número', '—', 'Limites'], ['data-step', 'número', '1', 'Passo (Page Up/Down = 10 passos)'], ['data-decimals', 'número', '0', 'Casas decimais'], ['data-suffix', 'texto', '—', 'Unidade exibida'], ['ac:change', 'evento', '—', 'detail: número']],
       a11y: ['role="spinbutton" com aria-valuenow/min/max.', '↑ ↓ Page Up/Down Home End.', 'Os botões ficam fora da ordem de Tab (o teclado usa as setas).'] },
 
-    { id: 'people', grupo: 'Formulários', nome: 'Seletor de pessoas e tags', novo: true,
-      desc: 'Seleção múltipla com busca e rosto (portado do SeletorPessoas do 4squad) e campo de tags livres.',
+    { id: 'people', grupo: 'Formulários', nome: 'Seletor de pessoas e tags', novo: '2026-10-27',
+      desc: 'Seleção múltipla com busca e rosto e campo de tags livres.',
       ref: { nome: 'Kobra · Multi Select', url: 'https://kobra.systems/components/multi-select' },
       html: `<div style="display:grid;gap:18px;width:min(420px,100%)">
   <div class="ac-field"><span class="ac-label" id="pp-l">Responsáveis</span><div data-ac="people" data-label="Adicionar responsável" data-value="[1,3]" data-options='${attr(team)}'></div></div>
@@ -81,16 +81,16 @@
       api: [['data-ac="people"', 'div', '—', 'data-options: [{ id, name, detail }], data-value: ids'], ['data-ac="tags"', 'div', '—', 'data-value separado por vírgula, data-max'], ['ac:change', 'evento', '—', 'detail: lista atual']],
       a11y: ['Lista com aria-multiselectable; Enter marca e desmarca.', 'Cada etiqueta tem botão “Remover nome”.', 'Mudanças das tags são anunciadas.'] },
 
-    { id: 'daterange', grupo: 'Formulários', nome: 'Intervalo de datas', novo: true,
-      desc: 'Atalhos por nome e dois meses lado a lado (um no celular), com prévia do intervalo no hover (portado do Periodo do 4squad).',
+    { id: 'daterange', grupo: 'Formulários', nome: 'Intervalo de datas', novo: '2026-10-27',
+      desc: 'Atalhos por nome e dois meses lado a lado (um no celular), com prévia do intervalo no hover.',
       ref: { nome: 'Ant Design · RangePicker', url: 'https://ant.design/components/date-picker' },
       html: `<div class="ac-field"><span class="ac-label" id="dr-l">Período do relatório</span><button class="ac-btn ac-btn--secondary ac-btn--square ac-date-trigger" type="button" data-ac="daterange" data-empty aria-labelledby="dr-l" style="width:260px">${ico(P.calendar)}<span>Escolha o período</span></button></div>`,
       api: [['data-ac="daterange"', 'button', '—', 'Abre atalhos e calendário duplo'], ['ac:change', 'evento', '—', 'detail: { de: Date, ate: Date }']],
       a11y: ['Setas andam pelos dias; a instrução (“escolha a data de fim”) é anunciada.', 'Esc fecha e devolve o foco.'] },
 
-    { id: 'dirty', grupo: 'Formulários', nome: 'Alterações não salvas', novo: true,
-      desc: 'Quando algo muda no formulário, a barra de salvar aparece; se a pessoa voltar ao valor original, ela some. Ao tentar sair da página com alterações, o navegador pergunta antes (portado do form-dirty do 4selet-v2).',
-      ref: { nome: '4selet-v2 · form-dirty.js e save-bar (projeto próprio)', url: '' },
+    { id: 'dirty', grupo: 'Formulários', nome: 'Alterações não salvas', novo: '2026-10-27',
+      desc: 'Quando algo muda no formulário, a barra de salvar aparece; se a pessoa voltar ao valor original, ela some. Ao tentar sair da página com alterações, o navegador pergunta antes.',
+      ref: { nome: '', url: '' },
       html: `<form class="ac-card" data-ac="dirty" id="dirty-demo" style="width:min(460px,100%)" data-warn="false">
   <div class="ac-card__head"><h3 class="ac-card__title">Perfil da loja</h3><p class="ac-card__desc">Mude qualquer campo para ver a barra.</p></div>
   <div class="ac-card__body" style="display:grid;gap:14px">
@@ -103,9 +103,9 @@
       api: [['data-ac="dirty"', '<form>', '—', 'Compara os campos com o retrato inicial'], ['[data-dirty-show]', 'elemento', '—', 'Aparece com alterações (dentro do form ou com data-dirty-for="id")'], ['.ac-savebar', 'componente', '—', 'Barra fixa com aviso e ações'], ['data-warn="false"', 'atributo', 'avisa', 'Desliga o aviso ao sair da página'], ['Orthos.dirty.baseline(form)', 'função', '—', 'Novo retrato depois de salvar'], ['ac:dirty', 'evento', '—', 'detail: true/false']],
       a11y: ['O aviso da barra é anunciado quando aparece.', 'Descartar é um reset de verdade: volta ao estado inicial e a barra some.', 'Campos sem name não contam.'] },
 
-    { id: 'money', grupo: 'Formulários', nome: 'Campo de dinheiro', novo: true,
-      desc: 'Valor em reais digitado como no caixa eletrônico: os centavos entram pela direita e os números rolam como num contador. Valida mínimo, máximo e taxa (portado do money-input do 4selet-v2).',
-      ref: { nome: '4selet-v2 · money-input (projeto próprio)', url: '' },
+    { id: 'money', grupo: 'Formulários', nome: 'Campo de dinheiro', novo: '2026-10-27',
+      desc: 'Valor em reais digitado como no caixa eletrônico: os centavos entram pela direita e os números rolam como num contador. Valida mínimo, máximo e taxa.',
+      ref: { nome: '', url: '' },
       html: `<form id="money-form" style="display:grid;gap:14px;justify-items:center;width:min(380px,100%)" onsubmit="return false">
   <div data-ac="money" data-label="Quanto você quer sacar?" data-name="valor" data-min="10" data-max="1250.40" data-fee="3.67"></div>
   <button class="ac-btn" type="submit" style="width:100%">Solicitar saque</button>
@@ -113,9 +113,9 @@
       api: [['data-ac="money"', 'div', '—', 'Monta o campo'], ['data-label', 'texto', 'Valor', 'Rótulo'], ['data-min / data-max / data-fee', 'reais', '—', 'Regras e taxa mostradas na dica'], ['data-name', 'texto', '—', 'Campo oculto com o valor (ex.: 1250.40)'], ['data-value', 'reais', '—', 'Valor inicial'], ['el._money.set(v) / get()', 'função', '—', 'Lê e muda o valor'], ['ac:change', 'evento', '—', 'detail: { cents, valid }'], ['data-lock-submit="false"', 'atributo', 'trava', 'Por padrão, o botão de enviar fica desligado enquanto o valor é inválido']],
       a11y: ['Por baixo é um input de texto real (inputmode numérico) com rótulo; o desenho é aria-hidden.', 'A dica com limites e erros é anunciada (aria-live).', 'Movimento reduzido: os números trocam sem rolar.'] },
 
-    { id: 'phone', grupo: 'Formulários', nome: 'Telefone com país', novo: true,
-      desc: 'País com busca, máscara do país e os valores separados (número, DDI e país) em campos ocultos. Colar “+55 11 9…” escolhe o país sozinho (baseado no input-phone do 4selet-v2, sem biblioteca externa).',
-      ref: { nome: '4selet-v2 · input-phone (projeto próprio)', url: '' },
+    { id: 'phone', grupo: 'Formulários', nome: 'Telefone com país', novo: '2026-10-27',
+      desc: 'País com busca, máscara do país e os valores separados (número, DDI e país) em campos ocultos. Colar “+55 11 9…” escolhe o país sozinho.',
+      ref: { nome: '', url: '' },
       html: `<div style="display:grid;gap:16px;width:min(360px,100%)">
   <div class="ac-field"><label class="ac-label" for="tel-demo">WhatsApp</label><div data-ac="phone" data-id="tel-demo" data-name="whatsapp" data-country="BR"></div><p class="ac-hint" id="tel-out" aria-live="polite">Formato do país escolhido.</p></div>
 </div>`,
@@ -123,7 +123,7 @@
       a11y: ['Botão do país com aria-label e lista com busca por teclado.', 'Número incompleto marca aria-invalid.', 'autocomplete="tel-national" para o preenchimento automático.'] },
 
     /* ---------- Navegação ---------- */
-    { id: 'contextmenu', grupo: 'Navegação', nome: 'Context menu e Menubar', novo: true,
+    { id: 'contextmenu', grupo: 'Navegação', nome: 'Context menu e Menubar', novo: '2026-10-27',
       desc: 'Menu no botão direito (também por Shift+F10) e barra de menus de aplicativo com navegação por setas entre menus.',
       ref: { nome: 'Radix · Context Menu', url: 'https://www.radix-ui.com/primitives/docs/components/context-menu' },
       html: `<div class="ac-menubar" data-ac="menubar" aria-label="Editor">
@@ -139,9 +139,9 @@
       api: [['data-ac="contextmenu"', 'área', '—', 'data-target: o .ac-pop do menu'], ['data-ac="menubar"', 'container', '—', '.ac-menubar__trigger com data-target'], ['aria-checked', 'item', '—', 'Item marcável (menuitemcheckbox)'], ['ac:select', 'evento', '—', 'detail: item escolhido']],
       a11y: ['Menubar: ← → trocam de menu, ↓ abre, Esc fecha.', 'Context menu também abre por Shift+F10 ou tecla Menu.', 'Itens: ↑ ↓ Home End e letra inicial.'] },
 
-    { id: 'tabs-many', grupo: 'Navegação', nome: 'Abas com muitas seções', novo: true,
-      desc: 'Quando as abas não cabem, a lista rola de lado, as bordas esmaecem e aparecem setas; a aba escolhida sempre fica à vista. Vale para todo data-ac="tabs" (portado do tabs-overflow do 4selet-v2).',
-      ref: { nome: '4selet-v2 · tabs-overflow.js (projeto próprio)', url: '' },
+    { id: 'tabs-many', grupo: 'Navegação', nome: 'Abas com muitas seções', novo: '2026-10-27',
+      desc: 'Quando as abas não cabem, a lista rola de lado, as bordas esmaecem e aparecem setas; a aba escolhida sempre fica à vista. Vale para todo data-ac="tabs".',
+      ref: { nome: '', url: '' },
       html: `<div class="ac-tabs" data-ac="tabs" style="width:min(420px,100%)">
   <div class="ac-tabs__list" aria-label="Configurações do produto"><button class="ac-tabs__tab" type="button" aria-selected="true">Geral</button><button class="ac-tabs__tab" type="button">Preços</button><button class="ac-tabs__tab" type="button">Checkout</button><button class="ac-tabs__tab" type="button">Order bump</button><button class="ac-tabs__tab" type="button">Upsell</button><button class="ac-tabs__tab" type="button">Cupons</button><button class="ac-tabs__tab" type="button">Afiliados</button><button class="ac-tabs__tab" type="button">Integrações</button><button class="ac-tabs__tab" type="button">Certificado</button></div>
   <div class="ac-tabs__panel">Nome, descrição e categoria do produto.</div><div class="ac-tabs__panel">Planos, parcelas e moeda.</div><div class="ac-tabs__panel">Campos pedidos no checkout.</div><div class="ac-tabs__panel">Oferta extra no pagamento.</div><div class="ac-tabs__panel">Oferta depois da compra.</div><div class="ac-tabs__panel">Descontos e validade.</div><div class="ac-tabs__panel">Comissões e materiais.</div><div class="ac-tabs__panel">Webhooks e e-mail marketing.</div><div class="ac-tabs__panel">Modelo e regras de emissão.</div>
@@ -149,9 +149,9 @@
       api: [['automático', 'data-ac="tabs"', '—', 'Entra sozinho quando as abas não cabem'], ['[data-overflow-start] / [data-overflow-end]', 'atributos', '—', 'Indicam o lado com mais abas (para estilizar)']],
       a11y: ['As setas são só para mouse (aria-hidden); no teclado, ← → já trazem a aba à vista.', 'No toque, a lista rola com o dedo e as setas somem.'] },
 
-    { id: 'tour', grupo: 'Navegação', nome: 'Tour de apresentação', novo: true,
-      desc: 'Destaca um elemento por vez com um recorte de luz e um balão com título, texto, “2 de 4”, Voltar, Próximo e Pular. Alvo escondido é pulado; pode ficar salvo como já visto (portado do onboarding-tour do 4selet-v2).',
-      ref: { nome: '4selet-v2 · onboarding-tour.js (projeto próprio)', url: '' },
+    { id: 'tour', grupo: 'Navegação', nome: 'Tour de apresentação', novo: '2026-10-27',
+      desc: 'Destaca um elemento por vez com um recorte de luz e um balão com título, texto, “2 de 4”, Voltar, Próximo e Pular. Alvo escondido é pulado; pode ficar salvo como já visto.',
+      ref: { nome: '', url: '' },
       html: `<div style="display:grid;gap:16px;width:min(520px,100%)">
   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
     <article class="ac-card" id="tour-vendas"><div class="ac-card__body"><div class="ac-stat__label">Vendas</div><div class="ac-stat__value">R$ 18.420</div></div></article>
@@ -164,7 +164,7 @@
       a11y: ['O balão é um diálogo não modal com título e texto ligados por aria-labelledby/describedby.', '← → andam entre os passos; Esc fecha e devolve o foco.', 'O foco vai para “Próximo” a cada passo.'] },
 
     /* ---------- Feedback ---------- */
-    { id: 'popover', grupo: 'Feedback', nome: 'Popover e Hover card', novo: true,
+    { id: 'popover', grupo: 'Feedback', nome: 'Popover e Hover card', novo: '2026-10-27',
       desc: 'Popover para conteúdo interativo curto ancorado a um botão; hover card para prévia rica ao passar o mouse ou focar um link.',
       ref: { nome: 'Radix · Popover e Hover Card', url: 'https://www.radix-ui.com/primitives/docs/components/popover' },
       html: `<div class="ac-btn-group">
@@ -181,7 +181,7 @@
       api: [['data-ac="popover"', 'botão', '—', 'data-target, data-side, data-align'], ['data-ac-close', 'botão', '—', 'Fecha o popover'], ['data-ac="hovercard"', 'link', '—', 'data-target, data-delay (500 ms)']],
       a11y: ['Popover: role="dialog", foco vai para o 1º campo e Esc devolve o foco ao botão.', 'Hover card abre também com foco de teclado e não deve conter a única forma de fazer algo.'] },
 
-    { id: 'result', grupo: 'Feedback', nome: 'Páginas de erro e resultado', novo: true,
+    { id: 'result', grupo: 'Feedback', nome: 'Páginas de erro e resultado', novo: '2026-10-27',
       desc: 'Uma página só que muda pelo código: 401, 403, 404, 500, 503, sem internet e sucesso. Diz o que houve, o que fazer e oferece a saída.',
       ref: { nome: 'Ant Design · Result', url: 'https://ant.design/components/result' },
       wide: true,
@@ -192,9 +192,9 @@
       api: [['data-ac="result"', 'div', '—', 'Desenha a página a partir do código'], ['data-code', '"401"…"503" | "offline" | "success"', '404', 'Caso'], ['data-title / data-text', 'texto', 'padrão do caso', 'Substitui título e texto'], ['conteúdo interno', 'HTML', 'ações padrão', 'Substitui os botões'], ['Orthos.results', 'objeto', '—', 'Textos padrão, para traduzir ou ajustar']],
       a11y: ['Título em <h2> diz o problema em linguagem simples; nada de código técnico sozinho.', 'Sempre há uma ação de saída.', 'Offline avisa (evento ac:online) quando a conexão volta.'] },
 
-    { id: 'logo-loader', grupo: 'Feedback', nome: 'Carregamento com logo', novo: true,
-      desc: 'O logo se desenha, aparece preenchido com um brilho passando e o traço some, em ciclos de 3,2 s. Carregue o seu logo (SVG é traçado; PNG, JPG e WebP são ajustados a um quadrado padrão), recarregue a animação ou veja na tela inteira (portado do MarcaCarregando do 4squad).',
-      ref: { nome: '4squad · Carregando.tsx (projeto próprio)', url: '' },
+    { id: 'logo-loader', grupo: 'Feedback', nome: 'Carregamento com logo', novo: '2026-10-27',
+      desc: 'O logo se desenha, aparece preenchido com um brilho passando e o traço some, em ciclos de 3,2 s. Carregue o seu logo (SVG é traçado; PNG, JPG e WebP são ajustados a um quadrado padrão), recarregue a animação ou veja na tela inteira.',
+      ref: { nome: '', url: '' },
       html: `<div style="display:grid;gap:18px;justify-items:center;width:100%;grid-template-columns:minmax(0,1fr)">
   <div class="ac-logo-stage"><div data-ac="logo-loader" id="ll-demo" data-label="Carregando"></div></div>
   <p class="ac-hint" id="ll-info" aria-live="polite">Logo padrão do Orthos (SVG, 4 formas)</p>
@@ -212,8 +212,8 @@
       a11y: ['A animação é decorativa; o texto (“Carregando”) vai em role="status" e é lido pelo leitor de tela.', 'Com movimento reduzido, mostra só o logo parado.', 'Espera curta não aparece (sem piscar) e, uma vez visível, fica ao menos 1 s.'] },
 
     /* ---------- Dados ---------- */
-    { id: 'charts', grupo: 'Dados', nome: 'Gráficos: área, barras e meta', novo: true,
-      desc: 'Área com comparação ao período anterior e leitura por teclado, barras horizontais, barra de meta e barra empilhada, com “Ver tabela” (portado do Graficos do 4squad).',
+    { id: 'charts', grupo: 'Dados', nome: 'Gráficos: área, barras e meta', novo: '2026-10-27',
+      desc: 'Área com comparação ao período anterior e leitura por teclado, barras horizontais, barra de meta e barra empilhada, com “Ver tabela”.',
       ref: { nome: 'shadcn/ui · Chart', url: 'https://ui.shadcn.com/docs/components/chart' },
       wide: true,
       html: `<article class="ac-card" style="width:100%"><div class="ac-card__head"><h3 class="ac-card__title">Alcance por dia</h3><p class="ac-card__desc">Últimos 14 dias, comparado aos 14 anteriores</p></div><div class="ac-card__body"><div data-ac="area" data-label="Alcance" data-values="820,940,880,1020,1180,1100,1260,1210,1380,1460,1390,1540,1620,1710" data-compare="760,800,790,840,900,880,910,950,980,1010,990,1040,1080,1100" data-labels="14/10,15/10,16/10,17/10,18/10,19/10,20/10,21/10,22/10,23/10,24/10,25/10,26/10,27/10"></div></div></article>
@@ -227,8 +227,8 @@
       api: [['data-ac="area"', 'div', '—', 'data-values, data-compare, data-labels, data-label'], ['.ac-hbars', '<ul>', '—', 'Cada <li>: rótulo, trilha com --v e valor'], ['.ac-goal', 'div', '—', '--v (atual) e --goal (marca da meta)'], ['.ac-stack', 'div', '—', 'Segmentos com --v (peso) e --c (cor)']],
       a11y: ['Área: foco no gráfico e ← → leem cada ponto.', '“Ver tabela” mostra os mesmos números em tabela.', 'Barras empilhadas têm descrição completa em aria-label.'] },
 
-    { id: 'collapsible', grupo: 'Dados', nome: 'Card e cartão recolhível', novo: true,
-      desc: 'O card base (cabeçalho, corpo e rodapé) e o cartão que abre e fecha com resumo, para listas longas de dados (portado do CartaoRecolhivel do 4squad).',
+    { id: 'collapsible', grupo: 'Dados', nome: 'Card e cartão recolhível', novo: '2026-10-27',
+      desc: 'O card base (cabeçalho, corpo e rodapé) e o cartão que abre e fecha com resumo, para listas longas de dados.',
       ref: { nome: 'shadcn/ui · Collapsible', url: 'https://ui.shadcn.com/docs/components/collapsible' },
       html: `<div style="display:grid;gap:14px;width:min(440px,100%)">
   <article class="ac-card"><div class="ac-card__head"><h3 class="ac-card__title">Plano Pro</h3><p class="ac-card__desc">Renova em 12/11/2026</p></div><div class="ac-card__body" style="font-size:14px;color:var(--ac-text-2)">5 assentos, 200 GB e suporte prioritário.</div><div class="ac-card__foot"><button class="ac-btn ac-btn--ghost ac-btn--sm" type="button">Cancelar plano</button><button class="ac-btn ac-btn--sm" type="button">Gerenciar</button></div></article>

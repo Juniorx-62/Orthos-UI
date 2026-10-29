@@ -652,9 +652,24 @@
   C.copy = el => { el.addEventListener('click', async () => { try { await navigator.clipboard.writeText(el.dataset.copy || ''); toast({ type: 'success', title: 'Copiado' }); } catch (_) { toast({ type: 'danger', title: 'Não foi possível copiar' }); } }); };
 
   /* skeleton gerado a partir da UI real (inspirado em boneyard) */
-  function skeleton(el, on) {
-    $('.ac-bones__layer', el)?.remove();
-    if (!on) { el.removeAttribute('data-skeleton'); el.setAttribute('aria-busy', 'false'); return; }
+  /* o: { animation: 'shimmer' | 'pulse' | 'static', cascade: true (cada osso 80 ms depois), delay: ms (espera curta nem
+     mostra o esqueleto, para não piscar) }. Ao desligar, o conteúdo entra com fade se o esqueleto chegou a aparecer. */
+  function skeleton(el, on, o = {}) {
+    clearTimeout(el._acSkelTimer);
+    if (!on) {
+      const shown = !!$('.ac-bones__layer', el); $('.ac-bones__layer', el)?.remove();
+      el.removeAttribute('data-skeleton'); el.setAttribute('aria-busy', 'false');
+      if (shown && !reduce()) { el.classList.add('ac-bones--in'); setTimeout(() => el.classList.remove('ac-bones--in'), 320); }
+      return;
+    }
+    el.setAttribute('aria-busy', 'true');
+    const wait = +(o.delay ?? el.dataset.skeletonDelay ?? 0);
+    if (wait > 0 && !$('.ac-bones__layer', el)) { el._acSkelTimer = setTimeout(() => skeleton(el, true, { ...o, delay: 0 }), wait); return; }
+    $('.ac-bones__layer', el)?.remove(); el.removeAttribute('data-skeleton'); // religar mede o conteúdo de novo, visível
+    const anim = o.animation || el.dataset.skeletonAnimation || 'shimmer', cascade = o.cascade ?? el.hasAttribute('data-skeleton-cascade');
+    el.classList.remove('ac-bones--pulse', 'ac-bones--static', 'ac-bones--cascade', 'ac-bones--in');
+    if (anim !== 'shimmer') el.classList.add('ac-bones--' + anim);
+    if (cascade) el.classList.add('ac-bones--cascade');
     el.classList.add('ac-bones'); const base = el.getBoundingClientRect();
     const layer = document.createElement('div'); layer.className = 'ac-bones__layer'; layer.setAttribute('aria-hidden', 'true');
     const leaves = $$('*', el).filter(n => { const cs = getComputedStyle(n); if (cs.display === 'none' || cs.visibility === 'hidden') return false; if (n.matches('img, svg, input, button, .ac-avatar, .ac-badge, .ac-bars__bar, .ac-spark')) return true; return [...n.childNodes].some(c => c.nodeType === 3 && c.textContent.trim()) && !n.closest('svg, button, .ac-badge, .ac-avatar'); });
@@ -669,7 +684,9 @@
       Object.assign(b.style, { left: r.left - base.left + 'px', top: r.top - base.top + 'px', width: r.width + 'px', height: Math.max(8, r.height * (n.matches('img, svg, input, button, .ac-avatar, .ac-badge, .ac-bars__bar, .ac-spark') ? 1 : .72)) + 'px', borderRadius: round ? '50%' : getComputedStyle(n).borderRadius || '6px' });
       layer.appendChild(b);
     });
-    el.appendChild(layer); el.dataset.skeleton = 'on'; el.setAttribute('aria-busy', 'true');
+    // cascata de cima para baixo: o índice segue a posição na tela, não a ordem no HTML
+    [...layer.children].sort((a, b) => parseFloat(a.style.top) - parseFloat(b.style.top) || parseFloat(a.style.left) - parseFloat(b.style.left)).forEach((b, i) => b.style.setProperty('--i', i));
+    el.appendChild(layer); el.dataset.skeleton = 'on';
   }
 
   /* paleta de esferas (componente próprio do projeto) */
@@ -864,7 +881,7 @@
     set(val);
   };
 
-  /* Seleção múltipla de pessoas (portado do SeletorPessoas do 4squad): etiquetas com rosto, busca e teclado. */
+  /* Seleção múltipla de pessoas: etiquetas com rosto, busca e teclado. */
   C.people = el => {
     const opts = JSON.parse(el.dataset.options || '[]'); const chosen = new Set(JSON.parse(el.dataset.value || '[]'));
     el.classList.add('ac-chips-field');
@@ -915,7 +932,7 @@
     draw();
   };
 
-  /* Intervalo de datas com atalhos (portado do Periodo do 4squad): atalhos por nome e dois meses lado a lado. */
+  /* Intervalo de datas com atalhos: atalhos por nome e dois meses lado a lado. */
   C.daterange = el => {
     const pop = document.createElement('div'); pop.className = 'ac-pop ac-range'; pop.hidden = true; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Escolher período'); document.body.appendChild(pop);
     const lab = $('span', el), day = 864e5, today = new Date(); today.setHours(0, 0, 0, 0);
@@ -972,7 +989,7 @@
     });
   };
 
-  /* Gráfico de área com comparação e "Ver tabela" (portado do GraficoArea do 4squad). Setas percorrem os pontos. */
+  /* Gráfico de área com comparação e "Ver tabela". Setas percorrem os pontos. */
   C.area = el => {
     const v = el.dataset.values.split(',').map(Number), c = el.dataset.compare ? el.dataset.compare.split(',').map(Number) : null;
     const labs = (el.dataset.labels || '').split(','), name = el.dataset.label || 'Série', fmt = n => n.toLocaleString('pt-BR');
@@ -1004,14 +1021,14 @@
     const tb = $('.ac-area__foot button', el); tb.addEventListener('click', () => { const t = $('#' + tid, el); t.hidden = !t.hidden; tb.setAttribute('aria-expanded', !t.hidden); tb.textContent = t.hidden ? 'Ver tabela' : 'Ocultar tabela'; });
   };
 
-  /* Cartão recolhível (portado do CartaoRecolhivel do 4squad): título e resumo fechados; linhas quando aberto. */
+  /* Cartão recolhível: título e resumo fechados; linhas quando aberto. */
   C.collapsible = el => {
     const tr = $('[data-ac-trigger]', el), pn = $('.ac-collapsible__panel', el);
     pn.id = pn.id || id('col'); tr.setAttribute('aria-controls', pn.id); tr.setAttribute('aria-expanded', el.classList.contains('is-open'));
     tr.addEventListener('click', () => { const on = !el.classList.contains('is-open'); el.classList.toggle('is-open', on); tr.setAttribute('aria-expanded', on); });
   };
 
-  /* Página de resultado e erro (portada do Erro do 4squad e do padrão Result do Ant Design).
+  /* Página de resultado e erro.
      data-code: 401, 403, 404, 500, 503, offline, success. O conteúdo de dentro, se houver, substitui as ações padrão. */
   const RESULTS = {
     404: ['search', 'Página não encontrada', 'O endereço pode ter mudado ou sido digitado errado. Confira o link ou volte ao início.', 'Voltar ao início', 'Buscar no site'],
@@ -1036,7 +1053,7 @@
 
 
   /* ======================= Carregamento com logo =======================
-     Portado do MarcaCarregando do 4squad (components/base/Carregando.tsx): o contorno se desenha, o logo aparece
+     O contorno se desenha, o logo aparece
      preenchido com um brilho passando e o traço some, em 3,2 s, sem parar; por baixo, o contorno apagado “respira”.
      Aceita qualquer logo: SVG é desenhado traço a traço; PNG/JPG/WebP é ajustado a um quadrado padrão (240 × 240) e o
      traço vira a revelação da silhueta. O SVG enviado nunca é inserido como veio: só formas geométricas e cores
@@ -1160,7 +1177,7 @@
     loadLogo(el, inline ? inline.outerHTML : el.dataset.src || '').catch(err => { console.warn('[Orthos] logo', err.message); loadLogo(el, ''); });
   };
 
-  /* Carregamento por cima da tela inteira, com o fundo desfocado (TelaCarregando do 4squad). Espera curta (menos que
+  /* Carregamento por cima da tela inteira, com o fundo desfocado. Espera curta (menos que
      `delay`) nem aparece, para não piscar; uma vez na tela, fica pelo menos `min` ms. Devolve a função que esconde. */
   function loadingScreen(o = {}) {
     const ov = document.createElement('div'); ov.className = 'ac ac-loading-screen'; ov.setAttribute('role', 'status'); ov.setAttribute('aria-live', 'polite');
@@ -1182,9 +1199,9 @@
     return hide;
   }
 
-  /* ======================= Portados do 4selet-v2 (27/10/2026) ======================= */
+  /* ======================= Componentes de 27/10/2026 ======================= */
 
-  /* Alterações não salvas (form-dirty.js + save-bar do 4selet-v2): compara os campos com o retrato inicial do
+  /* Alterações não salvas: compara os campos com o retrato inicial do
      formulário; quando muda, mostra a barra de salvar e avisa ao sair da página. Voltar ao valor original some com ela. */
   const fieldVal = f => f.type === 'file' ? 'file:' + [...(f.files || [])].map(x => x.name + ':' + x.size).join('|')
     : (f.type === 'checkbox' || f.type === 'radio') ? f.value + ':' + (f.checked ? 1 : 0)
@@ -1208,7 +1225,7 @@
     if (form.dataset.warn !== 'false') addEventListener('beforeunload', e => { if (form.isConnected && form.classList.contains('is-dirty')) { e.preventDefault(); e.returnValue = ''; } });
   };
 
-  /* Campo de dinheiro (money-input do 4selet-v2): digita como em caixa eletrônico (os centavos entram pela direita),
+  /* Campo de dinheiro: digita como em caixa eletrônico (os centavos entram pela direita),
      os números rolam como num contador e a dica valida mínimo, máximo e taxa. O valor em centavos vai no input oculto. */
   const brl = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const fmtBRL = c => 'R$ ' + brl.format(c / 100);
@@ -1305,8 +1322,8 @@
     const ini = toC(d.value); if (ini) update(ini, true); else validate();
   };
 
-  /* Telefone com país (input-phone do 4selet-v2, sem dependência externa): escolha do país com busca, máscara do país
-     e os três valores separados em campos ocultos (número local, DDI e código do país), como o 4selet-v2 envia. */
+  /* Telefone com país: escolha do país com busca, máscara do país
+     e os três valores separados em campos ocultos (número local, DDI e código do país). */
   const COUNTRIES = [
     ['BR', 'Brasil', '55', '(##) #####-####', [10, 11]], ['PT', 'Portugal', '351', '### ### ###', [9]], ['US', 'Estados Unidos', '1', '(###) ###-####', [10]],
     ['AR', 'Argentina', '54', '## ####-####', [10]], ['CL', 'Chile', '56', '# #### ####', [9]], ['CO', 'Colômbia', '57', '### ### ####', [10]],
@@ -1350,7 +1367,7 @@
     paint();
   };
 
-  /* Abas que transbordam (tabs-overflow.js do 4selet-v2): com abas demais, a lista rola, as bordas esmaecem e aparecem
+  /* Abas que transbordam: com abas demais, a lista rola, as bordas esmaecem e aparecem
      setas; a aba escolhida sempre fica à vista. Entra sozinho em todo data-ac="tabs". */
   function tabsOverflow(el, list, selectedTab) {
     const FADE = 48, frame = document.createElement('div'); frame.className = 'ac-tabs__frame';
@@ -1366,7 +1383,7 @@
     el._revealTab = reveal; if (selectedTab) reveal(selectedTab, false); sync();
   }
 
-  /* Tour de apresentação (onboarding-tour.js do 4selet-v2): destaca um elemento por vez com um recorte de luz, um balão
+  /* Tour de apresentação: destaca um elemento por vez com um recorte de luz, um balão
      com título, texto e “2 de 5”, e Voltar/Próximo/Pular. Alvo que não existe ou está escondido é pulado. */
   function tour(steps, o = {}) {
     if (o.id && o.once) { try { if (localStorage.getItem('orthos.tour.' + o.id) === 'done') return null; } catch (_) {} }
@@ -1413,7 +1430,7 @@
     return { next: () => show(i + 1), prev: () => show(i - 1), go: show, close: () => close(false) };
   }
 
-  /* Sidebar redimensionável (sidebar-resize.js do 4selet-v2): arraste a borda; abaixo de 180 px ela recolhe; duplo clique
+  /* Sidebar redimensionável: arraste a borda; abaixo de 180 px ela recolhe; duplo clique
      volta ao padrão; setas no teclado (Shift anda mais). A largura fica salva neste navegador. */
   function sidebarResize(el, handle) {
     const DEF = +el.dataset.width || 240, MIN = 200, MAX = 420, COLLAPSE = 180, KEY = 'orthos.sidebar.' + (el.id || 'w');
@@ -1440,7 +1457,7 @@
     });
   }
 
-  /* ======================= Pesquisa de 28/10/2026 (4squad, zero-7-global, 4selet-v2) ======================= */
+  /* ======================= Pesquisa de 28/10/2026 ======================= */
 
   ICONS.copy = '<path d="M7.5 14.5C7.5 11.2002 7.5 9.55025 8.52513 8.52513C9.55025 7.5 11.2002 7.5 14.5 7.5C17.7998 7.5 19.4497 7.5 20.4749 8.52513C21.5 9.55025 21.5 11.2002 21.5 14.5C21.5 17.7998 21.5 19.4497 20.4749 20.4749C19.4497 21.5 17.7998 21.5 14.5 21.5C11.2002 21.5 9.55025 21.5 8.52513 20.4749C7.5 19.4497 7.5 17.7998 7.5 14.5Z"/><path d="M7.5 16.5C6.10355 16.5 5.40533 16.5 4.84402 16.3036C3.83866 15.9518 3.0482 15.1613 2.69641 14.156C2.5 13.5947 2.5 12.8964 2.5 11.5V9.5C2.5 6.20017 2.5 4.55025 3.52513 3.52513C4.55025 2.5 6.20017 2.5 9.5 2.5H11.5C12.8964 2.5 13.5947 2.5 14.156 2.69641C15.1613 3.0482 15.9518 3.83866 16.3036 4.84402C16.5 5.40533 16.5 6.10355 16.5 7.5"/>';
   ICONS.eye = '<path d="M21.544 11.045C21.848 11.4713 22 11.6845 22 12C22 12.3155 21.848 12.5287 21.544 12.955C20.1779 14.8706 16.6892 19 12 19C7.31078 19 3.8221 14.8706 2.45604 12.955C2.15201 12.5287 2 12.3155 2 12C2 11.6845 2.15201 11.4713 2.45604 11.045C3.8221 9.12944 7.31078 5 12 5C16.6892 5 20.1779 9.12944 21.544 11.045Z"/><path d="M15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12Z"/>';
@@ -1450,7 +1467,7 @@
   ICONS.send = '<path d="M21.0477 3.05293C18.8697 0.707363 2.48648 6.4532 2.50001 8.551C2.51535 10.9299 8.89809 11.6617 10.6672 12.1581C11.7311 12.4565 12.016 12.7625 12.2613 13.8781C13.3723 18.9305 13.9301 21.4435 15.2014 21.4996C17.2278 21.5892 23.1733 5.342 21.0477 3.05293Z"/><path d="M11.5 12.5L15 9"/>';
   ICONS.clock = '<circle cx="12" cy="12" r="10"/><path d="M12 8V12L14 14"/>';
 
-  /* Carrossel (padrão Carousel do WAI-ARIA APG, snap-carousel do 4selet-v2 e shop-banner do zero-7): trilha com
+  /* Carrossel: trilha com
      scroll-snap; setas, bolinhas e pausa numa cápsula; slide fora da vista fica inerte (o Tab não cai nele). O ativo é o
      mais perto do começo da rolagem (o último, quando a rolagem chega ao fim). data-autoplay="12000" troca sozinho e
      para no hover, no foco e no botão Pausar, que vale mais que o hover. Com movimento reduzido não há troca sozinha. */
@@ -1467,6 +1484,15 @@
     const bar = document.createElement('div'); bar.className = 'ac-carousel__controls';
     bar.innerHTML = `${can ? `<button type="button" class="ac-carousel__btn" data-car="pause" aria-controls="${track.id}">${icon('pause')}${icon('play')}</button>` : ''}<button type="button" class="ac-carousel__btn" data-car="-1" aria-controls="${track.id}" aria-label="Slide anterior">${icon('left')}</button><div class="ac-carousel__dots" role="group" aria-label="Escolher slide">${slides.map((_, i) => `<button type="button" class="ac-carousel__dot" data-i="${i}" aria-controls="${track.id}" aria-label="Slide ${i + 1} de ${n}" tabindex="-1"></button>`).join('')}</div><button type="button" class="ac-carousel__btn" data-car="1" aria-controls="${track.id}" aria-label="Próximo slide">${icon('right')}</button>`;
     el.appendChild(bar);
+    // data-thumbs: miniaturas das fotos no lugar das bolinhas; data-lightbox: clicar na foto amplia
+    const pics = slides.map(s => $('img', s)), thumbs = [];
+    if (el.hasAttribute('data-thumbs') && pics.every(Boolean)) {
+      const row = document.createElement('div'); row.className = 'ac-carousel__thumbs'; row.setAttribute('role', 'group'); row.setAttribute('aria-label', 'Escolher imagem');
+      pics.forEach((p, i) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'ac-carousel__thumb'; b.dataset.i = i; b.setAttribute('aria-controls', track.id); b.setAttribute('aria-label', `Imagem ${i + 1} de ${n}${p.alt ? ': ' + p.alt : ''}`); b.innerHTML = `<img src="${esc(p.getAttribute('src'))}" alt="" loading="lazy">`; row.appendChild(b); thumbs.push(b); });
+      row.addEventListener('click', e => { const b = e.target.closest('.ac-carousel__thumb'); if (b) go(+b.dataset.i); });
+      el.insertBefore(row, bar);
+    }
+    if (el.hasAttribute('data-lightbox') && pics.every(Boolean)) { const data = slides.map(imageData); pics.forEach((p, i) => p.addEventListener('click', () => lightbox(data, i, p))); }
     const dots = $$('.ac-carousel__dot', bar), pause = $('[data-car="pause"]', bar);
     const left = s => s.offsetLeft - (parseFloat(getComputedStyle(track).paddingLeft) || 0);
     const active = () => { const max = track.scrollWidth - track.clientWidth; if (max > 0 && track.scrollLeft >= max - 2) return n - 1; let b = 0, d = Infinity; slides.forEach((s, i) => { const x = Math.abs(left(s) - track.scrollLeft); if (x < d) { d = x; b = i; } }); return b; };
@@ -1478,6 +1504,7 @@
       if (i === cur) return;
       const first = cur < 0; cur = i;
       dots.forEach((d, k) => { if (k === i) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); d.tabIndex = k === i ? 0 : -1; });
+      thumbs.forEach((b, k) => { if (k === i) { b.setAttribute('aria-current', 'true'); b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } else b.removeAttribute('aria-current'); });
       if (!first) el.dispatchEvent(new CustomEvent('ac:change', { detail: { index: i, total: n }, bubbles: true }));
     };
     const schedule = () => { if (!raf) raf = requestAnimationFrame(sync); };
@@ -1514,9 +1541,10 @@
     $$('th', t).forEach(c => c.setAttribute('role', c.closest('thead') ? 'columnheader' : 'rowheader'));
     $$('td', t).forEach(c => c.setAttribute('role', 'cell'));
   }
-  C.stack = t => { t.classList.add('ac-table--stack'); tableRoles(t); };
+  // sem .ac-table-wrap em volta, o pai vira o contêiner medido (ele precisa ter largura própria, como um bloco comum)
+  C.stack = t => { t.classList.add('ac-table--stack'); if (!t.closest('.ac-table-wrap') && t.parentElement) t.parentElement.classList.add('ac-stack-host'); tableRoles(t); };
 
-  /* Campo de senha (CampoSenha do 4squad e password-rules do zero-7): botão Mostrar/Esconder com aria-pressed; regras
+  /* Campo de senha: botão Mostrar/Esconder com aria-pressed; regras
      que se marcam enquanto a pessoa digita (escondidas com os campos vazios), anunciadas de uma vez depois de uma pausa;
      e a validade no próprio campo (setCustomValidity), que o data-ac="validate" já respeita ao enviar.
      data-secret: chave de API, longe do preenchimento automático e dos gerenciadores de senha. */
@@ -1574,7 +1602,7 @@
     update(true);
   };
 
-  /* Conversa (Conversa.tsx e BotaoDescer do 4squad): balões enviados e recebidos; tocar no balão mostra a hora; botão
+  /* Conversa: balões enviados e recebidos; tocar no balão mostra a hora; botão
      “Ir para a mensagem mais nova” quando a lista está a mais de 120 px do fim; campo de escrever (Ctrl/⌘+Enter envia).
      O envio só emite ac:send com o texto: quem usa decide como a mensagem entra na lista (que desce sozinha). */
   C.chat = el => {
@@ -1626,6 +1654,361 @@
     end(); sync();
   };
 
+  /* ---------- Imagens: lightbox, galeria e coverflow ---------- */
+  // dados de uma imagem a partir do elemento: href (ou data-full) é a versão grande; data-caption ou <figcaption> é a legenda
+  const imageData = c => { const img = c.matches('img') ? c : $('img', c); return { src: c.getAttribute('href') || c.dataset.full || img.dataset.full || img.getAttribute('src'), thumb: img.getAttribute('src'), alt: img.alt || '', caption: c.dataset.caption || img.dataset.caption || $('figcaption', c)?.textContent.trim() || '' }; };
+
+  /* Lightbox: a imagem grande por cima de tudo, com setas, miniaturas, arrastar no celular, Home/End e Esc.
+     items: [{ src, alt, caption, thumb }]. Ao fechar, o foco volta para quem abriu. */
+  function lightbox(items, start = 0, opener = document.activeElement) {
+    const n = items.length; if (!n) return;
+    let cur = -1, x0 = null;
+    const dlg = document.createElement('dialog'); dlg.className = 'ac ac-lightbox'; dlg.setAttribute('aria-label', 'Visualizador de imagens');
+    const nav = (d, label) => n > 1 ? `<button type="button" class="ac-lightbox__btn" data-lb="${d}" aria-label="${label}">${icon(d < 0 ? 'left' : 'right')}</button>` : '';
+    dlg.innerHTML = `<div class="ac-lightbox__top"><span class="ac-lightbox__count" aria-live="polite"></span><button type="button" class="ac-lightbox__btn" data-lb="close" aria-label="Fechar">${icon('x')}</button></div>`
+      + `<div class="ac-lightbox__stage">${nav(-1, 'Imagem anterior')}<figure class="ac-lightbox__figure"><img class="ac-lightbox__img" alt=""><figcaption class="ac-lightbox__cap"></figcaption></figure>${nav(1, 'Próxima imagem')}</div>`
+      + (n > 1 ? `<div class="ac-lightbox__thumbs">${items.map((it, i) => `<button type="button" class="ac-lightbox__thumb" data-i="${i}" aria-label="Imagem ${i + 1} de ${n}${it.alt ? ': ' + esc(it.alt) : ''}"><img src="${esc(it.thumb || it.src)}" alt="" loading="lazy"></button>`).join('')}</div>` : '');
+    document.body.appendChild(dlg);
+    const img = $('.ac-lightbox__img', dlg), cap = $('.ac-lightbox__cap', dlg), count = $('.ac-lightbox__count', dlg), thumbs = $$('.ac-lightbox__thumb', dlg);
+    const show = (i, dir = 0) => {
+      i = (i + n) % n; if (i === cur) return; cur = i; const it = items[i];
+      img.classList.remove('is-in'); img.style.setProperty('--dir', dir); void img.offsetWidth;
+      img.src = it.src; img.alt = it.alt; img.classList.add('is-in');
+      cap.textContent = it.caption; cap.hidden = !it.caption;
+      count.textContent = `${i + 1} de ${n}`;
+      thumbs.forEach((t, k) => { if (k === i) t.setAttribute('aria-current', 'true'); else t.removeAttribute('aria-current'); });
+      thumbs[i]?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduce() ? 'auto' : 'smooth' });
+      if (n > 1) [1, -1].forEach(d => { new Image().src = items[(i + d + n) % n].src; }); // a vizinha já chega carregada
+      dlg.dispatchEvent(new CustomEvent('ac:change', { detail: { index: i, total: n }, bubbles: true }));
+    };
+    dlg.addEventListener('click', e => {
+      const b = e.target.closest('button');
+      if (b) { if (b.dataset.lb === 'close') close(dlg); else if (b.dataset.lb) show(cur + +b.dataset.lb, +b.dataset.lb); else show(+b.dataset.i, Math.sign(+b.dataset.i - cur)); return; }
+      if (e.target.matches('.ac-lightbox__stage, .ac-lightbox__figure')) close(dlg); // clique fora da imagem fecha
+    });
+    dlg.addEventListener('keydown', e => {
+      if (n < 2) return;
+      const to = { ArrowLeft: cur - 1, ArrowRight: cur + 1, Home: 0, End: n - 1 }[e.key];
+      if (to === undefined) return; e.preventDefault(); show(to, Math.sign(to - cur) || (e.key === 'ArrowLeft' ? -1 : 1));
+    });
+    const stage = $('.ac-lightbox__stage', dlg);
+    stage.addEventListener('pointerdown', e => { if (!e.target.closest('button')) x0 = e.clientX; });
+    stage.addEventListener('pointerup', e => { if (x0 === null || n < 2) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 48) show(cur + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1); });
+    dlg.addEventListener('cancel', e => { e.preventDefault(); close(dlg); });
+    dlg.addEventListener('close', () => { dlg.remove(); if (opener && opener.isConnected && opener.focus) opener.focus(); });
+    dlg.showModal(); show(Math.max(0, Math.min(n - 1, start)));
+    return { show: i => show(i, Math.sign(i - cur)), close: () => close(dlg), el: dlg };
+  }
+
+  // galeria: cada filho com <img> abre o lightbox; <a href> é o fallback sem JS (abre a imagem grande)
+  C.gallery = el => {
+    el.classList.add('ac-gallery');
+    const items = [...el.children].filter(c => c.matches('img') || $('img', c));
+    const data = items.map(imageData);
+    items.forEach((c, i) => {
+      c.classList.add('ac-gallery__item'); c.setAttribute('aria-haspopup', 'dialog');
+      if (!c.matches('a[href], button')) { c.tabIndex = 0; c.setAttribute('role', 'button'); c.setAttribute('aria-label', 'Ampliar: ' + data[i].alt); c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); } }); }
+      c.addEventListener('click', e => { e.preventDefault(); lightbox(data, i, c); });
+    });
+  };
+
+  /* Coverflow: a imagem do meio de frente e as vizinhas giradas em 3D para os lados. Setas, clique na vizinha,
+     arrastar e ← → com o foco no palco. data-lightbox: clicar na imagem da frente amplia. */
+  C.coverflow = el => {
+    const figs = [...el.children].filter(c => c.matches('img') || $('img', c)), n = figs.length; if (!n) return;
+    const data = figs.map(imageData);
+    el.classList.add('ac-coverflow'); el.setAttribute('role', 'region'); el.setAttribute('aria-roledescription', 'carrossel');
+    if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', 'Carrossel de imagens');
+    const stage = document.createElement('div'); stage.className = 'ac-coverflow__stage'; stage.tabIndex = 0; stage.id = id('cf');
+    stage.setAttribute('aria-label', 'Imagens; use as setas para trocar');
+    figs.forEach((f, i) => { f.classList.add('ac-coverflow__item'); f.setAttribute('role', 'group'); f.setAttribute('aria-roledescription', 'slide'); f.setAttribute('aria-label', `${i + 1} de ${n}`); stage.appendChild(f); });
+    const bar = document.createElement('div'); bar.className = 'ac-carousel__controls';
+    bar.innerHTML = `<button type="button" class="ac-carousel__btn" data-cf="-1" aria-controls="${stage.id}" aria-label="Imagem anterior">${icon('left')}</button><span class="ac-coverflow__status" aria-live="polite"></span><button type="button" class="ac-carousel__btn" data-cf="1" aria-controls="${stage.id}" aria-label="Próxima imagem">${icon('right')}</button>`;
+    el.append(stage, bar);
+    const status = $('.ac-coverflow__status', bar), [prev, next] = $$('button', bar);
+    let cur = Math.max(0, Math.min(n - 1, +el.dataset.start || Math.floor((n - 1) / 2)));
+    const paint = () => {
+      const w = figs[0].offsetWidth || 200;
+      figs.forEach((f, i) => {
+        const o = i - cur, a = Math.abs(o), s = Math.sign(o);
+        const x = s * (a ? w * .62 + (a - 1) * w * .3 : 0), z = a ? -150 - (a - 1) * 70 : 0;
+        f.style.transform = `translateX(${x}px) translateZ(${z}px) rotateY(${-s * 46}deg)`;
+        f.style.zIndex = 100 - a; f.style.opacity = a > 3 ? 0 : 1; f.style.filter = a ? `brightness(${1 - Math.min(a, 3) * .12})` : '';
+        f.style.pointerEvents = a > 3 ? 'none' : '';
+        f.classList.toggle('is-active', !a); f.setAttribute('aria-hidden', a ? 'true' : 'false');
+      });
+      // aria-disabled em vez de disabled: o botão não perde o foco ao chegar na ponta
+      status.textContent = `${cur + 1} de ${n}`; prev.setAttribute('aria-disabled', cur === 0); next.setAttribute('aria-disabled', cur === n - 1);
+    };
+    const go = i => { i = Math.max(0, Math.min(n - 1, i)); if (i === cur) return; cur = i; paint(); el.dispatchEvent(new CustomEvent('ac:change', { detail: { index: i, total: n }, bubbles: true })); };
+    bar.addEventListener('click', e => { const b = e.target.closest('[data-cf]'); if (b) go(cur + +b.dataset.cf); });
+    stage.addEventListener('keydown', e => { const to = { ArrowLeft: cur - 1, ArrowRight: cur + 1, Home: 0, End: n - 1 }[e.key]; if (to !== undefined) { e.preventDefault(); go(to); } else if ((e.key === 'Enter' || e.key === ' ') && el.hasAttribute('data-lightbox')) { e.preventDefault(); lightbox(data, cur, stage); } });
+    let x0 = null, moved = false;
+    stage.addEventListener('pointerdown', e => { x0 = e.clientX; moved = false; });
+    stage.addEventListener('pointerup', e => { if (x0 === null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 40) { moved = true; go(cur + (dx < 0 ? 1 : -1)); } });
+    figs.forEach((f, i) => f.addEventListener('click', () => { if (moved) return; if (i !== cur) go(i); else if (el.hasAttribute('data-lightbox')) lightbox(data, i, stage); }));
+    new ResizeObserver(paint).observe(stage);
+    paint();
+    el._coverflow = { go, next: () => go(cur + 1), prev: () => go(cur - 1) };
+  };
+
+  /* Banner com fotos: cada .ac-hero__slide tem a foto e o texto; troca sozinho a cada
+     data-interval ms, com barrinhas de progresso que também levam ao slide, e pausa no botão, no hover e no foco.
+     Com movimento reduzido começa pausado. A troca vem do fim da animação da barrinha: pausar congela tudo junto. */
+  C.hero = el => {
+    const slides = $$('.ac-hero__slide', el), n = slides.length; if (!n) return;
+    el.classList.add('ac-hero'); el.setAttribute('role', 'region'); el.setAttribute('aria-roledescription', 'carrossel');
+    if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', 'Destaques');
+    el.style.setProperty('--t', (+el.dataset.interval || 6000) + 'ms');
+    slides.forEach((s, i) => { s.setAttribute('role', 'group'); s.setAttribute('aria-roledescription', 'slide'); s.setAttribute('aria-label', `${i + 1} de ${n}`); });
+    if (n < 2) { slides[0].classList.add('is-active'); return; }
+    const bar = document.createElement('div'); bar.className = 'ac-hero__bar';
+    bar.innerHTML = slides.map((_, i) => `<button type="button" class="ac-hero__seg" data-i="${i}" aria-label="Destaque ${i + 1} de ${n}"><span></span></button>`).join('')
+      + `<button type="button" class="ac-hero__pause">${icon('pause')}${icon('play')}</button>`;
+    el.appendChild(bar);
+    const segs = $$('.ac-hero__seg', bar), btn = $('.ac-hero__pause', bar);
+    let cur = -1, stopped = reduce(), held = false;
+    const state = () => { const p = stopped || held; el.dataset.paused = p; btn.dataset.paused = stopped; btn.setAttribute('aria-label', stopped ? 'Retomar a troca automática' : 'Pausar a troca automática'); el.setAttribute('aria-live', p ? 'polite' : 'off'); };
+    const show = i => {
+      i = (i + n) % n; const first = cur < 0; cur = i;
+      slides.forEach((s, k) => { s.classList.toggle('is-active', k === i); s.inert = k !== i; s.setAttribute('aria-hidden', k !== i); });
+      segs.forEach((b, k) => { b.classList.toggle('is-done', k < i); b.classList.remove('is-on'); if (k === i) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+      void segs[i].offsetWidth; segs[i].classList.add('is-on');
+      if (!first) el.dispatchEvent(new CustomEvent('ac:change', { detail: { index: i, total: n }, bubbles: true }));
+    };
+    bar.addEventListener('animationend', e => { if (e.target.closest('.ac-hero__seg') === segs[cur] && el.isConnected) show(cur + 1); });
+    bar.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b === btn) { stopped = !stopped; state(); } else show(+b.dataset.i); });
+    bar.addEventListener('keydown', e => { const to = { ArrowLeft: cur - 1, ArrowRight: cur + 1 }[e.key]; if (to !== undefined && e.target.classList.contains('ac-hero__seg')) { e.preventDefault(); show(to); segs[cur].focus(); } });
+    el.addEventListener('pointerenter', () => { held = true; state(); });
+    el.addEventListener('pointerleave', () => { held = el.contains(document.activeElement); state(); });
+    el.addEventListener('focusin', () => { held = true; state(); });
+    el.addEventListener('focusout', e => { if (!el.contains(e.relatedTarget)) { held = el.matches(':hover'); state(); } });
+    state(); show(+el.dataset.start || 0);
+    el._hero = { go: show, pause: () => { stopped = true; state(); }, play: () => { stopped = false; state(); } };
+  };
+
+  /* Número do cartão (Baymard): espaça em grupos enquanto digita, mostra a bandeira detectada e mantém o cursor no lugar.
+     data-ac="card-number" num contêiner com o <input>; a bandeira vai em data-brand e no selo ao lado. */
+  const CARD_BRANDS = [
+    ['elo', /^(4011(78|79)|43(1274|8935)|45(1416|7393|763[12])|50(4175|6699|67[0-7]\d|9\d{3})|627780|63(6297|6368)|650(0[3-9]|[1-4]\d|5[0-1])|6516[5-7]\d|6550[0-5]\d)/, [4, 4, 4, 4]],
+    ['hipercard', /^(606282|3841)/, [4, 4, 4, 4]],
+    ['amex', /^3[47]/, [4, 6, 5]],
+    ['visa', /^4/, [4, 4, 4, 4]],
+    ['mastercard', /^(5[1-5]|2(2[2-9]|[3-6]\d|7[01]|720))/, [4, 4, 4, 4]]
+  ];
+  const BRAND_NAMES = { elo: 'Elo', hipercard: 'Hipercard', amex: 'Amex', visa: 'Visa', mastercard: 'Mastercard' };
+  C['card-number'] = el => {
+    const inp = $('input', el); if (!inp) return;
+    el.classList.add('ac-card-number');
+    Object.assign(inp, { inputMode: 'numeric', autocomplete: inp.autocomplete || 'cc-number' }); inp.setAttribute('spellcheck', 'false');
+    const tag = document.createElement('span'); tag.className = 'ac-card-number__brand'; tag.setAttribute('aria-live', 'polite'); el.appendChild(tag);
+    const fmt = () => {
+      const pos = inp.selectionStart ?? inp.value.length, before = inp.value.slice(0, pos).replace(/\D/g, '').length;
+      const d = inp.value.replace(/\D/g, '').slice(0, 19), b = CARD_BRANDS.find(([, re]) => re.test(d));
+      const groups = b ? b[2] : [4, 4, 4, 4, 3]; let out = '', i = 0;
+      for (const g of groups) { if (i >= d.length) break; out += (out ? ' ' : '') + d.slice(i, i + g); i += g; }
+      if (i < d.length) out += ' ' + d.slice(i);
+      inp.value = out; tag.textContent = b ? BRAND_NAMES[b[0]] : ''; el.dataset.brand = b ? b[0] : '';
+      // devolve o cursor depois do mesmo número de dígitos
+      let k = 0, at = 0; while (at < out.length && k < before) { if (/\d/.test(out[at])) k++; at++; }
+      if (document.activeElement === inp) inp.setSelectionRange(at, at);
+    };
+    inp.addEventListener('input', fmt); fmt();
+  };
+
+  /* ---------- Mais efeitos 3D ---------- */
+  // Hugeicons "arrow-reload-horizontal"
+  ICONS.flip = '<path d="M20.5 5.5H9.5C5.78672 5.5 3 8.18503 3 12"/><path d="M3.5 18.5H14.5C18.2133 18.5 21 15.815 21 12"/><path d="M18.5 3C18.5 3 21 4.84122 21 5.50002C21 6.15882 18.5 8 18.5 8"/><path d="M5.49998 16C5.49998 16 3.00001 17.8412 3 18.5C2.99999 19.1588 5.5 21 5.5 21"/>';
+  const inView = (el, cb) => { if (!window.IntersectionObserver) { cb(true); return; } new IntersectionObserver(es => es.forEach(e => cb(e.isIntersecting))).observe(el); };
+
+  /* Cartão que vira: os dois primeiros filhos viram frente e verso; o botão no canto (ou um clique fora de links e
+     campos) vira o cartão. A face escondida fica inert, então o Tab nunca cai num botão de costas. */
+  C.flip = el => {
+    const [front, back] = el.children; if (!front || !back) return;
+    el.classList.add('ac-flip');
+    const inner = document.createElement('div'); inner.className = 'ac-flip__inner';
+    front.classList.add('ac-flip__front'); back.classList.add('ac-flip__back'); inner.append(front, back); el.appendChild(inner);
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'ac-btn ac-btn--secondary ac-btn--icon ac-btn--sm ac-flip__toggle';
+    btn.innerHTML = icon('flip'); el.appendChild(btn);
+    const set = on => { el.classList.toggle('is-flipped', on); btn.setAttribute('aria-pressed', on); btn.setAttribute('aria-label', on ? (el.dataset.labelFront || 'Ver a frente') : (el.dataset.labelBack || 'Ver o verso')); front.inert = on; back.inert = !on; };
+    btn.addEventListener('click', () => set(!el.classList.contains('is-flipped')));
+    inner.addEventListener('click', e => { if (!e.target.closest('a, button, input, select, textarea, label')) btn.click(); });
+    set(false);
+  };
+
+  /* Marquee 3D: as imagens viram 4 colunas numa grade inclinada, cada coluna rolando num sentido.
+     Pausa no hover, no foco e no botão (WCAG 2.2.2); com movimento reduzido fica parado. */
+  C.marquee3d = el => {
+    const imgs = [...el.querySelectorAll('img')]; if (!imgs.length) return;
+    el.classList.add('ac-marquee3d'); if (!el.hasAttribute('role')) el.setAttribute('role', 'region');
+    if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', 'Galeria em movimento');
+    const plane = document.createElement('div'); plane.className = 'ac-marquee3d__plane';
+    const cols = [0, 1, 2, 3].map(() => { const c = document.createElement('div'); c.className = 'ac-marquee3d__col'; plane.appendChild(c); return c; });
+    imgs.forEach((img, i) => cols[i % 4].appendChild(img));
+    // cada coluna é duplicada para o laço não ter emenda; a cópia fica escondida do leitor de tela
+    // duas passadas: a 1ª dobra a coluna (a grade inclinada mostra muito na vertical), a 2ª faz o laço sem emenda
+    for (let k = 0; k < 2; k++) cols.forEach(c => [...c.children].forEach(img => { const d = img.cloneNode(); d.alt = ''; d.setAttribute('aria-hidden', 'true'); c.appendChild(d); }));
+    el.textContent = ''; el.appendChild(plane);
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'ac-btn ac-btn--secondary ac-btn--icon ac-btn--sm ac-marquee3d__pause';
+    btn.innerHTML = icon('pause') + icon('play'); el.appendChild(btn);
+    let stopped = reduce(), held = false;
+    const state = () => { el.dataset.paused = stopped || held; btn.setAttribute('aria-label', stopped ? 'Retomar o movimento' : 'Pausar o movimento'); $$('.ac-icon', btn).forEach((ic, k) => { ic.style.display = (k === 0) === !stopped ? '' : 'none'; }); };
+    btn.addEventListener('click', () => { stopped = !stopped; state(); });
+    el.addEventListener('focusin', () => { held = true; state(); }); el.addEventListener('focusout', e => { if (!el.contains(e.relatedTarget)) { held = false; state(); } });
+    inView(el, v => { if (!v) { el.dataset.paused = 'true'; } else state(); });
+    state();
+  };
+
+  /* Nuvem em esfera: cada item vai para um ponto de uma esfera (espiral de Fibonacci) e a esfera gira sozinha;
+     o mouse ou o dedo empurram a rotação. Os itens de trás ficam menores e mais apagados. Parada fora da tela. */
+  C.sphere = el => {
+    const items = [...el.children], n = items.length; if (!n) return;
+    el.classList.add('ac-sphere');
+    const pts = items.map((_, i) => { const y = 1 - (i + .5) * 2 / n, r = Math.sqrt(1 - y * y), t = i * Math.PI * (3 - Math.sqrt(5)); return [Math.cos(t) * r, y, Math.sin(t) * r]; });
+    let ax = .002, ay = .004, rx = 0, ry = 0, raf = 0, visible = true, drag = null;
+    const paint = () => {
+      const R = el.clientWidth / 2 - 36, cx = Math.cos(rx), sx = Math.sin(rx), cy = Math.cos(ry), sy = Math.sin(ry);
+      pts.forEach(([x, y, z], i) => {
+        const x1 = x * cy + z * sy, z1 = -x * sy + z * cy, y2 = y * cx - z1 * sx, z2 = y * sx + z1 * cx, k = (z2 + 2) / 3;
+        const s = items[i].style; s.transform = `translate(-50%, -50%) translate3d(${(x1 * R).toFixed(1)}px, ${(y2 * R).toFixed(1)}px, 0) scale(${(.6 + .4 * k).toFixed(3)})`;
+        s.opacity = (.25 + .75 * k).toFixed(2); s.zIndex = Math.round(k * 100); s.filter = z2 < -.3 ? 'blur(1px)' : '';
+      });
+    };
+    const loop = () => { raf = 0; if (!visible || reduce()) return; if (!drag) { rx += ax; ry += ay; ax += (.002 - ax) * .02; ay += (.004 - ay) * .02; } paint(); raf = requestAnimationFrame(loop); };
+    const start = () => { if (!raf) raf = requestAnimationFrame(loop); };
+    el.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; el.setPointerCapture(e.pointerId); });
+    el.addEventListener('pointermove', e => { if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; ry += dx * .008; rx -= dy * .008; ax = -dy * .0008; ay = dx * .0008; drag = { x: e.clientX, y: e.clientY }; paint(); });
+    el.addEventListener('pointerup', () => { drag = null; }); el.addEventListener('pointercancel', () => { drag = null; });
+    inView(el, v => { visible = v; if (v) start(); });
+    new ResizeObserver(paint).observe(el); paint(); start();
+  };
+
+  /* Anel 3D: imagens em volta de um cilindro. Gira devagar sozinho, arrasta para girar, setas e ← → no palco
+     levam à próxima; ao soltar, encaixa na imagem mais próxima. Com movimento reduzido não gira sozinho. */
+  C.ring3d = el => {
+    const figs = [...el.children].filter(c => c.matches('img') || $('img', c)), n = figs.length; if (n < 3) return;
+    el.classList.add('ac-ring3d'); el.setAttribute('role', 'region'); el.setAttribute('aria-roledescription', 'carrossel');
+    if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', 'Carrossel 3D');
+    const stage = document.createElement('div'); stage.className = 'ac-ring3d__stage'; stage.tabIndex = 0; stage.setAttribute('aria-label', 'Imagens em anel; use as setas para girar');
+    const spin = document.createElement('div'); spin.className = 'ac-ring3d__spin'; stage.appendChild(spin);
+    const step = 360 / n;
+    figs.forEach((f, i) => { f.classList.add('ac-ring3d__item'); f.style.setProperty('--i-a', i * step + 'deg'); f.setAttribute('role', 'group'); f.setAttribute('aria-roledescription', 'slide'); f.setAttribute('aria-label', `${i + 1} de ${n}`); spin.appendChild(f); });
+    const bar = document.createElement('div'); bar.className = 'ac-carousel__controls';
+    bar.innerHTML = `<button type="button" class="ac-carousel__btn" data-r="-1" aria-label="Imagem anterior">${icon('left')}</button><span class="ac-coverflow__status" aria-live="polite"></span><button type="button" class="ac-carousel__btn" data-r="1" aria-label="Próxima imagem">${icon('right')}</button>`;
+    el.append(stage, bar);
+    const status = $('.ac-coverflow__status', bar);
+    let a = 0, raf = 0, visible = true, drag = null, idle = 0, auto = !reduce() && !el.hasAttribute('data-static');
+    const radius = () => { const w = figs[0].offsetWidth || 200; spin.style.setProperty('--r', Math.round(w / 2 / Math.tan(Math.PI / n) + 18) + 'px'); };
+    const front = () => ((Math.round(-a / step) % n) + n) % n;
+    const paint = () => { spin.style.setProperty('--a', a.toFixed(2) + 'deg'); const f = front(); status.textContent = `${f + 1} de ${n}`; figs.forEach((fig, i) => fig.setAttribute('aria-hidden', i !== f)); };
+    const snap = to => { spin.classList.add('is-snap'); a = to; paint(); idle = performance.now() + 2500; setTimeout(() => spin.classList.remove('is-snap'), 650); };
+    const loop = t => { raf = 0; if (!visible) return; if (auto && !drag && t > idle) { a -= .06; paint(); } raf = requestAnimationFrame(loop); };
+    bar.addEventListener('click', e => { const b = e.target.closest('[data-r]'); if (b) snap(Math.round(a / step) * step - +b.dataset.r * step); });
+    stage.addEventListener('keydown', e => { const d = { ArrowLeft: -1, ArrowRight: 1 }[e.key]; if (d) { e.preventDefault(); snap(Math.round(a / step) * step - d * step); } });
+    stage.addEventListener('pointerdown', e => { drag = { x: e.clientX, a }; stage.classList.add('is-drag'); stage.setPointerCapture(e.pointerId); });
+    stage.addEventListener('pointermove', e => { if (!drag) return; a = drag.a + (e.clientX - drag.x) * .35; paint(); });
+    const end = () => { if (!drag) return; drag = null; stage.classList.remove('is-drag'); snap(Math.round(a / step) * step); };
+    stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
+    el.addEventListener('focusin', () => { idle = Infinity; }); el.addEventListener('focusout', e => { if (!el.contains(e.relatedTarget)) idle = performance.now() + 1500; });
+    inView(el, v => { visible = v; if (v && !raf) raf = requestAnimationFrame(loop); });
+    new ResizeObserver(() => { radius(); paint(); }).observe(stage); radius(); paint();
+  };
+
+  /* Palavras que viram em 3D: data-words="vende,organiza,cresce"; cada letra entra girando no eixo X.
+     O leitor de tela ouve a frase inteira uma vez (todas as palavras), sem anúncio a cada troca. */
+  C['flip-words'] = el => {
+    const words = (el.dataset.words || el.textContent).split(',').map(w => w.trim()).filter(Boolean); if (!words.length) return;
+    el.classList.add('ac-flip-words');
+    el.innerHTML = `<span class="ac-sr">${esc(words.join(', '))}</span><span class="ac-flip-words__w" aria-hidden="true"></span>`;
+    const box = $('.ac-flip-words__w', el), every = +el.dataset.interval || 2600;
+    let i = 0, t = 0, visible = true;
+    const put = w => { box.classList.remove('is-out'); box.innerHTML = [...w].map((c, k) => `<span class="ac-flip-words__c" style="--i:${k}">${c === ' ' ? '&nbsp;' : esc(c)}</span>`).join(''); };
+    const next = () => { if (!el.isConnected) return; if (visible && !reduce()) { box.classList.add('is-out'); setTimeout(() => { i = (i + 1) % words.length; put(words[i]); }, 380); } t = setTimeout(next, every); };
+    put(words[0]); inView(el, v => { visible = v; });
+    if (words.length > 1) t = setTimeout(next, every);
+  };
+
+  /* ---------- Profundidade e movimento ---------- */
+  // cartão que inclina seguindo o mouse; desligado em telas de toque e com movimento reduzido
+  C.tilt = el => {
+    el.classList.add('ac-tilt');
+    const max = +el.dataset.max || 10, fine = matchMedia('(hover: hover) and (pointer: fine)');
+    $$('[data-depth]', el).forEach(l => { l.classList.add('ac-tilt__layer'); l.style.setProperty('--z', parseFloat(l.dataset.depth) + 'px'); });
+    let raf = 0;
+    el.addEventListener('pointermove', e => {
+      if (!fine.matches || reduce() || e.pointerType !== 'mouse') return;
+      cancelAnimationFrame(raf); raf = requestAnimationFrame(() => {
+        const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        el.classList.add('is-moving');
+        el.style.setProperty('--ry', ((x - .5) * 2 * max).toFixed(2) + 'deg'); el.style.setProperty('--rx', ((.5 - y) * 2 * max).toFixed(2) + 'deg');
+        el.style.setProperty('--gx', (x * 100).toFixed(1) + '%'); el.style.setProperty('--gy', (y * 100).toFixed(1) + '%');
+      });
+    });
+    el.addEventListener('pointerleave', () => { cancelAnimationFrame(raf); el.classList.remove('is-moving'); el.style.setProperty('--rx', '0deg'); el.style.setProperty('--ry', '0deg'); });
+  };
+  /* revelar ao rolar: data-ac="reveal" no elemento (ou data-reveal-children no contêiner, com atraso em sequência).
+     Com animation-timeline: view() quem anima é o CSS; sem suporte (Firefox), IntersectionObserver liga .is-in. */
+  const scrollDriven = () => window.CSS && CSS.supports('animation-timeline: view()');
+  let revealIO = null;
+  C.reveal = el => {
+    const items = el.hasAttribute('data-reveal-children') ? [...el.children] : [el];
+    items.forEach((n, i) => { n.classList.add('ac-reveal'); if (el.dataset.reveal && n !== el) n.dataset.reveal = el.dataset.reveal; n.style.setProperty('--i', i); });
+    if (scrollDriven() || reduce() || !window.IntersectionObserver) { items.forEach(n => n.classList.add('is-in')); return; }
+    revealIO = revealIO || new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); revealIO.unobserve(e.target); } }), { threshold: .15 });
+    items.forEach(n => revealIO.observe(n));
+  };
+  // barra de leitura: sem animation-timeline: scroll(), acompanha a rolagem do contêiner pelo JS
+  C['scroll-progress'] = el => {
+    el.classList.add('ac-scroll-progress'); el.setAttribute('aria-hidden', 'true');
+    if (window.CSS && CSS.supports('animation-timeline: scroll()')) return;
+    let box = el.parentElement; while (box && box !== document.body && !/(auto|scroll)/.test(getComputedStyle(box).overflowY)) box = box.parentElement;
+    const target = !box || box === document.body ? document.scrollingElement : box, src = target === document.scrollingElement ? window : target;
+    const upd = () => { const max = target.scrollHeight - target.clientHeight; el.style.setProperty('--p', max > 0 ? Math.min(1, target.scrollTop / max) : 0); };
+    src.addEventListener('scroll', upd, { passive: true }); upd();
+  };
+  // troca de tela com View Transitions (fade curto); sem suporte ou com movimento reduzido, só executa
+  function transition(update) {
+    if (!document.startViewTransition || reduce()) { update(); return Promise.resolve(); }
+    return document.startViewTransition(update).finished.catch(() => {});
+  }
+
+  /* ---------- Carregamentos (pesquisa de 28/10/2026, 2ª rodada) ---------- */
+  // quatro pontos girando: só desenho; quem dá o nome da espera é o contêiner (ou role="status" + aria-label no próprio)
+  C.orbit = el => {
+    el.classList.add('ac-orbit');
+    if (!el.children.length) el.innerHTML = '<i></i><i></i><i></i><i></i>';
+    if (el.dataset.size) el.style.setProperty('--size', parseFloat(el.dataset.size) + 'px');
+    if (!el.hasAttribute('role')) el.setAttribute('aria-hidden', 'true');
+  };
+  /* Espera longa (1–2 min) que não trava a tela: gerar arte, relatório, pesquisa. Navegador desenhado com os blocos da
+     página pulsando e a luz correndo pelos traços até ele; o rótulo vai na barra e é lido pelo leitor de tela. */
+  const WAIT_TRACES = ['M0 60H40V100H80', 'M320 140H280V100H240', 'M120 0V24H160V44', 'M200 200V176H160V156'];
+  const WAIT_DIRS = [[0, 0, 1, 0], [1, 0, 0, 0], [0, 0, 0, 1], [0, 1, 0, 0]];
+  C.wait = el => {
+    const label = el.dataset.label || 'Gerando', g = id('ac-wait'), seq = n => Array.from({ length: n }, (_, i) => (i + 1) * 20);
+    el.classList.add('ac-wait'); el.setAttribute('role', 'status'); el.setAttribute('aria-live', 'polite');
+    const note = el.dataset.note ? `<p class="ac-wait__note">${esc(el.dataset.note)}</p>` : '';
+    el.innerHTML = `<svg class="ac-wait__svg" viewBox="0 0 320 200" aria-hidden="true" focusable="false">`
+      + `<defs>${WAIT_DIRS.map(([a, b, c, d], i) => `<linearGradient id="${g}-${i}" x1="${a}" y1="${b}" x2="${c}" y2="${d}"><stop offset="0" class="ac-wait__s1"/><stop offset=".6" class="ac-wait__s2"/><stop offset="1" class="ac-wait__s3"/></linearGradient>`).join('')}</defs>`
+      + `<g>${seq(15).map(x => `<line class="ac-wait__grid" x1="${x}" y1="0" x2="${x}" y2="200"/>`).join('')}${seq(9).map(y => `<line class="ac-wait__grid" x1="0" y1="${y}" x2="320" y2="${y}"/>`).join('')}</g>`
+      + `<g>${WAIT_TRACES.map((d, i) => `<path class="ac-wait__trace" d="${d}" pathLength="720" stroke="url(#${g}-${i})"/>`).join('')}</g>`
+      + `<rect class="ac-wait__frame" x="80.5" y="44.5" width="159" height="111" rx="8"/>`
+      + `<path class="ac-wait__bar" d="M88.5 45H231.5A7.5 7.5 0 0 1 239 52.5V62H81V52.5A7.5 7.5 0 0 1 88.5 45Z"/>`
+      + [91, 98, 105].map(x => `<circle class="ac-wait__dot" cx="${x}" cy="53.5" r="2.2"/>`).join('')
+      + `<text class="ac-wait__label" x="168" y="57.5" text-anchor="middle">${esc(label)}</text>`
+      + `<g><rect class="ac-wait__bone" x="90" y="72" width="52" height="64" rx="4"/><rect class="ac-wait__bone" x="152" y="74" width="76" height="8" rx="4"/><rect class="ac-wait__bone" x="152" y="90" width="64" height="6" rx="3"/><rect class="ac-wait__bone" x="152" y="102" width="70" height="6" rx="3"/><rect class="ac-wait__bone" x="152" y="120" width="40" height="12" rx="4"/><rect class="ac-wait__bone" x="90" y="144" width="138" height="5" rx="2.5"/></g>`
+      + `</svg><span class="ac-sr">${esc(label)}</span>${note}`;
+  };
+  /* Sincronizando: um sistema externo está demorando e a tela tenta de novo sozinha. Fica no lugar do aviso de erro. */
+  // Hugeicons "refresh" (stroke rounded)
+  const SYNC_ICON = '<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.0092 2V5.13219C20.0092 5.42605 19.6418 5.55908 19.4537 5.33333C17.6226 3.2875 14.9617 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12"/></svg>';
+  C.sync = el => {
+    el.classList.add('ac-sync'); el.setAttribute('role', 'status'); el.setAttribute('aria-live', 'polite');
+    if ($('.ac-sync__text', el)) return;
+    const mark = el.dataset.variant === 'dots' ? '<span class="ac-orbit" aria-hidden="true"><i></i><i></i><i></i><i></i></span>' : `<span class="ac-sync__sonar" aria-hidden="true"><i></i><i></i><i></i>${SYNC_ICON}</span>`;
+    el.innerHTML = `${mark}<span class="ac-sync__text"><span class="ac-sync__title">${esc(el.dataset.title || 'Sincronizando')}</span>${el.dataset.detail ? `<span class="ac-sync__detail">${esc(el.dataset.detail)}</span>` : ''}</span>`;
+  };
+
   /* Campo copiável (clipboard-text do zero-7, porte do Kumo): valor só de leitura, cortado com reticências, e o botão de
      copiar colado. Copia data-copy (o valor inteiro, sem máscara), não o texto da tela. Se a área de transferência falhar,
      o valor inteiro aparece selecionado, com a dica do atalho para copiar à mão. */
@@ -1663,7 +2046,7 @@
     });
   };
 
-  /* Faixas de aviso em fila (FaixasTopo do 4squad): aviso que vale para a conta inteira, um por vez, do mais grave ao
+  /* Faixas de aviso em fila: aviso que vale para a conta inteira, um por vez, do mais grave ao
      mais leve (data-priority, ou o tom: crítico, perigo, atenção, ok, neutro). Com mais de um: setas, troca a cada 10 s
      (para no hover e no foco; nunca com movimento reduzido) e “Aviso 2 de 3” para o leitor de tela quando a pessoa
      troca. Trocas automáticas não são anunciadas. data-dismissible deixa dispensar (evento ac:dismiss). */
@@ -1736,7 +2119,7 @@
     document.addEventListener('close', schedule, true);
   })();
 
-  /* Confirmar e alertar (Confirmar e Alerta da Janela do 4squad): diálogo montado na hora que devolve uma promessa.
+  /* Confirmar e alertar: diálogo montado na hora que devolve uma promessa.
      confirm: título, a consequência em texto, botão que repete o nome da ação e Cancelar com o foco inicial. Se onConfirm
      devolver uma promessa, o botão carrega e o diálogo espera; se ela falhar, o erro aparece dentro do diálogo.
      alert: uma mensagem e o OK. Ao fechar, o foco volta para onde estava. */
@@ -1781,6 +2164,6 @@
     });
   }
 
-  global.Orthos = global.Seleta = global.Acervo = { init, reveal, toast, command, open, close, skeleton, icon, place, results: RESULTS, dirty: { baseline: dirtyBaseline, refresh: dirtyRefresh }, tour, countries: COUNTRIES, logo: { load: loadLogo, replay: replayLogo, screen: loadingScreen, sanitize: sanitizeSvg }, loading: loadingScreen, confirm: o => ask(o), alert: o => ask(o, true), components: C };
+  global.Orthos = global.Seleta = global.Acervo = { init, reveal, toast, command, open, close, skeleton, icon, place, results: RESULTS, dirty: { baseline: dirtyBaseline, refresh: dirtyRefresh }, tour, countries: COUNTRIES, logo: { load: loadLogo, replay: replayLogo, screen: loadingScreen, sanitize: sanitizeSvg }, loading: loadingScreen, lightbox, transition, confirm: o => ask(o), alert: o => ask(o, true), components: C };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => init()); else init();
 })(window);
