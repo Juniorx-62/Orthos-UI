@@ -53,12 +53,17 @@
   }
 
   /* ---------- página de componente ---------- */
+  // setas para o componente anterior e o próximo (na ordem do menu); na ponta, a seta fica apagada
+  const arrow = (to, dir) => {
+    const ic = A.icon(dir < 0 ? 'left' : 'right'), label = dir < 0 ? 'Componente anterior' : 'Próximo componente';
+    return to ? `<a class="ac-btn ac-btn--secondary ac-btn--icon ac-btn--sm" href="#/${to.id}" aria-label="${label}: ${esc(to.nome)}" title="${esc(to.nome)}">${ic}</a>` : `<span class="ac-btn ac-btn--secondary ac-btn--icon ac-btn--sm" aria-hidden="true" data-off>${ic}</span>`;
+  };
   function renderDoc(d) {
     const i = D.indexOf(d), prev = D[i - 1], next = D[i + 1];
     const code = tidy(d.html);
     main.innerHTML = `<div class="doc">
       <section class="stage" aria-label="Demonstração">
-        <div class="stage__bar"><span class="stage__crumb">${esc(d.grupo)} / <b>${esc(d.nome)}</b></span>
+        <div class="stage__bar"><span class="stage__nav">${arrow(prev, -1)}${arrow(next, 1)}</span><span class="stage__crumb">${esc(d.grupo)} / <b>${esc(d.nome)}</b></span>
           <div class="ac-segmented" data-ac="segmented" id="mode" aria-label="Visualização"><button type="button" value="preview" aria-pressed="${mode === 'preview'}">Preview</button><button type="button" value="code" aria-pressed="${mode === 'code'}">Código</button></div>
           <button class="ac-btn ac-btn--secondary ac-btn--sm stage__md" type="button" id="md-open">${A.icon('file')}Ver como Markdown</button></div>
         <div class="canvas" ${d.wide ? 'data-wide' : ''} ${mode === 'code' ? 'hidden' : ''}>

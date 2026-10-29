@@ -6,18 +6,102 @@
 <title>Testes — Orthos UI</title>
 <link rel="icon" href="../brand/orthos-mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../src/orthos.css">
+<meta name="color-scheme" content="light dark">
+<script>(function () { try { var t = localStorage.getItem('orthos.theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (_) {} })();</script>
 <style>
-  body { margin: 0; padding: 24px; background: var(--ac-bg); color: var(--ac-text); font: 14px/1.5 var(--ac-font); }
-  h1 { margin: 0 0 4px; font-size: 22px; } #resumo { margin: 0 0 16px; color: var(--ac-text-2); }
-  table { border-collapse: collapse; width: 100%; font-size: 13px; } td, th { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--ac-border); vertical-align: top; }
-  .ok { color: var(--ac-success); font-weight: 600; } .falha { color: var(--ac-danger); font-weight: 600; }
+  /* só o layout da página; cartões, alerta, tabela, badges, botões, campo, segmented, progresso e estado vazio são componentes do Orthos */
+  body { margin: 0; background: var(--ac-bg); color: var(--ac-text); font: var(--ac-fs-base)/1.5 var(--ac-font); }
+  .tp { max-width: 1040px; margin: 0 auto; padding: 28px 24px 48px; display: grid; gap: 16px; }
+  .tp-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .tp-brand { display: flex; align-items: center; gap: 12px; }
+  .tp-brand svg { width: 36px; height: 36px; border-radius: 9px; flex: none; }
+  .tp-brand h1 { margin: 0; font: 650 var(--ac-fs-2xl)/1.15 var(--ac-font); letter-spacing: -.02em; }
+  .tp-brand p { margin: 2px 0 0; color: var(--ac-text-3); }
+  .tp-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  /* resumo: um cartão só, com o anel (Ring), o status, os números e o ambiente */
+  .tp-sum { overflow: hidden; }
+  .tp-sum__main { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 24px; align-items: center; padding: 24px; }
+  .tp-sum__ring { position: relative; display: grid; place-items: center; }
+  .tp-sum__ring .ac-ring { width: 112px; height: 112px; }
+  .tp-sum__ring .ac-ring circle { stroke-width: 4.5; }
+  .tp-sum[data-s="rodando"] .ac-ring .v { stroke: var(--ac-accent); }
+  .tp-sum[data-s="ok"] .ac-ring .v { stroke: var(--ac-success); }
+  /* no fim, o anel mostra a proporção: verde o que passou, vermelho a fatia das falhas */
+  .tp-sum[data-s="falha"] .ac-ring .v { stroke: var(--ac-success); }
+  .tp-sum[data-s="falha"] .ac-ring .t { stroke: var(--ac-danger); }
+  .tp-sum__pct { position: absolute; display: grid; justify-items: center; line-height: 1.1; }
+  .tp-sum__pct b { font: 650 var(--ac-fs-2xl) var(--ac-font); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .tp-sum__pct small { color: var(--ac-text-3); font-size: var(--ac-fs-sm); }
+  .tp-sum__text { display: grid; gap: 6px; justify-items: start; min-width: 0; }
+  .tp-sum__text h2 { margin: 2px 0 0; font: 650 var(--ac-fs-xl)/1.25 var(--ac-font); letter-spacing: -.01em; }
+  .tp-sum__text p { margin: 0; color: var(--ac-text-2); }
+  .tp-sum__stats { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 10px 0 0; }
+  .tp-sum__stats div { display: grid; gap: 0; }
+  .tp-sum__stats dt { color: var(--ac-text-3); font-size: var(--ac-fs-sm); }
+  .tp-sum__stats dd { margin: 0; font: 650 var(--ac-fs-xl)/1.2 var(--ac-font); font-variant-numeric: tabular-nums; }
+  .tp-sum__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 24px; border-top: 1px solid var(--ac-border); background: var(--ac-surface-2); }
+  .tp-env { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tp-env .ac-badge { background: var(--ac-surface); }
+  .tp-warn { display: inline-flex; align-items: center; gap: 6px; margin: 0; color: var(--ac-warning); font-size: var(--ac-fs-sm); font-weight: 500; }
+  .tp-warn[hidden] { display: none; }
+  .tp-warn .ac-icon { width: 16px; height: 16px; flex: none; }
+  .tp-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+  .tp-tools .ac-input { width: min(280px, 100%); }
+  .tp-cat { margin-right: 6px; }
+  .tp-detail { display: block; margin-top: 6px; padding: 6px 10px; border-radius: 8px; background: var(--ac-danger-bg); color: var(--ac-danger); font: var(--ac-fs-sm)/1.5 var(--ac-mono); overflow-wrap: anywhere; white-space: normal; }
+  .tp-note { display: block; margin-top: 2px; color: var(--ac-text-3); font-size: var(--ac-fs-sm); white-space: normal; }
+  #saida td:first-child { white-space: normal; min-width: 260px; }
+  #saida tr[hidden] { display: none; }
+  .tp-foot { margin: 0; color: var(--ac-text-3); font-size: var(--ac-fs-sm); }
   #palco { position: absolute; left: -10000px; top: 0; width: 900px; }
+  @media (max-width: 640px) { .tp { padding: 18px 14px 40px; } .tp-sum__main { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; padding: 20px 16px; } .tp-sum__text { justify-items: center; } .tp-sum__stats { justify-content: center; } .tp-sum__foot { padding: 12px 16px; justify-content: center; } #saida td:first-child { min-width: 0; } }
 </style>
 </head>
 <body class="ac">
-<h1>Testes dos componentes</h1>
-<p id="resumo" role="status">Rodando…</p>
-<table><thead><tr><th>Teste</th><th>Resultado</th><th>Detalhe</th></tr></thead><tbody id="saida"></tbody></table>
+<div class="tp">
+  <header class="tp-top">
+    <div class="tp-brand"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0b0b0c"/><rect x="15.25" y="15.25" width="13.5" height="13.5" rx="2.25" fill="none" stroke="#fafafa" stroke-width="2.5"/><rect x="34" y="14" width="16" height="16" rx="3.5" fill="#fafafa"/><rect x="15.25" y="35.25" width="13.5" height="13.5" rx="2.25" fill="none" stroke="#fafafa" stroke-width="2.5"/><rect x="35.25" y="35.25" width="13.5" height="13.5" rx="2.25" fill="none" stroke="#fafafa" stroke-width="2.5"/></svg>
+      <div><h1>Testes dos componentes</h1><p>Monta cada componente, confere a documentação e testa teclado e comportamento neste navegador.</p></div></div>
+    <div class="tp-actions"><a class="ac-btn ac-btn--ghost ac-btn--sm" href="../index.html">← Voltar ao site</a><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button" id="tp-copy" disabled>Copiar relatório</button><button class="ac-btn ac-btn--sm" type="button" id="tp-again" disabled>Rodar de novo</button></div>
+  </header>
+
+  <section class="ac-card tp-sum" id="tp-sum" data-s="rodando" aria-labelledby="resumo">
+    <div class="tp-sum__main">
+      <div class="tp-sum__ring">
+        <svg class="ac-ring" id="tp-ring" viewBox="0 0 56 56" style="--v:0" role="progressbar" aria-label="Andamento dos testes" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><circle class="t" cx="28" cy="28" r="22"/><circle class="v" cx="28" cy="28" r="22"/></svg>
+        <span class="tp-sum__pct" aria-hidden="true"><b id="tp-pct">0%</b><small id="tp-pct-l">rodando</small></span>
+      </div>
+      <div class="tp-sum__text">
+        <span class="ac-badge" id="tp-badge"><span class="ac-badge__dot ac-badge__dot--pulse" style="color:var(--ac-accent)"></span>Rodando</span>
+        <h2 id="resumo" role="status">Rodando os testes…</h2>
+        <p id="tp-sub">Um depois do outro; não troque de aba até terminar.</p>
+        <dl class="tp-sum__stats">
+          <div><dt>Passaram</dt><dd id="tp-ok" style="color:var(--ac-success)">0</dd></div>
+          <div><dt>Falharam</dt><dd id="tp-fail" style="color:var(--ac-danger)">0</dd></div>
+          <div><dt>Total</dt><dd id="tp-total">0</dd></div>
+          <div><dt>Tempo</dt><dd id="tp-time">0 s</dd></div>
+        </dl>
+      </div>
+    </div>
+    <div class="tp-sum__foot">
+      <div class="tp-env" id="tp-env" aria-label="Ambiente"></div>
+      <p class="tp-warn" id="tp-focus" hidden><svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.9248 21H10.0752C5.44476 21 3.12955 21 2.27636 19.4939C1.42317 17.9879 2.60736 15.9914 4.97574 11.9985L6.90057 8.75333C9.17559 4.91778 10.3131 3 12 3C13.6869 3 14.8244 4.91777 17.0994 8.75332L19.0243 11.9985C21.3926 15.9914 22.5768 17.9879 21.7236 19.4939C20.8704 21 18.5552 21 13.9248 21Z"/><path d="M12 9V13"/><path d="M12.125 16.75H12M12.25 16.75C12.25 16.8881 12.1381 17 12 17C11.8619 17 11.75 16.8881 11.75 16.75C11.75 16.6119 11.8619 16.5 12 16.5C12.1381 16.5 12.25 16.6119 12.25 16.75Z"/></svg>Janela sem foco: testes de foco podem falhar só por isso</p>
+    </div>
+  </section>
+
+  <div class="tp-tools">
+    <div class="ac-segmented" data-ac="segmented" id="tp-filter" aria-label="Mostrar"><button type="button" aria-pressed="true" value="todos">Todos</button><button type="button" value="falha">Falhas <span id="tp-f-count">0</span></button><button type="button" value="ok">Passaram</button></div>
+    <input class="ac-input" type="search" id="tp-search" placeholder="Buscar teste (ex.: OTP, tabela)" aria-label="Buscar teste">
+  </div>
+
+  <div class="ac-table-wrap"><div class="ac-table-scroll"><table class="ac-table ac-table--stack" data-ac="stack">
+    <caption class="ac-sr">Resultados dos testes</caption>
+    <thead><tr><th scope="col">Teste</th><th scope="col">Resultado</th><th scope="col" class="num">Tempo</th></tr></thead>
+    <tbody id="saida"></tbody>
+  </table></div></div>
+  <div class="ac-empty" id="tp-vazio" hidden><span class="ac-empty__icon"><svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 17L21 21"/><path d="M19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19C15.4183 19 19 15.4183 19 11Z"/></svg></span><h4>Nenhum teste encontrado</h4><p>Nada combina com o filtro ou a busca. Limpe a busca ou escolha “Todos”.</p></div>
+  <p class="tp-foot">Para automação: o resultado fica em <code>window.RESULTADO</code> (<code>{ passou, total, falhas }</code>) quando a suíte termina. Também dá para abrir no Firefox, no Safari e no celular para conferir nesses navegadores.</p>
+</div>
 <div id="palco"></div>
 
 <script src="../src/orthos.js"></script>
@@ -38,7 +122,36 @@
   const key = (el, k, o = {}) => el.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, ...o }));
   const erros = []; window.addEventListener('error', e => erros.push(e.message)); const ce = console.error; console.error = (...a) => { erros.push(a.join(' ')); ce(...a); };
   const res = [], palco = $('#palco');
-  const t = async (nome, fn) => { const e0 = erros.length; try { const d = await fn(); if (erros.length > e0) throw new Error(erros.slice(e0).join('; ')); res.push([nome, true, d || '']); } catch (e) { res.push([nome, false, e.message]); } };
+  // ---- painel: cada teste entra na lista assim que termina ----
+  const T0 = performance.now(), prev = +(localStorage.getItem('orthos.tests.total') || 0) || 170;
+  const ICO_CHECK = '<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 14L8.5 17.5L19 6.5"/></svg>', ICO_X = '<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085"/></svg>';
+  const ICO = { ok: '<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 14L8.5 17.5L19 6.5"/></svg>', no: '<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085"/></svg>' };
+  const escH = x => String(x ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const filtro = { modo: 'todos', busca: '' };
+  const visivel = row => (filtro.modo === 'todos' || row.dataset.s === filtro.modo) && (!filtro.busca || row.dataset.q.includes(filtro.busca));
+  const pinta = () => {
+    const ok = res.filter(r => r[1]).length, fail = res.length - ok, seg = Math.round((performance.now() - T0) / 100) / 10;
+    $('#tp-ok').textContent = ok; $('#tp-fail').textContent = fail; $('#tp-total').textContent = res.length; $('#tp-time').textContent = seg.toLocaleString('pt-BR') + ' s'; $('#tp-f-count').textContent = fail;
+    const v = Math.min(99, Math.round(res.length / prev * 100)); $('#tp-ring').style.setProperty('--v', v / 100); $('#tp-ring').setAttribute('aria-valuenow', v); $('#tp-pct').textContent = v + '%';
+  };
+  const vazio = () => { $('#tp-vazio').hidden = !!$$('#saida tr').find(r => !r.hidden); };
+  const registra = (nome, passou, detalhe, ms) => {
+    const cat = (nome.match(/^([^:]{2,40}):/) || [])[1] || '';
+    const row = document.createElement('tr'); row.className = passou ? 'is-ok' : 'is-falha'; row.dataset.s = passou ? 'ok' : 'falha'; row.dataset.q = nome.toLowerCase();
+    const status = `<td data-label="Resultado"><span class="ac-badge ${passou ? 'ac-badge--success' : 'ac-badge--danger'}">${passou ? 'Passou' : 'Falhou'}</span></td>`;
+    row.innerHTML = `<td>${cat ? `<span class="ac-badge tp-cat">${escH(cat)}</span>${escH(nome.slice(cat.length + 1).trim())}` : escH(nome)}${!passou ? `<span class="tp-detail">${escH(detalhe)}</span>` : detalhe ? `<span class="tp-note">${escH(detalhe)}</span>` : ''}</td>` + status + `<td class="num" data-label="Tempo">${ms < 1 ? '<1' : Math.round(ms)} ms</td>`;
+    row.hidden = !visivel(row); $('#saida').appendChild(row); pinta(); vazio();
+  };
+  const t = async (nome, fn) => { const e0 = erros.length, t1 = performance.now(); let item; try { const d = await fn(); if (erros.length > e0) throw new Error(erros.slice(e0).join('; ')); item = [nome, true, d || '']; } catch (e) { item = [nome, false, e.message]; } res.push(item); registra(item[0], item[1], item[2], performance.now() - t1); };
+  // ambiente: navegador, tela, tema, movimento e foco (testes de foco dependem da janela estar em foco)
+  const ua = navigator.userAgent, nav = (/Firefox\/(\d+)/.exec(ua) && 'Firefox ' + RegExp.$1) || (/Edg\/(\d+)/.exec(ua) && 'Edge ' + RegExp.$1) || (/Chrome\/(\d+)/.exec(ua) && 'Chrome ' + RegExp.$1) || (/Version\/(\d+).*Safari/.exec(ua) && 'Safari ' + RegExp.$1) || 'Navegador';
+  const escuro = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  $('#tp-env').innerHTML = [nav, `${innerWidth}×${innerHeight} px · ${Math.round((devicePixelRatio || 1) * 100) / 100}x`, 'Tema ' + (escuro ? 'escuro' : 'claro'), matchMedia('(prefers-reduced-motion: reduce)').matches ? 'Movimento reduzido' : 'Movimento normal', matchMedia('(pointer: coarse)').matches ? 'Toque' : 'Mouse'].map(x => `<span class="ac-badge">${escH(x)}</span>`).join('');
+  $('#tp-focus').hidden = document.hasFocus();
+  Orthos.init($('.tp-tools')); Orthos.init($('.ac-table-wrap'));
+  $('#tp-filter').addEventListener('ac:change', () => { filtro.modo = $('#tp-filter [aria-pressed="true"]').value; $$('#saida tr').forEach(r => { r.hidden = !visivel(r); }); vazio(); });
+  $('#tp-search').addEventListener('input', e => { filtro.busca = e.target.value.trim().toLowerCase(); $$('#saida tr').forEach(r => { r.hidden = !visivel(r); }); vazio(); });
+  $('#tp-again').onclick = () => location.reload();
   const ok = (c, m) => { if (!c) throw new Error(m); };
   const mount = id => { document.querySelectorAll('body > .ac-pop, body > .ac-tip').forEach(n => n.remove()); const d = DEMOS.find(x => x.id === id); palco.innerHTML = d.html; Orthos.init(palco); (DEMO_HOOKS[id] || (() => {}))(palco); return palco; };
 
@@ -416,9 +529,21 @@
   await t('API pública antiga preservada', () => { ['init', 'toast', 'command', 'open', 'close', 'skeleton', 'icon', 'place', 'confirm', 'alert'].forEach(k => ok(typeof Orthos[k] === 'function', k)); ok(window.Acervo === Orthos && window.Seleta === Orthos, 'aliases'); });
 
   palco.innerHTML = '';
-  const passou = res.filter(r => r[1]).length;
-  $('#saida').innerHTML = res.map(([n, b, d]) => `<tr><td>${n}</td><td class="${b ? 'ok' : 'falha'}">${b ? 'passou' : 'falhou'}</td><td>${String(d).replace(/</g, '&lt;')}</td></tr>`).join('');
+  const passou = res.filter(r => r[1]).length, falhas = res.filter(r => !r[1]), seg = ((performance.now() - T0) / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+  pinta(); const taxa = Math.round(passou / res.length * 1000) / 10; $('#tp-ring').style.setProperty('--v', passou / res.length); $('#tp-ring').setAttribute('aria-valuenow', 100); $('#tp-pct').textContent = taxa.toLocaleString('pt-BR') + '%'; $('#tp-pct-l').textContent = 'passaram';
+  try { localStorage.setItem('orthos.tests.total', res.length); } catch (_) {}
+  $('#tp-sum').dataset.s = falhas.length ? 'falha' : 'ok';
+  const bd = $('#tp-badge'); bd.className = 'ac-badge ' + (falhas.length ? 'ac-badge--danger' : 'ac-badge--success'); bd.textContent = falhas.length ? (falhas.length === 1 ? '1 falha' : falhas.length + ' falhas') : 'Tudo certo';
   $('#resumo').textContent = `${passou} de ${res.length} testes passaram${passou === res.length ? '.' : '. Veja as falhas abaixo.'}`;
+  $('#tp-sub').textContent = falhas.length ? `Terminou em ${seg} s. As falhas aparecem primeiro na lista, com o motivo.` : `Terminou em ${seg} s, sem nenhuma falha.`;
+  // falhas sobem para o topo da lista
+  $$('#saida tr.is-falha').reverse().forEach(r => $('#saida').prepend(r));
+  if (falhas.length && document.hasFocus() === false) $('#tp-focus').hidden = false;
+  $('#tp-again').disabled = false; const cp = $('#tp-copy'); cp.disabled = false;
+  cp.onclick = async () => {
+    const txt = [`# Testes do Orthos UI`, ``, `${passou} de ${res.length} passaram em ${seg} s — ${$('#tp-env').innerText.replace(/\n+/g, ' · ')}`, ``, ...(falhas.length ? ['## Falhas', ...falhas.map(([n, , d]) => `- ${n} — ${d}`)] : ['Nenhuma falha.'])].join('\n');
+    try { await navigator.clipboard.writeText(txt); Orthos.toast({ type: 'success', title: 'Relatório copiado' }); } catch (_) { Orthos.toast({ type: 'danger', title: 'Não foi possível copiar' }); }
+  };
   window.RESULTADO = { passou, total: res.length, falhas: res.filter(r => !r[1]) };
 })();
 </script>

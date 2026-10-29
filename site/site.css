@@ -47,6 +47,9 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 .stage__crumb { font-size: var(--ac-fs-sm); color: var(--ac-text-3); }
 .stage__crumb b { color: var(--ac-text); font-weight: 500; }
 .stage__bar .ac-segmented { margin-left: auto; }
+.stage__nav { display: inline-flex; gap: 4px; }
+.stage__nav .ac-btn { border-radius: var(--ac-r-full); }
+.stage__nav [data-off] { opacity: .35; pointer-events: none; }
 .stage__md { border-radius: var(--ac-r-full); }
 @media (max-width: 520px) { .stage__md { font-size: 0; gap: 0; padding: 0; width: 32px; justify-content: center; } .stage__md .ac-icon { margin: 0; } }
 .canvas { position: relative; flex: 1; min-height: 520px; display: flex; flex-direction: column; border: 1px solid var(--ac-border); border-radius: 20px; background-color: var(--ac-surface-2); background-image: radial-gradient(color-mix(in oklab, var(--ac-text) 12%, transparent) 1px, transparent 1.2px); background-size: 18px 18px; overflow: hidden; }
