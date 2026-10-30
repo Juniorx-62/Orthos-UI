@@ -213,7 +213,6 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 .prose h2 { margin: 36px 0 12px; font: 600 var(--ac-fs-lg) var(--ac-font); }
 .prose .lead { color: var(--ac-text-2); font-size: var(--site-read); line-height: 1.6; max-width: 70ch; }
 /* nome do componente em inglês, quando não aparece no título (convenção de 30/10/2026) */
-.nav__a .en { color: var(--ac-text-3); }
 .panel .aka { margin: -4px 0 10px; color: var(--ac-text-3); font-size: var(--ac-fs-sm); }
 .prose .api { max-width: 860px; }
 /* nomes longos de token (--ac-dur-fast/base/slow/overlay) quebram em qualquer ponto: sem isso a tabela passava 16px da tela no celular */

@@ -487,7 +487,14 @@
     const gIcon = v => !v ? '' : /^\s*</.test(v) ? `<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true">${v}</svg>` : icon(v);
     const head = g => { const c = G[g] || {}; return `<li class="ac-listbox__group ac-command__group" role="presentation"${c.color ? ` style="--ac-group:${esc(c.color)}"` : ''}>${gIcon(c.icon)}<span>${esc(g)}</span></li>`; };
     const render = () => {
-      const q = norm(input.value); flat = o.items.filter(i => norm(i.label + ' ' + (i.group || '') + ' ' + (i.keywords || '')).includes(q)).slice(0, max);
+      const q = norm(input.value); flat = o.items.filter(i => norm(i.label + ' ' + (i.aliases || '') + ' ' + (i.group || '') + ' ' + (i.keywords || '')).includes(q));
+      // com texto digitado, ordena por relevância: nome que começa com o termo, nome alternativo (aliases, ex.: o termo em
+      // inglês), nome que contém o termo, grupo e, por último, palavras-chave (descrição). Sem texto, fica a ordem original.
+      if (q) { const rank = i => { const l = norm(i.label), al = norm(i.aliases || '').split(/\s*,\s*/); return l.startsWith(q) ? 0 : al.some(x => x.startsWith(q)) ? 1 : l.includes(q) ? 2 : al.some(x => x.includes(q)) ? 3 : norm(i.group || '').includes(q) ? 4 : 5; };
+        flat = flat.map((it, k) => [rank(it), k, it]).sort((x, y) => x[0] - y[0] || x[1] - y[1]).map(x => x[2]);
+        // reagrupa: cada grupo aparece uma vez, na ordem do seu melhor resultado (sem título de grupo repetido)
+        const ord = [...new Set(flat.map(it => it.group))]; flat = ord.flatMap(g => flat.filter(it => it.group === g)); }
+      flat = flat.slice(0, max);
       act = Math.min(act, Math.max(0, flat.length - 1)); let g = null, h = '';
       flat.forEach((it, i) => { if (it.group !== g) { g = it.group; if (g) h += head(g); } h += `<li class="ac-option" role="option" id="ac-cmd-${i}" data-i="${i}" aria-selected="${i === act}">${esc(it.label)}${it.hint ? `<small>${esc(it.hint)}</small>` : ''}</li>`; });
       lb.innerHTML = h || '<li class="ac-listbox__empty">Nenhum resultado.</li>';

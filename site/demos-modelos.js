@@ -36,7 +36,7 @@ ${inner}
   const faq = (q, a, open) => `<div class="ac-accordion__item${open ? ' is-open' : ''}"><button class="ac-accordion__trigger" type="button">${q}${I('chevron')}</button><div class="ac-accordion__panel"><div><p>${a}</p></div></div></div>`;
 
   const NOVOS = [
-    { id: 'tpl-dashboard', grupo: 'Modelos', nome: 'Painel (dashboard)', novo: '2026-10-28',
+    { id: 'tpl-dashboard', grupo: 'Modelos', nome: 'Painel de controle', aka: 'Dashboard', novo: '2026-10-28',
       desc: 'App shell com menu lateral, topo com busca, quatro números com tendência, gráfico principal com painel de apoio ao lado (padrão “supporting pane” do Material 3) e a tabela das últimas movimentações. Abaixo de 720 px o menu sai e a tabela vira cartões.',
       ref: { nome: 'NN/g · Dashboards e Material 3 · Layouts canônicos', url: 'https://m3.material.io/foundations/adaptive-design/canonical-layouts' },
       wide: true,
@@ -84,7 +84,7 @@ ${inner}
       api: [['.ac-shell > .ac-shell__in', 'div', '—', 'O .ac-shell é medido (container query) e o __in é a grade menu + conteúdo'], ['.ac-shell__top / __kpis / __grid', 'div', '—', 'Topo, linha de números (4 → 2 → 1 colunas) e gráfico com painel de apoio (2/3 + 1/3)'], ['.ac-shell__brand-m', 'span', '—', 'Marca que aparece quando o menu lateral sai (abaixo de 720 px)']],
       a11y: ['Um <h2> por tela e regiões com nome (menu “Principal”).', 'Números sempre com o texto da tendência, não só a cor.', 'Gráficos com rótulo e a tabela com <caption> para leitor de tela.'] },
 
-    { id: 'tpl-login', grupo: 'Modelos', nome: 'Tela de entrada (login)', aka: 'Login, Sign in', novo: '2026-10-28',
+    { id: 'tpl-login', grupo: 'Modelos', nome: 'Tela de entrada', aka: 'Login', novo: '2026-10-28',
       desc: 'Tela de entrada com foto e depoimento ao lado do formulário. Segue o GOV.UK e a NN/g: e-mail e senha com “mostrar senha” (o campo de senha do Orthos), colar permitido, “Esqueci a senha” à vista e a opção de entrar com um código por e-mail (Input OTP), sem senha.',
       ref: { nome: 'GOV.UK · Senhas e NN/g · Login sem senha', url: 'https://design-system.service.gov.uk/patterns/passwords/' },
       wide: true,
@@ -113,7 +113,7 @@ ${inner}
       api: [['.ac-auth > .ac-auth__in', 'div', '—', 'Painel de imagem + formulário; abaixo de 720 px fica só o formulário'], ['.ac-auth__panel', 'aside', '—', 'Foto de fundo (img) com depoimento em .ac-auth__quote'], ['.ac-auth__box', 'form', '—', 'Coluna do formulário (até 380 px)'], ['.ac-auth__or', 'div', '—', 'Divisor “ou”']],
       a11y: ['Rótulos visíveis e autocomplete (username, current-password) para gerenciadores de senha.', 'Mostrar senha e colar permitidos (GOV.UK).', 'O código chega num campo único com one-time-code; o erro é anunciado.'] },
 
-    { id: 'tpl-checkout', grupo: 'Modelos', nome: 'Pagamento (checkout)', novo: '2026-10-28',
+    { id: 'tpl-checkout', grupo: 'Modelos', nome: 'Pagamento', aka: 'Checkout', novo: '2026-10-28',
       desc: 'Checkout no padrão Baymard: poucos campos, compra sem cadastro, bandeira do cartão detectada e número espaçado enquanto digita, área de pagamento destacada e o resumo com o total sempre à vista (no celular, o resumo vem primeiro). Com erro, o que foi digitado continua lá.',
       ref: { nome: 'Baymard · Checkout e formulário de cartão', url: 'https://baymard.com/blog/payment-ux' },
       wide: true,

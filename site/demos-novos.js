@@ -49,7 +49,7 @@
       a11y: ['A toolbar tem um só ponto de Tab; ← → Home End andam entre os itens.', 'Toggle anuncia o estado por aria-pressed.', 'Botões só com ícone têm aria-label e dica.'] },
 
     /* ---------- Formulários ---------- */
-    { id: 'select', grupo: 'Formulários', nome: 'Lista de opções (Select)', aka: 'Select', novo: '2026-10-27',
+    { id: 'select', grupo: 'Formulários', nome: 'Lista de opções', aka: 'Select', novo: '2026-10-27',
       desc: 'Lista de opções desenhada sobre um <select> nativo: o formulário continua recebendo o valor, com grupos, opção desabilitada e busca por digitação.',
       ref: { nome: 'Radix · Select', url: 'https://www.radix-ui.com/primitives/docs/components/select' },
       html: `<div style="display:grid;gap:16px;width:min(300px,100%)">
@@ -166,7 +166,7 @@
       a11y: ['O balão é um diálogo não modal com título e texto ligados por aria-labelledby/describedby.', '← → andam entre os passos; Esc fecha e devolve o foco.', 'O foco vai para “Próximo” a cada passo.'] },
 
     /* ---------- Feedback ---------- */
-    { id: 'popover', grupo: 'Feedback', nome: 'Balão e cartão de prévia (Popover, Hover card)', aka: 'Popover e Hover card', novo: '2026-10-27',
+    { id: 'popover', grupo: 'Feedback', nome: 'Balão e cartão de prévia', aka: 'Popover, Hover card', novo: '2026-10-27',
       desc: 'Balão para conteúdo interativo curto, preso a um botão; cartão de prévia, com conteúdo rico, ao passar o mouse ou focar um link.',
       ref: { nome: 'Radix · Popover e Hover Card', url: 'https://www.radix-ui.com/primitives/docs/components/popover' },
       html: `<div class="ac-btn-group">
@@ -232,7 +232,7 @@
       api: [['data-ac="area"', 'div', '—', 'data-values, data-compare, data-labels, data-label'], ['.ac-hbars', '<ul>', '—', 'Cada <li>: rótulo, trilha com --v e valor'], ['.ac-goal', 'div', '—', '--v (atual) e --goal (marca da meta)'], ['.ac-stack', 'div', '—', 'Segmentos com --v (peso) e --c (cor)']],
       a11y: ['Área: foco no gráfico e ← → leem cada ponto.', '“Ver tabela” mostra os mesmos números em tabela.', 'Barras empilhadas têm descrição completa em aria-label.'] },
 
-    { id: 'collapsible', grupo: 'Dados', nome: 'Cartão e cartão recolhível (Card)', aka: 'Card e cartão recolhível', novo: '2026-10-27',
+    { id: 'collapsible', grupo: 'Dados', nome: 'Cartão e cartão recolhível', aka: 'Card', novo: '2026-10-27',
       desc: 'O cartão base (cabeçalho, corpo e rodapé) e o cartão que abre e fecha com resumo, para listas longas de dados.',
       ref: { nome: 'shadcn/ui · Collapsible', url: 'https://ui.shadcn.com/docs/components/collapsible' },
       html: `<div style="display:grid;gap:14px;width:min(440px,100%)">

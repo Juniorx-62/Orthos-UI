@@ -65,7 +65,7 @@
       api: [['data-ac="magnetic"', 'atributo', '—', 'Ativa o efeito'], ['data-strength', 'número', '0.35', 'Intensidade do deslocamento (0–1)']],
       a11y: ['Desativado automaticamente com prefers-reduced-motion.'] },
 
-    { id: 'badge', grupo: 'Fundamentos', nome: 'Selo e tecla (Badge, Kbd)', aka: 'Badge e Kbd', desc: 'Rótulos curtos de status, sempre com texto (não só cor). Kbd para atalhos de teclado.',
+    { id: 'badge', grupo: 'Fundamentos', nome: 'Selo e tecla', aka: 'Badge, Kbd', desc: 'Rótulos curtos de status, sempre com texto (não só cor). Kbd para atalhos de teclado.',
       ref: { nome: 'shadcn/ui · Badge', url: 'https://ui.shadcn.com/docs/components/badge' },
       html: `<div class="ac-btn-group">
   <span class="ac-badge">Rascunho</span>
@@ -90,7 +90,7 @@
       api: [['data-status', '"online" | "busy"', '—', 'Indicador de presença'], ['.ac-avatar-stack', 'classe', '—', 'Sobrepõe avatares; hover eleva']],
       a11y: ['Em pilhas, descreva o grupo com aria-label.'] },
 
-    { id: 'tooltip', grupo: 'Fundamentos', nome: 'Dica (Tooltip)', aka: 'Tooltip', desc: 'Dica curta que aparece ao passar o mouse ou no foco do teclado. Para ícones e abreviações, nunca para conteúdo essencial.',
+    { id: 'tooltip', grupo: 'Fundamentos', nome: 'Dica', aka: 'Tooltip', desc: 'Dica curta que aparece ao passar o mouse ou no foco do teclado. Para ícones e abreviações, nunca para conteúdo essencial.',
       ref: { nome: 'Radix · Tooltip', url: 'https://www.radix-ui.com/primitives/docs/components/tooltip' },
       html: `<div class="ac-btn-group">
   <button class="ac-btn ac-btn--secondary ac-btn--icon" type="button" aria-label="Copiar" data-tip="Copiar link">${ico(P.copy)}</button>
@@ -101,7 +101,7 @@
       a11y: ['Abre com foco de teclado e fecha com Esc.', 'Vinculada por aria-describedby.'] },
 
     /* ---------------- Formulários ---------------- */
-    { id: 'input', grupo: 'Formulários', nome: 'Campo de texto (Input)', aka: 'Input e Field', desc: 'Campo com rótulo, ajuda e erro associados. Ícones, atalho e contador de caracteres.',
+    { id: 'input', grupo: 'Formulários', nome: 'Campo de texto', aka: 'Input', desc: 'Campo com rótulo, ajuda e erro associados. Ícones, atalho e contador de caracteres.',
       ref: { nome: 'shadcn/ui · Field', url: 'https://ui.shadcn.com/docs/components/field' },
       html: `<div style="display:grid;gap:18px;width:min(360px,100%)">
   <div class="ac-field"><label class="ac-label" for="d-email">E-mail</label><input class="ac-input" id="d-email" type="email" placeholder="nome@empresa.com"><p class="ac-hint">Usaremos só para avisos da conta.</p></div>
@@ -127,7 +127,7 @@
       api: [['data-ac="validate"', '<form>', '—', 'Ativa validação nativa com mensagens próprias'], ['required / minlength / type="email" / pattern', 'HTML', '—', 'Regras usadas'], ['data-pattern-msg', 'texto', '—', 'Mensagem para pattern']],
       a11y: ['Erros aparecem em texto ao lado do campo.', 'Ao enviar com erros, o foco vai para o primeiro campo inválido.'] },
 
-    { id: 'otp', grupo: 'Formulários', nome: 'Código de verificação (OTP)', aka: 'Input OTP', desc: 'Código segmentado num único campo: um anel desliza até a casa ativa, os dígitos entram girando, colar deixa um rastro e, ao completar, as casas ondulam enquanto o código é conferido. Certo: varredura verde com salto. Errado: limpa, anel vermelho e mensagem.',
+    { id: 'otp', grupo: 'Formulários', nome: 'Código de verificação', aka: 'OTP', desc: 'Código segmentado num único campo: um anel desliza até a casa ativa, os dígitos entram girando, colar deixa um rastro e, ao completar, as casas ondulam enquanto o código é conferido. Certo: varredura verde com salto. Errado: limpa, anel vermelho e mensagem.',
       ref: { nome: 'Kobra · Input OTP', url: 'https://kobra.systems/components/input-otp' },
       html: `<div style="display:grid;gap:12px;justify-items:center">
   <div class="ac-otp" data-ac="otp" data-length="6" data-valid="888813"></div>
@@ -155,7 +155,7 @@
       api: [['.ac-check > input[type=checkbox|radio]', 'HTML', '—', 'Checkbox e radio'], ['.ac-switch > input[role=switch]', 'HTML', '—', 'Alternador de efeito imediato']],
       a11y: ['Controles nativos: teclado e leitores de tela funcionam sem JS.', 'Agrupe opções em <fieldset> com <legend>.'] },
 
-    { id: 'slider', grupo: 'Formulários', nome: 'Controle deslizante (Slider)', aka: 'Slider', desc: 'Range nativo com trilha preenchida, valor ao vivo e polegar que cresce ao arrastar.',
+    { id: 'slider', grupo: 'Formulários', nome: 'Controle deslizante', aka: 'Slider', desc: 'Range nativo com trilha preenchida, valor ao vivo e polegar que cresce ao arrastar.',
       ref: { nome: 'Radix · Slider', url: 'https://www.radix-ui.com/primitives/docs/components/slider' },
       html: `<div style="display:grid;gap:20px;width:min(360px,100%)">
   <div class="ac-field"><label class="ac-label" for="s1">Volume</label><div class="ac-slider-row"><input class="ac-slider" id="s1" type="range" min="0" max="100" value="64" data-ac="slider"><output for="s1"></output></div></div>
@@ -172,19 +172,19 @@
       api: [['data-ac="segmented"', 'container', '—', 'Ativa o grupo'], ['ac:change', 'evento', '—', 'detail: texto da opção']],
       a11y: ['Botões com aria-pressed; o grupo tem aria-label.'] },
 
-    { id: 'combobox', grupo: 'Formulários', nome: 'Busca com lista (Combobox)', aka: 'Combobox', desc: 'Seleção com busca, destaque do trecho encontrado, teclado completo e estado vazio.',
+    { id: 'combobox', grupo: 'Formulários', nome: 'Busca com lista', aka: 'Combobox', desc: 'Seleção com busca, destaque do trecho encontrado, teclado completo e estado vazio.',
       ref: { nome: 'shadcn/ui · Combobox', url: 'https://ui.shadcn.com/docs/components/combobox' },
       html: `<div class="ac-field" style="width:min(300px,100%)"><label class="ac-label" for="cb-pais">País</label><div class="ac-combo" data-ac="combo" data-options='${attr(countries)}'><input class="ac-input ac-select" id="cb-pais" placeholder="Selecione um país"></div></div>`,
       api: [['data-options', 'JSON', '[]', 'Lista de { label, hint }'], ['ac:change', 'evento', '—', 'detail: opção escolhida']],
       a11y: ['Padrão ARIA combobox com aria-activedescendant.', '↑ ↓ navegam, Enter escolhe, Esc fecha.'] },
 
-    { id: 'datepicker', grupo: 'Formulários', nome: 'Seletor de data (Date picker)', aka: 'Date picker', desc: 'Calendário em balão com navegação por mês e por setas, em português.',
+    { id: 'datepicker', grupo: 'Formulários', nome: 'Seletor de data', aka: 'Date picker', desc: 'Calendário em balão com navegação por mês e por setas, em português.',
       ref: { nome: 'shadcn/ui · Date Picker', url: 'https://ui.shadcn.com/docs/components/date-picker' },
       html: `<div class="ac-field"><span class="ac-label" id="dp-l">Data de entrega</span><button class="ac-btn ac-btn--secondary ac-btn--square ac-date-trigger" type="button" data-ac="datepicker" data-empty aria-labelledby="dp-l">${ico(P.calendar)}<span>Escolha uma data</span></button></div>`,
       api: [['data-ac="datepicker"', 'button', '—', 'Abre o calendário'], ['ac:change', 'evento', '—', 'detail: Date']],
       a11y: ['Setas movem entre dias; Enter seleciona; Esc fecha e devolve o foco.'] },
 
-    { id: 'dropzone', grupo: 'Formulários', nome: 'Envio de arquivos (Dropzone)', aka: 'File dropzone', desc: 'Arraste e solte com reação visual, lista de arquivos e progresso de envio (simulado).',
+    { id: 'dropzone', grupo: 'Formulários', nome: 'Envio de arquivos', aka: 'Dropzone', desc: 'Arraste e solte com reação visual, lista de arquivos e progresso de envio (simulado).',
       ref: { nome: 'Kobra · Magnetic Dropzone', url: 'https://kobra.systems/components/magnetic-dropzone' },
       html: `<div style="width:min(420px,100%)">
   <div class="ac-drop" data-ac="dropzone" aria-label="Enviar arquivos"><span class="ac-drop__icon">${I('upload')}</span><strong>Solte arquivos aqui</strong><span>ou clique para escolher · até 10 MB</span><input type="file" multiple hidden></div>
@@ -200,7 +200,7 @@
       a11y: ['radiogroup com setas para navegar.', 'Respeita prefers-reduced-motion.'] },
 
     /* ---------------- Navegação ---------------- */
-    { id: 'tabs', grupo: 'Navegação', nome: 'Abas (Tabs)', aka: 'Tabs', desc: 'Abas com indicador que desliza até a aba ativa e painel que entra suavemente.',
+    { id: 'tabs', grupo: 'Navegação', nome: 'Abas', aka: 'Tabs', desc: 'Abas com indicador que desliza até a aba ativa e painel que entra suavemente.',
       ref: { nome: 'shadcn/ui · Tabs', url: 'https://ui.shadcn.com/docs/components/tabs' },
       html: `<div class="ac-tabs" data-ac="tabs" style="width:min(440px,100%)">
   <div class="ac-tabs__list" aria-label="Seções do projeto"><button class="ac-tabs__tab" type="button" aria-selected="true">Visão geral</button><button class="ac-tabs__tab" type="button">Métricas</button><button class="ac-tabs__tab" type="button">Relatórios</button><button class="ac-tabs__tab" type="button">Ajustes</button></div>
@@ -212,7 +212,7 @@
       api: [['data-ac="tabs"', 'container', '—', 'Precisa de .ac-tabs__list, .ac-tabs__tab e .ac-tabs__panel'], ['aria-selected="true"', 'tab', '1ª', 'Aba inicial']],
       a11y: ['Padrão ARIA tabs: ← → Home End.', 'Só a aba ativa entra na ordem de Tab.'] },
 
-    { id: 'sidebar', grupo: 'Navegação', nome: 'Menu lateral (Sidebar)', aka: 'Sidebar', desc: 'Menu lateral agrupado, com item ativo marcado e modo recolhido com dicas.',
+    { id: 'sidebar', grupo: 'Navegação', nome: 'Menu lateral', aka: 'Sidebar', desc: 'Menu lateral agrupado, com item ativo marcado e modo recolhido com dicas.',
       ref: { nome: 'shadcn/ui · Sidebar', url: 'https://ui.shadcn.com/docs/components/sidebar' },
       html: `<nav class="ac-sidebar" data-ac="sidebar" aria-label="Principal">
   <div class="ac-sidebar__head"><span class="ac-sidebar__brand"><span class="ac-sidebar__logo"></span><span>Estúdio</span></span><button class="ac-btn ac-btn--ghost ac-btn--icon ac-btn--sm" type="button" data-ac-toggle aria-label="Recolher menu" aria-expanded="true">${ico(P.panel)}</button></div>
@@ -227,7 +227,7 @@
       api: [['data-ac="sidebar"', 'nav', '—', 'Ativa itens e o botão de recolher'], ['data-collapsed', '"true" | "false"', 'false', 'Estado recolhido'], ['[data-ac-toggle]', 'botão', '—', 'Alterna o modo'], ['.ac-sidebar__resize[data-ac-resize]', 'alça', '—', 'Arrastar muda a largura (200–420 px); abaixo de 180 px recolhe; duplo clique volta ao padrão'], ['data-width', 'px', '240', 'Largura padrão (a escolhida fica salva no navegador)']],
       a11y: ['aria-current="page" no item ativo.', 'No modo recolhido, os rótulos viram tooltips.', 'A alça é um separador focável: ← → mudam a largura (Shift anda mais), Home/End vão ao mínimo e ao máximo.'] },
 
-    { id: 'menu', grupo: 'Navegação', nome: 'Menu suspenso (Dropdown)', aka: 'Dropdown menu', desc: 'Menu de ações com atalhos, separadores e ação destrutiva destacada.',
+    { id: 'menu', grupo: 'Navegação', nome: 'Menu suspenso', aka: 'Dropdown', desc: 'Menu de ações com atalhos, separadores e ação destrutiva destacada.',
       ref: { nome: 'Radix · Dropdown Menu', url: 'https://www.radix-ui.com/primitives/docs/components/dropdown-menu' },
       html: `<button class="ac-btn ac-btn--secondary" type="button" data-ac="menu" data-target="#menu-demo">Opções ${I('chevron')}</button>
 <div class="ac-pop" id="menu-demo" hidden>
@@ -247,7 +247,7 @@
       api: [['Orthos.command({ items, groups })', 'função', '—', 'Abre a paleta (um <dialog> só, reaproveitado)'], ['items', 'array', '—', '{ label, group, hint, keywords, run }; hint aparece à direita do item (ex.: "novo")'], ['groups', 'objeto', '—', '{ "Nome do grupo": { icon, color } }: ícone (nome de Orthos.icon ou <path …/> de 24×24) e cor (qualquer cor CSS, inclusive var(--x)) no título do grupo'], ['limit', 'número', '60', 'Máximo de resultados; Infinity mostra todos'], ['placeholder', 'texto', 'Buscar comandos…', 'Texto do campo de busca']],
       a11y: ['Combobox dentro de <dialog>; foco preso e Esc fecha.', '↑ ↓ movem o item ativo (aria-activedescendant e aria-selected) e Enter abre; o ativo e o título do seu grupo ficam sempre à vista.', 'Título de grupo é só visual (role="presentation") e o ícone tem aria-hidden; o nome do grupo continua sendo buscado.'] },
 
-    { id: 'breadcrumb', grupo: 'Navegação', nome: 'Trilha e paginação (Breadcrumb, Pagination)', aka: 'Breadcrumb e Pagination', desc: 'Trilha de localização e paginação compacta.',
+    { id: 'breadcrumb', grupo: 'Navegação', nome: 'Trilha e paginação', aka: 'Breadcrumb, Pagination', desc: 'Trilha de localização e paginação compacta.',
       ref: { nome: 'shadcn/ui · Breadcrumb', url: 'https://ui.shadcn.com/docs/components/breadcrumb' },
       html: `<nav aria-label="Trilha"><ol class="ac-crumbs"><li><a href="#">Início</a></li><li><a href="#">Projetos</a></li><li><a href="#">Site 2026</a></li><li><span aria-current="page">Configurações</span></li></ol></nav>
 <nav class="ac-pager" data-ac="pagination" data-pages="12" data-page="1" aria-label="Paginação"></nav>
@@ -255,7 +255,7 @@
       api: [['.ac-crumbs', '<ol>', '—', 'Trilha'], ['data-ac="pagination"', '<nav>', '—', 'Monta a paginação; o clique troca a página e emite ac:change (número)'], ['data-pages / data-page', 'número', '1 / 1', 'Total de páginas e página atual'], ['data-siblings', 'número', '1', 'Quantas páginas vizinhas da atual aparecem antes do "…"'], ['el._pagination.go(n)', 'JS', '—', 'Vai para a página n sem emitir evento'], ['.ac-pager', '<nav>', '—', 'Só o visual (sem data-ac); aria-current="page" na atual']],
       a11y: ['<nav> com aria-label; página atual com aria-current.'] },
 
-    { id: 'stepper', grupo: 'Navegação', nome: 'Etapas (Stepper)', aka: 'Stepper', desc: 'Etapas com progresso preenchendo a linha e conclusão animada.',
+    { id: 'stepper', grupo: 'Navegação', nome: 'Etapas', aka: 'Stepper', desc: 'Etapas com progresso preenchendo a linha e conclusão animada.',
       ref: { nome: 'Ant Design · Steps', url: 'https://ant.design/components/steps' },
       html: `<div data-ac="stepper" style="width:min(560px,100%);display:grid;gap:22px">
   <ol class="ac-steps"><li data-state="current">Conta</li><li>Equipe</li><li>Plano</li><li>Revisão</li></ol>
@@ -264,7 +264,7 @@
       api: [['data-ac="stepper"', 'container', '—', 'Controla .ac-steps'], ['data-step="1|-1"', 'botão', '—', 'Avança/volta']],
       a11y: ['Etapa atual com aria-current="step".'] },
 
-    { id: 'accordion', grupo: 'Navegação', nome: 'Acordeão (Accordion)', aka: 'Accordion', desc: 'Perguntas frequentes com abertura suave de altura automática.',
+    { id: 'accordion', grupo: 'Navegação', nome: 'Acordeão', aka: 'Accordion', desc: 'Perguntas frequentes com abertura suave de altura automática.',
       ref: { nome: 'Motion-Primitives · Accordion', url: 'https://motion-primitives.com/docs/accordion' },
       html: `<div class="ac-accordion" data-ac="accordion" style="width:min(480px,100%)">
   <div class="ac-accordion__item is-open"><button class="ac-accordion__trigger" type="button">Posso cancelar quando quiser?${ico(P.plus)}</button><div class="ac-accordion__panel"><div><p>Sim. O cancelamento vale no fim do ciclo e você mantém o acesso até lá.</p></div></div></div>
@@ -275,7 +275,7 @@
       a11y: ['Botões com aria-expanded e aria-controls.'] },
 
     /* ---------------- Feedback ---------------- */
-    { id: 'toast', grupo: 'Feedback', nome: 'Aviso rápido (Toast)', aka: 'Toast', desc: 'Notificações empilhadas com entrada em mola, pausa ao passar o mouse e ação de desfazer.',
+    { id: 'toast', grupo: 'Feedback', nome: 'Aviso rápido', aka: 'Toast', desc: 'Notificações empilhadas com entrada em mola, pausa ao passar o mouse e ação de desfazer.',
       ref: { nome: 'shadcn/ui · Toast', url: 'https://ui.shadcn.com/docs/components/sonner' },
       html: `<div class="ac-btn-group">
   <button class="ac-btn ac-btn--secondary" type="button" data-demo-toast="success">Sucesso</button>
@@ -286,7 +286,7 @@
       api: [['Orthos.toast({ title, desc, type, action, duration })', 'função', '—', 'type: "default" | "success" | "danger" | "loading"; action: { label, onClick }; retorna uma função que fecha, com .update()'], ['Orthos.toast.promise(promessa, { loading, success, error })', 'função', '—', 'Aviso que acompanha a tarefa: carregando, depois sucesso ou erro'], ['Alt+T', 'atalho', '—', 'Leva o foco ao aviso mais recente; Esc o dispensa'], ['arrastar para a direita', 'gesto', '—', 'Dispensa o aviso']],
       a11y: ['Região aria-live="polite" criada no carregamento: o primeiro aviso também é anunciado.', 'Erros usam role="alert".', 'Alt+T foca os avisos; a pilha abre com foco ou hover.', 'Não some enquanto o cursor está em cima.'] },
 
-    { id: 'alert', grupo: 'Feedback', nome: 'Alerta e faixa (Alert, Banner)', aka: 'Alert e Banner', desc: 'Avisos em contexto, que ficam até serem lidos.',
+    { id: 'alert', grupo: 'Feedback', nome: 'Alerta e faixa', aka: 'Alert, Banner', desc: 'Avisos em contexto, que ficam até serem lidos.',
       ref: { nome: 'shadcn/ui · Alert', url: 'https://ui.shadcn.com/docs/components/alert' },
       html: `<div style="display:grid;gap:12px;width:min(520px,100%)">
   <div class="ac-banner">Nova versão disponível. <a href="#">Ver novidades →</a></div>
@@ -297,7 +297,7 @@
       api: [['.ac-alert--success / --warning / --danger', 'classe', 'neutro', 'Tom'], ['.ac-banner', 'classe', '—', 'Faixa de aviso global']],
       a11y: ['Use role="alert" só para erros urgentes.'] },
 
-    { id: 'dialog', grupo: 'Feedback', nome: 'Diálogo e confirmação (Dialog)', aka: 'Dialog e confirmação', desc: 'Modal nativo com entrada em mola, saída suave e confirmação destrutiva que explica o impacto.',
+    { id: 'dialog', grupo: 'Feedback', nome: 'Diálogo e confirmação', aka: 'Dialog', desc: 'Modal nativo com entrada em mola, saída suave e confirmação destrutiva que explica o impacto.',
       ref: { nome: 'Radix · Alert Dialog', url: 'https://www.radix-ui.com/primitives/docs/components/alert-dialog' },
       html: `<div class="ac-btn-group">
   <button class="ac-btn ac-btn--secondary" type="button" data-ac-open="#dlg-edit">Editar perfil</button>
@@ -317,7 +317,7 @@
       api: [['data-ac-open="#id"', 'gatilho', '—', 'Abre o <dialog>'], ['data-ac-close', 'botão', '—', 'Fecha com animação'], ['Orthos.open / close', 'função', '—', 'Controle por código']],
       a11y: ['<dialog> nativo: foco preso, Esc e clique fora fecham.', 'Na confirmação destrutiva, o foco inicial vai para “Cancelar”.'] },
 
-    { id: 'sheet', grupo: 'Feedback', nome: 'Painel lateral (Sheet)', aka: 'Sheet (painel lateral)', desc: 'Painel lateral para edições longas sem perder o contexto da página.',
+    { id: 'sheet', grupo: 'Feedback', nome: 'Painel lateral', aka: 'Sheet', desc: 'Painel lateral para edições longas sem perder o contexto da página.',
       ref: { nome: 'shadcn/ui · Sheet', url: 'https://ui.shadcn.com/docs/components/sheet' },
       html: `<button class="ac-btn ac-btn--secondary" type="button" data-ac-open="#sheet-demo">Abrir filtros</button>
 <dialog class="ac ac-sheet" id="sheet-demo" aria-labelledby="sheet-t"><div class="ac-sheet__in">
@@ -332,7 +332,7 @@
       api: [['.ac-sheet', '<dialog>', '—', 'Painel à direita'], ['data-ac-open / data-ac-close', 'gatilhos', '—', 'Iguais ao Dialog']],
       a11y: ['Mesmo comportamento de foco do Dialog.'] },
 
-    { id: 'progress', grupo: 'Feedback', nome: 'Progresso e carregamento (Progress, Spinner)', aka: 'Progress e Spinner', desc: 'Progresso determinado (barra e anel), indeterminado e indicadores de espera curta.',
+    { id: 'progress', grupo: 'Feedback', nome: 'Progresso e carregamento', aka: 'Progress, Spinner', desc: 'Progresso determinado (barra e anel), indeterminado e indicadores de espera curta.',
       ref: { nome: 'Material 3 · Progress indicators', url: 'https://m3.material.io/components/progress-indicators/overview' },
       html: `<div style="display:grid;gap:22px;width:min(420px,100%)">
   <div class="ac-field"><div style="display:flex;justify-content:space-between" class="ac-label"><span id="pg-l">Importando contatos</span><span class="ac-number" id="pg-v">0%</span></div><div class="ac-progress" id="pg-bar" style="--v:0%" role="progressbar" aria-labelledby="pg-l" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div></div>
@@ -342,7 +342,7 @@
       api: [['.ac-progress (--v)', 'CSS', '40%', 'Barra; data-indeterminate para indeterminado'], ['.ac-ring (--v)', 'SVG', '0.65', 'Anel de 0 a 1'], ['.ac-spinner / .ac-dots', 'classe', '—', 'Esperas curtas']],
       a11y: ['role="progressbar" com aria-valuenow.'] },
 
-    { id: 'skeleton', grupo: 'Feedback', nome: 'Esqueleto automático (Skeleton)', aka: 'Skeleton automático', desc: 'Gera o esqueleto medindo a interface real, como o boneyard: os blocos batem com o layout final.',
+    { id: 'skeleton', grupo: 'Feedback', nome: 'Esqueleto automático', aka: 'Skeleton', desc: 'Gera o esqueleto medindo a interface real, como o boneyard: os blocos batem com o layout final.',
       ref: { nome: 'boneyard', url: 'https://boneyard.vercel.app/overview' },
       html: `<div style="display:grid;gap:14px;width:min(460px,100%)">
   <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
@@ -366,14 +366,14 @@
       a11y: ['Texto orienta a ação; não use só ilustração.'] },
 
     /* ---------------- Dados ---------------- */
-    { id: 'table', grupo: 'Dados', nome: 'Tabela de dados (Data table)', aka: 'Data table', desc: 'Tabela com busca, filtro de status, ordenação, seleção em lote com desfazer, paginação e estado vazio.',
+    { id: 'table', grupo: 'Dados', nome: 'Tabela de dados', aka: 'Data table', desc: 'Tabela com busca, filtro de status, ordenação, seleção em lote com desfazer, paginação e estado vazio.',
       ref: { nome: 'shadcn/ui · Data Table', url: 'https://ui.shadcn.com/docs/components/data-table' },
       wide: true,
       html: `<div data-ac="table" style="width:100%" data-per-page="5" data-columns='${attr(cols)}' data-rows='${attr(people)}'></div>`,
       api: [['data-columns', 'JSON', '—', '{ k, label, sort, num, money }'], ['data-rows', 'JSON', '—', 'Registros (precisam de id)'], ['data-per-page', 'número', '5', 'Linhas por página']],
       a11y: ['Cabeçalhos com aria-sort.', 'Checkbox “selecionar página” com estado indeterminado.', 'Contagem anunciada via aria-live.'] },
 
-    { id: 'stats', grupo: 'Dados', nome: 'Cartões de indicadores (Stat cards)', aka: 'Stat cards e gráficos', desc: 'Indicadores com número animado, variação, sparkline que se desenha e barras com dica.',
+    { id: 'stats', grupo: 'Dados', nome: 'Cartões de indicadores', aka: 'Stat cards', desc: 'Indicadores com número animado, variação, sparkline que se desenha e barras com dica.',
       ref: { nome: 'shadcn/ui · Chart', url: 'https://ui.shadcn.com/docs/components/chart' },
       wide: true,
       html: `<div style="display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));width:100%">
@@ -401,7 +401,7 @@
       api: [['.ac-text-shimmer', 'classe', '—', 'Brilho contínuo'], ['data-ac="scramble"', 'elemento', '—', 'Embaralha no hover/foco']],
       a11y: ['Scramble mantém o texto real no aria-label.'] },
 
-    { id: 'marquee', grupo: 'Movimento', nome: 'Faixa rolante (Marquee)', aka: 'Marquee', desc: 'Faixa contínua de logos ou depoimentos, que pausa ao passar o mouse.',
+    { id: 'marquee', grupo: 'Movimento', nome: 'Faixa rolante', aka: 'Marquee', desc: 'Faixa contínua de logos ou depoimentos, que pausa ao passar o mouse.',
       ref: { nome: 'Magic UI · Marquee', url: 'https://magicui.design/docs/components/marquee' },
       html: `<div class="ac-marquee" style="width:100%;font:600 18px var(--ac-font);color:var(--ac-text-3)" aria-label="Clientes"><div class="ac-marquee__track"><span>Northwind</span><span>Acme Co.</span><span>Globex</span><span>Initech</span><span>Umbrella</span><span>Hooli</span></div><div class="ac-marquee__track" aria-hidden="true"><span>Northwind</span><span>Acme Co.</span><span>Globex</span><span>Initech</span><span>Umbrella</span><span>Hooli</span></div></div>`,
       api: [['.ac-marquee > .ac-marquee__track ×2', 'HTML', '—', 'Duplique a trilha (a 2ª com aria-hidden)'], ['--gap', 'CSS', '40px', 'Espaço entre itens']],
