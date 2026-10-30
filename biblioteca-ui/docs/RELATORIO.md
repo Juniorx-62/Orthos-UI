@@ -1,5 +1,7 @@
 # Relatório — Biblioteca de referências UI/UX (26/10/2026)
 
+> Registro de 26/10/2026. Em 29/10/2026 saíram a pasta `legacy/`, as 20 seções da vitrine e 5 fontes sem uso; o estado atual está em `MANUTENCAO.md`.
+
 ## 1. Diagnóstico do arquivo original (`mvp-validacao.html`, 9,9 MB)
 
 - É um **bundle Vite/React minificado** (um único `<script type="module">` de ~9,6 MB + 290 KB de CSS), com fontes Inter/Sora do Google Fonts (única dependência externa) e roteamento por hash.

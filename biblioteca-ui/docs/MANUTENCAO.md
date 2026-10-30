@@ -10,11 +10,9 @@ Sem build, sem dependências. Para servir por HTTP: `python -m http.server` na p
 | `index.html`, `css/app.css`, `js/app.js` | Interface (busca, filtros, fichas, comparação, favoritos, tema) |
 | `data/meta.js` | **Categorias, tipos, fontes e problemas de auditoria** (fonte única de metadados) |
 | `data/refs.js` | Referências externas curadas |
-| `data/local-4squad.js` | Conteúdo original do 4squad: 50 telas, 20 seções da vitrine, 117 peças de código |
+| `data/local-4squad.js` | Conteúdo original do 4squad: 50 telas e 117 peças de código |
 | `assets/4squad/` | As 100 capturas de tela (50 telas × claro/escuro) extraídas do arquivo original |
-| `legacy/biblioteca-4squad-original.html` | **O arquivo original, intacto** (hash idêntico ao `mvp-validacao.html`); a vitrine ao vivo dos componentes continua funcionando nele |
-| `legacy/pecas-4squad.json` | Os dados de “peças da base” em JSON |
-| `tests/check-links.py` | Verifica todas as URLs externas |
+| `tests/check-links.py` | Verifica todas as URLs externas (grava `links-resultado.json`, fora do git) |
 | `docs/` | Este arquivo, o relatório e as capturas antes/depois |
 
 ## Categorias
@@ -67,10 +65,9 @@ O tema fica em `uilib.tema`. Se o navegador bloquear o armazenamento, a bibliote
 
 Todo texto é inserido escapado; URLs só são aceitas se forem http/https; links externos usam `rel="noopener noreferrer"`. Nenhum código de exemplos externos é executado.
 
-## Arquivo original e pasta `work/` (28/10/2026)
+## Arquivo original, `legacy/` e pasta `work/` (limpeza de 29/10/2026)
 
-- `legacy/biblioteca-4squad-original.html` é byte a byte igual ao `mvp-validacao.html` (md5 `f6b08b42…`). O `.gitattributes` marca a pasta como `-text`, para o git não trocar o fim de linha e o hash continuar batendo em qualquer máquina.
-- O `mvp-validacao.html` recebido em 28/10/2026 foi comparado com esta cópia: **mesmo conteúdo**, nenhuma tela, seção ou peça nova. Nada foi regenerado.
-- A pasta `work/` da raiz (extração do bundle, `cv.json`, `sv.json`, `gen_local.py`, capturas brutas) saiu do git e do deploy: tem 26 MB, duplicava `assets/4squad/` e trazia o bundle do 4squad. Ela continua no disco de quem já tinha o repositório e está no histórico do git (`git checkout 7401fa1 -- work`).
-- Para regenerar a partir de uma versão nova do arquivo: extrair do bundle o `sv=JSON.parse('…')` (peças) e o `cv=JSON.parse(`…`)` (telas com imagens), gravar as imagens em `assets/4squad/tela-NN-{claro,escuro}.jpg`, atualizar `legacy/pecas-4squad.json`, rodar `work/gen_local.py` (o mapa `M` de categorias das telas 1–50 e a lista `vit` das 20 seções estão fixos no código: tela ou seção nova exige editar esse mapa) e depois `python tests/build-single.py`.
-- Defeitos conhecidos do original: "Entrar no console" e "Entrar no app" usam a mesma imagem nos quatro espaços (`tela-01`/`tela-02`), e o filtro de tipo das peças não tem "Constantes".
+- Saíram do repositório: `legacy/` (cópia de 9,9 MB do `mvp-validacao.html` e `pecas-4squad.json`), as 20 seções da vitrine (eram só atalhos para essa cópia), o selo “Na vitrine” das peças e 5 fontes que nenhuma referência usava (Tailwind Plus, Headless UI, Helios, NHS, React Aria). Sonner e cmdk ficaram: são dependências do 4squad, batuta, CRM-4ST e outros projetos.
+- A pasta `work/` da raiz (extração do bundle, `cv.json`, `sv.json`, `gen_local.py`, capturas brutas) foi apagada do disco. Tudo continua no histórico do git: `git checkout b4fa940 -- biblioteca-ui/legacy` e `git checkout 7401fa1 -- work`.
+- Para regenerar a partir de uma versão nova do arquivo: recuperar `work/` e `legacy/` do histórico, extrair do bundle o `sv=JSON.parse('…')` (peças) e o `cv=JSON.parse(`…`)` (telas com imagens), gravar as imagens em `assets/4squad/tela-NN-{claro,escuro}.jpg`, atualizar `legacy/pecas-4squad.json`, rodar `work/gen_local.py` (o mapa `M` de categorias das telas 1–50 está fixo no código) e depois `python tests/build-single.py`. O `gen_local.py` ainda gera a lista `vitrine` e o campo `naVitrine`: tire os dois do resultado.
+- Defeito conhecido do original: "Entrar no console" e "Entrar no app" usam a mesma imagem nos quatro espaços (`tela-01`/`tela-02`).

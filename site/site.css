@@ -33,12 +33,13 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 #nav::-webkit-scrollbar, .panel::-webkit-scrollbar { display: none; }
 .nav__g { display: flex; align-items: center; gap: 8px; margin: 14px 0 4px; padding: 14px 8px 0; border-top: 1px solid var(--ac-border); font: 600 var(--site-small) var(--ac-font); color: var(--ac-text); letter-spacing: .01em; }
 .nav__g .ac-icon { width: 17px; height: 17px; flex: none; color: var(--g, var(--ac-text-3)); stroke-width: 1.7; }
-/* cor de cada categoria: tons médios no claro, mais claros no escuro */
-.nav__g[data-g="fundamentos"] { --g: #0f9f6e; } .nav__g[data-g="formularios"] { --g: #2f6fe4; } .nav__g[data-g="navegacao"] { --g: #7c4ddb; } .nav__g[data-g="dados"] { --g: #0e93a8; }
-.nav__g[data-g="feedback"] { --g: #d97706; } .nav__g[data-g="movimento"] { --g: #db2777; } .nav__g[data-g="modelos"] { --g: #ea580c; }
-:root[data-theme="dark"] .nav__g[data-g="fundamentos"] { --g: #34d399; } :root[data-theme="dark"] .nav__g[data-g="formularios"] { --g: #60a5fa; } :root[data-theme="dark"] .nav__g[data-g="navegacao"] { --g: #a78bfa; } :root[data-theme="dark"] .nav__g[data-g="dados"] { --g: #22d3ee; }
-:root[data-theme="dark"] .nav__g[data-g="feedback"] { --g: #fbbf24; } :root[data-theme="dark"] .nav__g[data-g="movimento"] { --g: #f472b6; } :root[data-theme="dark"] .nav__g[data-g="modelos"] { --g: #fb923c; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nav__g[data-g="fundamentos"] { --g: #34d399; } :root:not([data-theme="light"]) .nav__g[data-g="formularios"] { --g: #60a5fa; } :root:not([data-theme="light"]) .nav__g[data-g="navegacao"] { --g: #a78bfa; } :root:not([data-theme="light"]) .nav__g[data-g="dados"] { --g: #22d3ee; } :root:not([data-theme="light"]) .nav__g[data-g="feedback"] { --g: #fbbf24; } :root:not([data-theme="light"]) .nav__g[data-g="movimento"] { --g: #f472b6; } :root:not([data-theme="light"]) .nav__g[data-g="modelos"] { --g: #fb923c; } }
+/* cor de cada categoria: tons médios no claro, mais claros no escuro. Ficam em --g-* no :root para o menu e a busca
+   (Ctrl K) usarem as mesmas; no menu, cada título lê a sua em --g pelo data-g */
+:root { --g-fundamentos: #0f9f6e; --g-formularios: #2f6fe4; --g-navegacao: #7c4ddb; --g-dados: #0e93a8; --g-feedback: #d97706; --g-movimento: #db2777; --g-modelos: #ea580c; }
+:root[data-theme="dark"] { --g-fundamentos: #34d399; --g-formularios: #60a5fa; --g-navegacao: #a78bfa; --g-dados: #22d3ee; --g-feedback: #fbbf24; --g-movimento: #f472b6; --g-modelos: #fb923c; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --g-fundamentos: #34d399; --g-formularios: #60a5fa; --g-navegacao: #a78bfa; --g-dados: #22d3ee; --g-feedback: #fbbf24; --g-movimento: #f472b6; --g-modelos: #fb923c; } }
+.nav__g[data-g="fundamentos"] { --g: var(--g-fundamentos); } .nav__g[data-g="formularios"] { --g: var(--g-formularios); } .nav__g[data-g="navegacao"] { --g: var(--g-navegacao); } .nav__g[data-g="dados"] { --g: var(--g-dados); }
+.nav__g[data-g="feedback"] { --g: var(--g-feedback); } .nav__g[data-g="movimento"] { --g: var(--g-movimento); } .nav__g[data-g="modelos"] { --g: var(--g-modelos); }
 .nav__g + .nav__a { margin-top: 2px; }
 .nav__a { display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 6px 8px; line-height: 1.35; border-radius: 8px; color: var(--ac-text-2); text-decoration: none; font-size: var(--site-read); transition: background .15s, color .15s; }
 .nav__a:hover { background: var(--ac-surface-2); color: var(--ac-text); }
@@ -49,6 +50,15 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 .side__foot { border-top: 1px solid var(--ac-border); padding-top: 10px; }
 .side__foot .ac-btn { width: 100%; justify-content: flex-start; font-size: var(--site-read); }
 .veil { position: fixed; inset: 0; z-index: 40; background: rgb(0 0 0 / .4); }
+
+/* ---------- busca (Ctrl K) com a mesma cara do menu ----------
+   ícone e cor de cada categoria chegam por Orthos.command({ groups }) (openSiteCommand); aqui só o que é do site:
+   itens em 16 px como no menu, selo "novo" igual ao do menu e rolagem invisível como a do #nav */
+.ac-command .ac-option { font-size: var(--site-read); }
+.ac-command .ac-option small { padding: 1px 6px; border-radius: 99px; background: var(--ac-surface-2); font: var(--site-small) var(--ac-font); color: var(--ac-text-3); }
+.ac-command .ac-option[aria-selected="true"] small { background: var(--ac-surface); box-shadow: inset 0 0 0 1px var(--ac-border); }
+.ac-command .ac-listbox { scrollbar-width: none; -ms-overflow-style: none; }
+.ac-command .ac-listbox::-webkit-scrollbar { display: none; }
 
 /* ---------- página de componente: palco + painel ---------- */
 .main { min-width: 0; outline: none; }
@@ -203,6 +213,8 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 .prose h2 { margin: 36px 0 12px; font: 600 var(--ac-fs-lg) var(--ac-font); }
 .prose .lead { color: var(--ac-text-2); font-size: var(--site-read); line-height: 1.6; max-width: 70ch; }
 .prose .api { max-width: 860px; }
+/* nomes longos de token (--ac-dur-fast/base/slow/overlay) quebram em qualquer ponto: sem isso a tabela passava 16px da tela no celular */
+.prose .api code { overflow-wrap: anywhere; }
 .nav__a .n { font-family: var(--ac-font); font-size: var(--site-small); padding: 1px 6px; border-radius: 99px; background: var(--ac-surface-2); }
 /* item do menu com nome longo: cresce em altura; ponto e selo "novo" ficam alinhados à primeira linha */
 .nav__a i { align-self: flex-start; margin-top: .5em; }

@@ -33,9 +33,11 @@
   <button class="ac-toggle" type="button" data-ac="toggle" aria-label="Itálico" data-tip="Itálico (Ctrl I)">${ico(P.italic)}</button>
   <button class="ac-toggle" type="button" data-ac="toggle" aria-label="Sublinhado" data-tip="Sublinhado (Ctrl U)">${ico(P.under)}</button>
   <hr class="ac-sep ac-sep--v" aria-orientation="vertical">
-  <button class="ac-toggle" type="button" data-ac="toggle" aria-pressed="true" aria-label="Alinhar à esquerda">${ico(P.left)}</button>
-  <button class="ac-toggle" type="button" data-ac="toggle" aria-label="Centralizar">${ico(P.center)}</button>
-  <button class="ac-toggle" type="button" data-ac="toggle" aria-label="Alinhar à direita">${ico(P.right)}</button>
+  <div class="ac-toggle-group" data-ac="toggle-group" aria-label="Alinhamento">
+    <button class="ac-toggle" type="button" aria-checked="true" aria-label="Alinhar à esquerda" value="esquerda">${ico(P.left)}</button>
+    <button class="ac-toggle" type="button" aria-label="Centralizar" value="centro">${ico(P.center)}</button>
+    <button class="ac-toggle" type="button" aria-label="Alinhar à direita" value="direita">${ico(P.right)}</button>
+  </div>
   <hr class="ac-sep ac-sep--v" aria-orientation="vertical">
   <button class="ac-toggle" type="button" aria-label="Inserir link">${ico(P.link)}</button>
 </div>
@@ -43,7 +45,7 @@
   <div class="ac-btn-joined" role="group" aria-label="Arquivo"><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button">Anterior</button><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button">Hoje</button><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button">Próximo</button></div>
   <button class="ac-toggle ac-toggle--outline" type="button" data-ac="toggle">${ico(P.star)}Favoritar</button>
 </div>`,
-      api: [['data-ac="toggle"', 'button', '—', 'Alterna aria-pressed; evento ac:change (true/false)'], ['data-ac="toolbar"', 'container', '—', 'role=toolbar e setas entre controles'], ['.ac-btn-joined', 'grupo', '—', 'Botões colados com raio só nas pontas'], ['.ac-sep / .ac-sep--v', '<hr>', 'horizontal', 'Separador']],
+      api: [['data-ac="toggle"', 'button', '—', 'Alterna aria-pressed; evento ac:change (true/false)'], ['data-ac="toggle-group"', 'container de .ac-toggle', '1º marcado', 'Escolha única (alinhamento, visualização): marcar um desmarca os outros; aria-checked; evento ac:change com o value'], ['data-ac="toolbar"', 'container', '—', 'role=toolbar e setas entre controles'], ['.ac-btn-joined', 'grupo', '—', 'Botões colados com raio só nas pontas'], ['.ac-sep / .ac-sep--v', '<hr>', 'horizontal', 'Separador']],
       a11y: ['A toolbar tem um só ponto de Tab; ← → Home End andam entre os itens.', 'Toggle anuncia o estado por aria-pressed.', 'Botões só com ícone têm aria-label e dica.'] },
 
     /* ---------- Formulários ---------- */
@@ -182,15 +184,18 @@
       a11y: ['Popover: role="dialog", foco vai para o 1º campo e Esc devolve o foco ao botão.', 'Hover card abre também com foco de teclado e não deve conter a única forma de fazer algo.'] },
 
     { id: 'result', grupo: 'Feedback', nome: 'Páginas de erro e resultado', novo: '2026-10-27',
-      desc: 'Uma página só que muda pelo código: 401, 403, 404, 500, 503, sem internet e sucesso. Diz o que houve, o que fazer e oferece a saída.',
+      desc: 'Uma página só que muda pelo código: 401, 403, 404, 500, 503, sem internet, erro na tela e sucesso. No desenho das páginas de erro do 4squad: ilustração, código grande, o que houve, o que fazer e a saída certa para quem está vendo.',
       ref: { nome: 'Ant Design · Result', url: 'https://ant.design/components/result' },
       wide: true,
-      html: `<div style="display:grid;gap:18px;justify-items:center;width:100%;grid-template-columns:minmax(0,1fr)">
-  <div class="ac-segmented" data-ac="segmented" id="res-codes" aria-label="Código"><button type="button" value="404" aria-pressed="true">404</button><button type="button" value="403">403</button><button type="button" value="401">401</button><button type="button" value="500">500</button><button type="button" value="503">503</button><button type="button" value="offline">Offline</button><button type="button" value="success">Sucesso</button></div>
-  <div data-ac="result" data-code="404" id="res-demo"></div>
+      html: `<div style="display:grid;gap:12px;justify-items:center;width:100%;grid-template-columns:minmax(0,1fr)">
+  <div class="ac-segmented" data-ac="segmented" id="res-codes" aria-label="Código" style="white-space:nowrap"><button type="button" value="404" aria-pressed="true">404</button><button type="button" value="403">403</button><button type="button" value="401">401</button><button type="button" value="500">500</button><button type="button" value="503">503</button><button type="button" value="offline">Sem internet</button><button type="button" value="error">Erro na tela</button><button type="button" value="success">Sucesso</button></div>
+  <div class="ac-segmented" data-ac="segmented" id="res-who" aria-label="Quem está vendo"><button type="button" value="guest" aria-pressed="true">Sem login</button><button type="button" value="user">Usuário</button><button type="button" value="admin">Equipe</button></div>
+  <div style="width:100%;margin-top:6px;border:1px solid var(--ac-border);border-radius:var(--ac-r-lg);background:var(--ac-bg);overflow:hidden">
+    <div data-ac="result" data-code="404" data-audience="guest" data-support="#suporte" id="res-demo"></div>
+  </div>
 </div>`,
-      api: [['data-ac="result"', 'div', '—', 'Desenha a página a partir do código'], ['data-code', '"401"…"503" | "offline" | "success"', '404', 'Caso'], ['data-title / data-text', 'texto', 'padrão do caso', 'Substitui título e texto'], ['conteúdo interno', 'HTML', 'ações padrão', 'Substitui os botões'], ['Orthos.results', 'objeto', '—', 'Textos padrão, para traduzir ou ajustar']],
-      a11y: ['Título em <h2> diz o problema em linguagem simples; nada de código técnico sozinho.', 'Sempre há uma ação de saída.', 'Offline avisa (evento ac:online) quando a conexão volta.'] },
+      api: [['data-ac="result"', 'div', '—', 'Desenha a página a partir do código'], ['data-code', '"401" | "403" | "404" | "500" | "503" | "offline" | "error" | "success"', '404', 'Caso'], ['data-audience', '"guest" | "user" | "admin"', 'guest', 'Quem está vendo: muda o “voltar” (início, app ou painel)'], ['data-home / data-login / data-support', 'URL', '"/"', 'Destinos do “voltar”, do “Entrar de novo” (401) e do “Falar com o suporte” (403, só com ele)'], ['data-home-label', 'texto', 'pelo público', 'Rótulo do “voltar”'], ['data-error-id', 'texto', '—', 'Código para o suporte, com botão de copiar (500 e error mostram também o horário)'], ['data-retry-at', '"15:30" | data ISO', '—', 'Previsão de volta do 503'], ['data-title / data-text', 'texto', 'padrão do caso', 'Substitui título e texto'], ['data-level', '1…6', '2', 'Nível do título (1 numa página só de erro)'], ['conteúdo interno', 'HTML', 'ações padrão', 'Substitui as ações; data-for="admin" (ou "user admin") mostra só para esse público'], ['.ac-result--page', 'classe', '—', 'Ocupa a tela toda e centraliza'], ['ac:action', 'evento', '—', 'detail { action, code }; sem preventDefault, retry recarrega e back volta no histórico'], ['ac:online', 'evento', '—', 'A conexão voltou; sem preventDefault, a página recarrega'], ['Orthos.results', 'objeto', '—', 'Textos de cada caso e Orthos.results.labels, para traduzir ou ajustar']],
+      a11y: ['Título em <h2> (ou data-level) diz o problema em linguagem simples; o código grande é decorativo e o título leva “(código 404)” para leitores de tela.', 'Erros entram como role="alert"; sucesso como role="status".', 'Sempre há uma saída; “Voltar para a página anterior” só aparece quando há histórico.', 'Copiar o código do erro avisa “Código copiado” numa região viva.'] },
 
     { id: 'logo-loader', grupo: 'Feedback', nome: 'Carregamento com logo', novo: '2026-10-27',
       desc: 'O logo se desenha, aparece preenchido com um brilho passando e o traço some, em ciclos de 3,2 s. Carregue o seu logo (SVG é traçado; PNG, JPG e WebP são ajustados a um quadrado padrão), recarregue a animação ou veja na tela inteira.',
@@ -265,6 +270,20 @@
     { target: '#tour-inexistente', title: 'Este passo é pulado', text: 'O alvo não existe na tela.' },
     { target: '#tour-produto', title: 'Crie um produto', text: 'Comece por aqui: nome, preço e checkout em poucos minutos.', position: 'top' }
   ], { doneLabel: 'Entendi' })); };
-  H.result = root => { const s = root.querySelector('#res-codes'); s && s.addEventListener('ac:change', e => { const r = root.querySelector('#res-demo'); if (!r || r.dataset.code === e.detail) return; const n = r.cloneNode(false); n.dataset.code = e.detail; [...n.attributes].filter(a => a.name.startsWith('data-ac-init')).forEach(a => n.removeAttribute(a.name)); n.innerHTML = ''; r.replaceWith(n); window.Orthos.init(n.parentElement); }); };
+  H.result = root => {
+    // redesenha com o código e o público escolhidos; 500 e erro na tela ganham um código para o suporte, 503 a previsão de volta
+    const redraw = (k, v) => {
+      const r = root.querySelector('#res-demo'); if (!r || r.dataset[k] === v) return;
+      const n = r.cloneNode(false); n.dataset[k] = v; [...n.attributes].filter(a => /^data-(ac-init|error-id|retry-at)/.test(a.name)).forEach(a => n.removeAttribute(a.name));
+      if (/^(500|error)$/.test(n.dataset.code)) n.dataset.errorId = 'A7F3-21C9';
+      if (n.dataset.code === '503') n.dataset.retryAt = new Date(Date.now() + 45 * 6e4).toTimeString().slice(0, 5);
+      n.innerHTML = ''; r.replaceWith(n); window.Orthos.init(n.parentElement);
+    };
+    [['#res-codes', 'code'], ['#res-who', 'audience']].forEach(([s, k]) => { const c = root.querySelector(s); c && c.addEventListener('ac:change', e => redraw(k, e.detail)); });
+    // na vitrine, as ações só avisam o que fariam numa página de verdade
+    const faz = { retry: 'recarrega a página', back: 'volta para a página anterior', home: 'abre o data-home', login: 'abre o data-login', support: 'abre o data-support', next: 'segue para o próximo passo' };
+    root.addEventListener('ac:action', e => { if (!faz[e.detail.action]) return; e.preventDefault(); window.Orthos.toast({ title: `ac:action · ${e.detail.action}`, desc: `Numa página de verdade, ${faz[e.detail.action]}.` }); });
+    root.addEventListener('ac:online', e => { e.preventDefault(); window.Orthos.toast({ type: 'success', title: 'A conexão voltou', desc: 'Numa página de verdade, ela recarrega sozinha.' }); });
+  };
   H.toast = (prev => root => { prev && prev(root); root.addEventListener('click', e => { if (e.target.closest('[data-demo-toast="promise"]')) window.Orthos.toast.promise(new Promise((ok, no) => setTimeout(() => Math.random() > .25 ? ok(3) : no(), 1800)), { loading: 'Publicando 3 posts…', success: n => `${n} posts publicados`, error: 'Não foi possível publicar', errorDesc: 'Tente de novo em instantes.' }); }); })(H.toast);
 })();

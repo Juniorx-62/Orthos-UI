@@ -216,11 +216,17 @@
   }
 
   /* ---------- busca (command palette) ---------- */
+  // categorias com a mesma cara do menu: ícone de GRUPO_ICO e cor de --g-* (site.css); "Ações" ganha um raio, em cinza
+  const ACOES_ICO = '<path d="M13 2.5L4.5 13.5H11L10.5 21.5L19.5 10.5H13L13 2.5Z"/>';
+  const cmdGroups = () => Object.assign(Object.fromEntries(groups.map(g => [g, { icon: GRUPO_ICO[g], color: `var(--g-${slug(g)})` }])), { 'Ações': { icon: ACOES_ICO, color: 'var(--ac-text-2)' } });
   function openSiteCommand() {
     A.command({
       placeholder: 'Buscar componentes e ações…',
+      groups: cmdGroups(),
+      limit: Infinity, // sem busca, a lista mostra tudo, como o menu (o padrão de 60 cortava Movimento, Modelos e Ações)
       items: [
-        ...D.map(d => ({ label: d.nome, group: d.grupo, hint: '', keywords: d.desc + ' ' + d.ref.nome, run: () => { location.hash = '#/' + d.id; } })),
+        // na ordem do menu (grupo a grupo), para cada categoria aparecer uma vez só
+        ...groups.flatMap(g => D.filter(d => d.grupo === g)).map(d => ({ label: d.nome, group: d.grupo, hint: isNew(d) ? 'novo' : '', keywords: d.desc + ' ' + d.ref.nome, run: () => { location.hash = '#/' + d.id; } })),
         { label: 'Alternar tema claro/escuro', group: 'Ações', keywords: 'dark light escuro claro', run: () => $('#theme').click() },
         { label: 'Ir para a introdução', group: 'Ações', run: () => { location.hash = '#/'; } }
       ]
@@ -246,11 +252,20 @@
     const d = D.find(x => x.id === id);
     renderNav(d && d.id);
     if (!d) cleanup();
-    if (d) { renderDoc(d); document.title = `${d.nome} — Orthos UI`; }
-    else if (id === 'padroes') { renderNav('padroes'); main.innerHTML = `<div class="home prose">${window.PADROES || ''}</div>`; document.title = 'Padrões — Orthos UI'; }
+    // marca primeiro na aba do navegador: com muitas abas abertas, "Orthos UI" continua visível
+    if (d) { renderDoc(d); document.title = `Orthos UI — ${d.nome}`; }
+    else if (id === 'padroes') { renderNav('padroes'); main.innerHTML = `<div class="home prose">${window.PADROES || ''}</div>`; document.title = 'Orthos UI — Padrões'; }
     else { renderHome(); document.title = 'Orthos UI — biblioteca de componentes'; }
     closeSide(); scrollTo({ top: 0 }); main.focus({ preventScroll: true });
   }
+  // links de exemplo das demos (href="#" ou "#id") não podem trocar o hash: o roteador entenderia "sem página" e abriria a
+  // introdução. Âncora para um id da própria página só leva o foco até ele.
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]'); if (!a || a.getAttribute('href').startsWith('#/') || a.classList.contains('skip')) return;
+    e.preventDefault();
+    const t = a.getAttribute('href').length > 1 && document.getElementById(a.getAttribute('href').slice(1));
+    if (t) { if (!t.hasAttribute('tabindex')) t.tabIndex = -1; t.focus(); }
+  });
   // sem View Transition na navegação: a foto da página e o fade deixavam a troca pelo menu com cara de travada
   addEventListener('hashchange', route);
   route();
