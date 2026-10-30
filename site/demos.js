@@ -193,10 +193,10 @@
       api: [['data-ac="dropzone"', 'container', '—', 'Precisa de <input type=file> dentro e .ac-files logo após']],
       a11y: ['Focável e ativável com Enter/Espaço.', 'Progresso com role="progressbar".'] },
 
-    { id: 'palette', grupo: 'Formulários', nome: 'Paleta de cores 3D', aka: 'Color palette', desc: 'Seletor de cor em esferas, feito neste projeto. Com mouse, a esfera sobe e afasta as vizinhas; no toque, só a esfera tocada responde ao pressionar. A escolhida fica por cima, com anel, e a cor aparece num aviso no topo.',
+    { id: 'palette', grupo: 'Formulários', nome: 'Paleta de cores 3D', aka: 'Color palette', desc: 'Seletor de cor em esferas, feito neste projeto. Com mouse, a esfera sobe e afasta as vizinhas; no toque, a esfera tocada dá uma leve retraída. A escolhida fica por cima, com anel; com data-copy, o código é copiado e uma pílula no topo mostra a amostra, o nome e o código da cor.',
       ref: { nome: 'Kobra · Color Palette (inspiração visual)', url: 'https://kobra.systems/components/color-palette' },
-      html: `<div style="display:grid;gap:16px;justify-items:center"><div data-ac="palette" id="pal-demo" style="--size:200px"></div><p class="ac-hint" id="pal-out">Escolha uma cor</p></div>`,
-      api: [['data-ac="palette"', 'div', '—', 'Gera 19 esferas'], ['--size', 'CSS', '200px', 'Diâmetro'], ['ac:change', 'evento', '—', 'detail: { name, color }'], ['dataset.value', 'leitura', '—', 'Cor selecionada']],
+      html: `<div style="display:grid;gap:16px;justify-items:center"><div data-ac="palette" data-copy id="pal-demo" style="--size:200px"></div><p class="ac-hint" id="pal-out">Escolha uma cor</p></div>`,
+      api: [['data-copy', 'atributo', 'desligado', 'O clique, o toque ou o Enter copiam o código da cor e mostram "Copiado #hex" numa pílula no topo (as setas só escolhem)'], ['data-ac="palette"', 'div', '—', 'Gera 19 esferas'], ['--size', 'CSS', '200px', 'Diâmetro'], ['ac:change', 'evento', '—', 'detail: { name, color }'], ['dataset.value', 'leitura', '—', 'Cor selecionada']],
       a11y: ['radiogroup com setas para navegar.', 'Respeita prefers-reduced-motion.'] },
 
     /* ---------------- Navegação ---------------- */
@@ -429,8 +429,7 @@
       if (e.target.closest('[data-demo-deleted]')) Orthos.toast({ title: 'Projeto excluído' });
     }),
     command: root => { const b = root.querySelector('#cmd-demo'); b && b.addEventListener('click', () => window.openSiteCommand && window.openSiteCommand()); },
-    // a cor escolhida aparece num aviso no topo, com a amostra, o nome e o código
-    palette: root => { const p = root.querySelector('#pal-demo'), o = root.querySelector('#pal-out'); p && p.addEventListener('ac:change', e => { o.innerHTML = `Selecionada: <b style="color:var(--ac-text)">${e.detail.name}</b> <code>${e.detail.color}</code>`; Orthos.toast({ title: `Cor selecionada: ${e.detail.name}`, desc: e.detail.color, swatch: e.detail.color, position: 'top', duration: 2600 }); }); },
+    palette: root => { const p = root.querySelector('#pal-demo'), o = root.querySelector('#pal-out'); p && p.addEventListener('ac:change', e => { o.innerHTML = `Selecionada: <b style="color:var(--ac-text)">${e.detail.name}</b> <code>${e.detail.color}</code>`; }); },
     progress: root => { const b = root.querySelector('#pg-run'), bar = root.querySelector('#pg-bar'), v = root.querySelector('#pg-v'); b && b.addEventListener('click', () => { let x = 0; b.disabled = true; const t = setInterval(() => { x = Math.min(100, x + 4 + Math.random() * 9); bar.style.setProperty('--v', x + '%'); bar.setAttribute('aria-valuenow', Math.round(x)); v.textContent = Math.round(x) + '%'; if (x >= 100) { clearInterval(t); b.disabled = false; Orthos.toast({ type: 'success', title: '1.284 contatos importados' }); } }, 160); }); },
     skeleton: root => {
       const seg = root.querySelector('#skel-toggle'), card = root.querySelector('#skel-card'), anim = root.querySelector('#skel-anim'), cas = root.querySelector('#skel-cascade'); if (!seg) return;
