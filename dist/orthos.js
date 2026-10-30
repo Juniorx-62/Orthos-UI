@@ -29,16 +29,21 @@
   const icon = (n, cls = 'ac-icon') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
 
   /* ---------------- posicionamento de flutuantes ---------------- */
+  // toque sem mouse (celular, tablet)
+  const touchOnly = () => matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches;
+  // faixa da tela que se vê de fato, nas coordenadas do getBoundingClientRect: o teclado virtual cobre a parte de baixo
+  // sem mudar innerHeight (no iOS e no Chrome Android); o visualViewport diz o que sobrou
+  const visibleBox = () => { const vv = global.visualViewport; return vv ? { top: vv.offsetTop, bottom: vv.offsetTop + vv.height } : { top: 0, bottom: innerHeight }; };
   function place(pop, anchor, side = 'bottom', align = 'start', gap = 8) {
     // tamanho de layout do pop: o getBoundingClientRect pegaria a escala .95 da animação de abertura e o pop vazaria da tela
     const a = anchor.getBoundingClientRect(), p = { width: pop.offsetWidth, height: pop.offsetHeight };
-    const vw = innerWidth, vh = innerHeight;
+    const vw = innerWidth, v = visibleBox();
     let top, left;
     if (side === 'top') top = a.top - p.height - gap; else if (side === 'bottom') top = a.bottom + gap; else top = a.top + a.height / 2 - p.height / 2;
     if (side === 'top' || side === 'bottom') left = align === 'center' ? a.left + a.width / 2 - p.width / 2 : align === 'end' ? a.right - p.width : a.left;
-    if (side === 'bottom' && top + p.height > vh - 8 && a.top - p.height - gap > 8) { top = a.top - p.height - gap; pop.style.setProperty('--origin', 'bottom left'); } else pop.style.setProperty('--origin', side === 'top' ? 'bottom center' : 'top left');
+    if (side === 'bottom' && top + p.height > v.bottom - 8 && a.top - p.height - gap > v.top + 8) { top = a.top - p.height - gap; pop.style.setProperty('--origin', 'bottom left'); } else pop.style.setProperty('--origin', side === 'top' ? 'bottom center' : 'top left');
     left = Math.max(8, Math.min(left, vw - p.width - 8));
-    top = Math.max(8, Math.min(top, vh - p.height - 8));
+    top = Math.max(v.top + 8, Math.min(top, v.bottom - p.height - 8));
     pop.style.left = left + 'px'; pop.style.top = top + 'px';
   }
 
@@ -72,7 +77,9 @@
     const host = (anchor.closest && anchor.closest('dialog[open]')) || document.body;
     if (pop.parentElement !== host) { if (!pop._home) pop._home = pop.parentElement; host.appendChild(pop); }
     pop.classList.add('ac');
-    place(pop, anchor, opts.side, opts.align);
+    // follow: rolar a página ou abrir o teclado virtual reposiciona o pop em vez de fechá-lo; fit ajusta o tamanho antes
+    pop._follow = !!opts.follow; pop._place = () => { opts.fit && opts.fit(); place(pop, anchor, opts.side, opts.align); };
+    pop._place();
     // owner: quem anuncia aria-expanded quando a âncora de posição é outro elemento (ex.: o campo do seletor de pessoas)
     pop._anchor = anchor; pop._owner = opts.owner || anchor; pop._owner.setAttribute('aria-expanded', 'true');
     openPops.add(pop);
@@ -88,8 +95,11 @@
   function closeAllPops(except) { openPops.forEach(p => { if (p !== except) closePop(p); }); }
   document.addEventListener('pointerdown', e => { openPops.forEach(p => { if (!p.contains(e.target) && !(p._anchor && p._anchor.contains(e.target))) closePop(p); }); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') openPops.forEach(p => closePop(p, true)); });
-  addEventListener('resize', () => openPops.forEach(p => closePop(p)));
-  addEventListener('scroll', e => { openPops.forEach(p => { if (!p.contains(e.target)) closePop(p); }); }, true);
+  // pop com follow só fecha quando a âncora sai da área visível
+  const reflow = p => { if (!p._follow) return closePop(p); const a = p._anchor.getBoundingClientRect(), v = visibleBox(); if (a.bottom < v.top || a.top > v.bottom) closePop(p); else p._place(); };
+  addEventListener('resize', () => openPops.forEach(reflow));
+  addEventListener('scroll', e => { openPops.forEach(p => { if (!p.contains(e.target)) reflow(p); }); }, true);
+  if (global.visualViewport) ['resize', 'scroll'].forEach(t => global.visualViewport.addEventListener(t, () => openPops.forEach(p => p._follow && reflow(p))));
 
   /* ---------------- diálogos (dialog nativo + animação de saída) ---------------- */
   function open(dlg) {
@@ -460,15 +470,29 @@
       input.setAttribute('aria-activedescendant', list.length ? `${lb.id}-${act}` : '');
       reveal($(`#${lb.id}-${act}`, lb));
     };
-    const show = () => { render(); pop.style.width = input.offsetWidth + 'px'; openPop(pop, input); };
-    const pick = i => { const o = list[i]; if (!o) return; chosen = input.value = o.label; closePop(pop); el.dispatchEvent(new CustomEvent('ac:change', { detail: o, bubbles: true })); };
-    input.addEventListener('focus', show); input.addEventListener('input', () => { act = 0; pop.hidden ? show() : render(); });
+    // no toque o campo começa somente leitura: o primeiro toque abre só a lista, sem o teclado virtual cobrindo metade da
+    // tela; tocar de novo no campo com a lista aberta libera a digitação (para filtrar). Escolher ou sair trava de novo.
+    const touch = touchOnly(); let typing = false;
+    const lock = () => { if (touch) input.readOnly = true; };
+    // a lista cabe no lado com mais espaço visível (acima ou abaixo do campo), descontado o teclado
+    const fit = () => { const v = visibleBox(), a = input.getBoundingClientRect(); lb.style.maxHeight = Math.max(96, Math.min(260, Math.max(v.bottom - a.bottom, a.top - v.top) - 18)) + 'px'; };
+    const show = () => { render(); pop.style.width = input.offsetWidth + 'px'; openPop(pop, input, { follow: true, fit }); };
+    const pick = i => { const o = list[i]; if (!o) return; chosen = input.value = o.label; closePop(pop); lock(); el.dispatchEvent(new CustomEvent('ac:change', { detail: o, bubbles: true })); };
+    lock();
+    input.addEventListener('focus', () => { typing = false; show(); });
+    input.addEventListener('click', () => { if (pop.hidden) show(); });
+    // o teclado só abre quando um campo editável ganha o foco pelo toque: tira o somente leitura e o foco, e o toque devolve
+    input.addEventListener('pointerdown', () => { if (!touch || !input.readOnly || pop.hidden) return; typing = true; input.readOnly = false; input.blur(); });
+    input.addEventListener('blur', () => { if (!typing) lock(); });
+    input.addEventListener('input', () => { act = 0; pop.hidden ? show() : render(); });
     input.addEventListener('keydown', e => {
       if (e.key === 'ArrowDown') { e.preventDefault(); if (pop.hidden) show(); else { act = (act + 1) % Math.max(1, list.length); render(); } }
       else if (e.key === 'ArrowUp') { e.preventDefault(); act = (act - 1 + list.length) % Math.max(1, list.length); render(); }
       else if (e.key === 'Enter' && !pop.hidden) { e.preventDefault(); pick(act); }
     });
-    lb.addEventListener('pointerdown', e => { const li = e.target.closest('.ac-option'); if (li) { e.preventDefault(); pick(+li.id.split('-').pop()); } });
+    // escolhe no clique, não no pointerdown: no toque, arrastar o dedo sobre a lista rola sem escolher a opção tocada
+    lb.addEventListener('pointerdown', e => { if (e.target.closest('.ac-option')) e.preventDefault(); }); // o foco fica no campo
+    lb.addEventListener('click', e => { const li = e.target.closest('.ac-option'); if (li) pick(+li.id.split('-').pop()); });
   };
 
   /* command palette */
@@ -512,7 +536,7 @@
     input.onkeydown = e => { if (e.key === 'ArrowDown') { e.preventDefault(); act = (act + 1) % Math.max(1, flat.length); render(); } if (e.key === 'ArrowUp') { e.preventDefault(); act = (act - 1 + flat.length) % Math.max(1, flat.length); render(); } if (e.key === 'Enter') { e.preventDefault(); run(act); } };
     lb.onclick = e => { const li = e.target.closest('[data-i]'); if (li) run(+li.dataset.i); };
     // no toque (celular/tablet) o foco fica no próprio diálogo: a lista aparece inteira e o teclado só abre quando a pessoa toca no campo
-    const toque = matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches;
+    const toque = touchOnly();
     // (o showModal foca o primeiro campo sozinho; somente leitura nesse instante não chama o teclado)
     if (toque) { dlg.tabIndex = -1; input.readOnly = true; } else dlg.removeAttribute('tabindex');
     input.value = ''; input.placeholder = o.placeholder || 'Buscar comandos…'; render(); open(dlg);
@@ -570,8 +594,9 @@
     const cols = JSON.parse(el.dataset.columns), rows = JSON.parse(el.dataset.rows);
     const per = +el.dataset.perPage || 5; let q = '', sortK = null, dir = 1, page = 0, status = ''; const sel = new Set();
     const statuses = [...new Set(rows.map(r => r.status))];
-    el.innerHTML = `<div class="ac-table-wrap"><div class="ac-table-tools"><div class="ac-input-wrap">${icon('search')}<input class="ac-input" type="search" placeholder="Filtrar por nome ou e-mail" aria-label="Filtrar tabela"></div><select class="ac-select" style="width:auto;height:34px" aria-label="Status"><option value="">Todos os status</option>${statuses.map(s => `<option>${esc(s)}</option>`).join('')}</select><div class="ac-bulk" role="status"><span class="n"></span><button class="ac-btn ac-btn--sm" type="button" data-bulk="del">${icon('trash')}Excluir</button></div></div><div class="ac-table-scroll"><table class="ac-table ac-table--stack"><thead></thead><tbody></tbody></table></div><div class="ac-table-foot"><span class="info" aria-live="polite"></span><div class="ac-pager"></div></div></div>`;
+    el.innerHTML = `<div class="ac-table-wrap"><div class="ac-table-tools"><div class="ac-input-wrap">${icon('search')}<input class="ac-input" type="search" placeholder="Nome ou e-mail" aria-label="Filtrar por nome ou e-mail"></div><select class="ac-select" aria-label="Status"><option value="">Todos os status</option>${statuses.map(s => `<option>${esc(s)}</option>`).join('')}</select><div class="ac-bulk" role="status"><span class="n"></span><button class="ac-btn ac-btn--sm" type="button" data-bulk="del">${icon('trash')}Excluir</button></div></div><div class="ac-table-scroll"><table class="ac-table ac-table--stack"><thead></thead><tbody></tbody></table></div><div class="ac-table-foot"><span class="info" aria-live="polite"></span><div class="ac-pager"></div></div></div>`;
     const [search, filt, bulk, thead, tbody, info, pager] = [$('input', el), $('select', el), $('.ac-bulk', el), $('thead', el), $('tbody', el), $('.info', el), $('.ac-pager', el)];
+    C.select(filt); // lista do Orthos (a mesma da Lista de opções) no lugar da lista nativa do navegador
     const view = () => { const n = s => String(s).toLowerCase(); let r = rows.filter(x => (!status || x.status === status) && (!q || n(x.name + ' ' + x.email).includes(n(q)))); if (sortK) r = r.slice().sort((a, b) => (a[sortK] > b[sortK] ? 1 : a[sortK] < b[sortK] ? -1 : 0) * dir); return r; };
     const cell = (c, r) => {
       if (c.k === 'name') return `<div class="ac-cell-user"><span class="ac-avatar">${esc(r.name.split(' ').map(p => p[0]).slice(0, 2).join(''))}</span><span>${esc(r.name)}<small>${esc(r.email)}</small></span></div>`;
@@ -602,7 +627,7 @@
     el.addEventListener('click', e => {
       const s = e.target.closest('.ac-sort'); if (s) { if (sortK === s.dataset.k) dir = -dir; else { sortK = s.dataset.k; dir = 1; } render(); $(`.ac-sort[data-k="${sortK}"]`, el).focus(); }
       const p = e.target.closest('[data-p]'); if (p && !p.disabled) { page = +p.dataset.p; render(); }
-      if (e.target.closest('[data-clear]')) { q = search.value = ''; status = filt.value = ''; render(); }
+      if (e.target.closest('[data-clear]')) { q = search.value = ''; filt.value = ''; filt.dispatchEvent(new Event('change')); }
       if (e.target.closest('[data-bulk]')) {
         const removed = rows.filter(r => sel.has(r.id)); const n = removed.length;
         removed.forEach(r => rows.splice(rows.indexOf(r), 1)); sel.clear(); render();
@@ -2146,17 +2171,43 @@
     const FMT = [['bold', 'Negrito', '<b>B</b>'], ['italic', 'Itálico', '<i>I</i>'], ['underline', 'Sublinhado', '<u>U</u>'], ['strikeThrough', 'Tachado', '<s>S</s>'], ['code', 'Código', '<code>&lt;/&gt;</code>']];
     let range = null, mode = '', streamT = 0;
     const hl = (r) => { try { if (!window.Highlight || !CSS.highlights) return; if (r) CSS.highlights.set('ac-ai', new Highlight(r)); else CSS.highlights.delete('ac-ai'); } catch (_) {} };
+    const touch = touchOnly();
+    // onde o pop aparece inteiro: a parte visível da tela (sem o teclado virtual), recortada pelos contêineres que cortam ou
+    // rolam o conteúdo (o palco das demos, um cartão com overflow). Sem isso a barra vazava do palco no celular.
+    const room = () => {
+      // na horizontal só os contêineres limitam (os limites do próprio editor entram no place)
+      const v = visibleBox(); let b = { top: v.top, bottom: v.bottom, left: -Infinity, right: Infinity };
+      for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
+        const cs = getComputedStyle(n); if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue;
+        const r = n.getBoundingClientRect(); b = { top: Math.max(b.top, r.top), bottom: Math.min(b.bottom, r.bottom), left: Math.max(b.left, r.left), right: Math.min(b.right, r.right) };
+      }
+      return b;
+    };
     const place = () => {
-      if (!range) return; const r = range.getBoundingClientRect(), e = el.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
-      // acima da seleção (pode passar do editor); só desce se faltar espaço na tela
-      let top = r.top - e.top - h - 8; if (r.top - h - 8 < 8) top = r.bottom - e.top + 8;
-      pop.style.left = Math.max(4, Math.min(e.width - w - 4, r.left - e.left + r.width / 2 - w / 2)) + 'px'; pop.style.top = top + 'px';
+      if (!range) return; const r = range.getBoundingClientRect(), e = el.getBoundingClientRect(), b = room(), w = pop.offsetWidth, h = pop.offsetHeight;
+      // mouse: acima da seleção. Toque: abaixo, porque em cima fica o menu do sistema (Copiar, Colar…) e logo embaixo da
+      // seleção ficam as alças de arrastar. Troca de lado quando não cabe; sem espaço nos dois (cartão alto num editor
+      // pequeno), vai para o lado maior e sobe por cima do trecho até aparecer inteiro.
+      const below = r.bottom + (touch ? 32 : 8), above = r.top - h - 8, more = b.bottom - r.bottom > r.top - b.top;
+      const fitsBelow = below + h <= b.bottom - 8, fitsAbove = above >= b.top + 8;
+      const down = touch ? fitsBelow || (!fitsAbove && more) : !fitsAbove && (fitsBelow || more);
+      const top = Math.max(b.top + 8, Math.min(down ? below : above, b.bottom - 8 - h));
+      const lo = Math.max(b.left, e.left) - e.left + 4, hi = Math.min(b.right, e.right) - e.left - w - 4;
+      pop.style.left = Math.max(lo, Math.min(hi, r.left - e.left + r.width / 2 - w / 2)) + 'px'; pop.style.top = top - e.top + 'px';
+    };
+    // barra mais larga que o espaço (editor estreito, celular): botões mais justos e, se ainda faltar, "Perguntar à IA"
+    // fica só com o ícone (o texto continua para leitores de tela)
+    const fitBar = () => {
+      const b = room(), e = el.getBoundingClientRect(), max = Math.min(b.right, e.right) - Math.max(b.left, e.left) - 8;
+      pop.classList.remove('is-tight', 'is-tighter');
+      if (pop.offsetWidth > max) pop.classList.add('is-tight');
+      if (pop.offsetWidth > max) pop.classList.add('is-tighter');
     };
     const close = (restore) => { clearTimeout(streamT); pop.hidden = true; mode = ''; hl(null); if (restore && range) { doc.focus(); const s = getSelection(); s.removeAllRanges(); s.addRange(range); } };
     const bar = () => {
       mode = 'bar'; pop.className = 'ac-ai-pop ac-ai-pop--bar'; pop.setAttribute('role', 'toolbar'); pop.setAttribute('aria-label', 'Seleção');
-      pop.innerHTML = `<button type="button" class="ac-ai-ask-btn" data-ai="ask">${orb}Perguntar à IA</button><span class="ac-ai-sep" aria-hidden="true"></span>` + FMT.map(([c, l, g]) => `<button type="button" class="ac-ai-fmt" data-ai="${c}" aria-label="${l}" aria-pressed="${c !== 'code' && document.queryCommandState && document.queryCommandState(c)}">${g}</button>`).join('');
-      pop.hidden = false; place();
+      pop.innerHTML = `<button type="button" class="ac-ai-ask-btn" data-ai="ask">${orb}<span class="ac-ai-ask-btn__text">Perguntar à IA</span></button><span class="ac-ai-sep" aria-hidden="true"></span>` + FMT.map(([c, l, g]) => `<button type="button" class="ac-ai-fmt" data-ai="${c}" aria-label="${l}" aria-pressed="${c !== 'code' && document.queryCommandState && document.queryCommandState(c)}">${g}</button>`).join('');
+      pop.hidden = false; fitBar(); place();
     };
     const ask = () => {
       mode = 'ask'; pop.className = 'ac-ai-pop ac-ai-pop--ask'; pop.removeAttribute('role');
@@ -2190,6 +2241,10 @@
     };
     const blockOf = n => { while (n && n.parentNode !== doc) n = n.parentNode; return n; };
     pop.addEventListener('mousedown', e => { if (!e.target.closest('input')) e.preventDefault(); }); // não perde a seleção ao clicar na barra
+    pop.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' && !e.target.closest('input')) e.preventDefault(); }); // nem ao tocar nela
+    // o teclado virtual abrindo ou fechando muda a área visível: a barra, a pergunta e o cartão trocam de lado se preciso
+    const vv = global.visualViewport, onView = () => { if (!el.isConnected) { vv.removeEventListener('resize', onView); return; } if (!pop.hidden) place(); };
+    vv && vv.addEventListener('resize', onView);
     pop.addEventListener('click', e => {
       const b = e.target.closest('[data-ai]'); if (!b) return; const k = b.dataset.ai;
       if (k === 'ask') ask(); else if (FMT.some(f => f[0] === k)) apply(k);

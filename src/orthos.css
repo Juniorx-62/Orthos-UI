@@ -561,10 +561,11 @@
 /* ---------- Data table ---------- */
 .ac-table-wrap { border: 1px solid var(--ac-border); border-radius: var(--ac-r-lg); background: var(--ac-surface); overflow: hidden; font-family: var(--ac-font); }
 .ac-table-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; border-bottom: 1px solid var(--ac-border); }
-.ac-table-tools .ac-input-wrap { flex: 1; min-width: 180px; max-width: 280px; }
-/* celular: a busca ocupa a linha inteira (o texto de exemplo cabia cortado ao lado do filtro) */
-@media (max-width: 560px) { .ac-table-tools .ac-input-wrap { flex-basis: 100%; max-width: none; } .ac-table-tools .ac-select { flex: 1; } }
+/* busca e filtro lado a lado; abaixo de 150 px a busca não mostraria o texto de exemplo inteiro e o filtro desce */
+.ac-table-tools .ac-input-wrap { flex: 1; min-width: 150px; max-width: 280px; }
 .ac-table-tools .ac-input { height: 34px; }
+/* no toque o campo usa 16 px (sem zoom no iPhone); o texto de exemplo fica em 14 px para caber ao lado do filtro */
+.ac-table-tools .ac-input::placeholder { font-size: var(--ac-fs-base); }
 .ac-table-scroll { overflow-x: auto; }
 .ac-table { width: 100%; border-collapse: collapse; font-size: var(--ac-fs-base); color: var(--ac-text); }
 .ac-table th { height: 40px; padding: 0 14px; text-align: left; font-weight: 500; color: var(--ac-text-3); font-size: var(--ac-fs-base); background: var(--ac-surface-2); border-bottom: 1px solid var(--ac-border); white-space: nowrap; }
@@ -591,7 +592,11 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 
 /* ---------- Sidebar ---------- */
 .ac-sidebar { --w: 240px; display: flex; flex-direction: column; gap: 2px; width: var(--w); padding: 12px; border-radius: var(--ac-r-lg); border: 1px solid var(--ac-border); background: var(--ac-surface); font: var(--ac-fs-base) var(--ac-font); transition: width .35s var(--ac-ease); overflow: hidden; }
-.ac-sidebar[data-collapsed="true"] { --w: 64px; }
+/* width, não --w: a largura ajustada pela alça fica em --w no style do elemento e venceria a regra */
+.ac-sidebar[data-collapsed="true"] { width: 64px; }
+/* recolhido, a marca sai do caminho e o botão de expandir fica no centro (antes ficava empurrado para fora da borda) */
+.ac-sidebar[data-collapsed="true"] .ac-sidebar__head { justify-content: center; gap: 0; padding-inline: 0; }
+.ac-sidebar[data-collapsed="true"] .ac-sidebar__brand { width: 0; overflow: hidden; }
 .ac-sidebar__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 36px; padding: 0 4px 8px 6px; margin-bottom: 6px; border-bottom: 1px solid var(--ac-border); }
 .ac-sidebar__brand { display: flex; align-items: center; gap: 10px; font-weight: 600; white-space: nowrap; }
 .ac-sidebar__logo { width: 24px; height: 24px; border-radius: 7px; flex: none; background: var(--ac-primary); }
@@ -1577,7 +1582,7 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 ::highlight(ac-ai) { background-color: color-mix(in oklab, var(--ac-text) 14%, transparent); }
 .ac-ai-new { animation: ac-fade-up .5s var(--ac-ease); }
 .ac-ai-pop { position: absolute; z-index: 20; border: 1px solid var(--ac-border); border-radius: var(--ac-r-full); background: var(--ac-surface); box-shadow: var(--ac-shadow-lg); animation: ac-pop-sm .18s var(--ac-ease); }
-.ac-ai-pop--bar { display: flex; align-items: center; gap: 2px; padding: 4px; white-space: nowrap; }
+.ac-ai-pop--bar { display: flex; align-items: center; gap: 2px; width: max-content; padding: 4px; white-space: nowrap; }
 .ac-ai-orb { flex: none; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #8be9ff, #3b5bfd 45%, #a855f7 80%); box-shadow: 0 0 10px rgb(59 91 253 / .35); }
 .ac-ai-ask-btn, .ac-ai-fmt { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 32px; min-width: 32px; padding: 0 10px; border: 0; border-radius: var(--ac-r-full); background: none; color: var(--ac-text); font: 500 var(--ac-fs-base) var(--ac-font); cursor: pointer; }
 .ac-ai-fmt { padding: 0; font-size: var(--ac-fs-md); color: var(--ac-text-2); }
@@ -1585,6 +1590,12 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-ai-ask-btn:hover, .ac-ai-fmt:hover, .ac-ai-fmt[aria-pressed="true"] { background: var(--ac-surface-2); color: var(--ac-text); }
 .ac-ai-ask-btn:focus-visible, .ac-ai-fmt:focus-visible, .ac-ai-send:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ac-ring); }
 .ac-ai-sep { width: 1px; height: 18px; margin: 0 4px; background: var(--ac-border); }
+/* editor estreito (celular): o JS marca .is-tight quando a barra não cabe e .is-tighter quando nem assim cabe */
+.ac-ai-pop--bar.is-tight .ac-ai-ask-btn { gap: 6px; padding: 0 8px; }
+.ac-ai-pop--bar.is-tight .ac-ai-fmt { min-width: 28px; }
+.ac-ai-pop--bar.is-tight .ac-ai-sep { margin: 0 2px; }
+.ac-ai-pop--bar.is-tighter .ac-ai-ask-btn { padding: 0 7px; }
+.ac-ai-pop--bar.is-tighter .ac-ai-ask-btn__text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .ac-ai-pop--ask { width: min(340px, calc(100% - 8px)); padding: 4px 4px 4px 12px; }
 .ac-ai-form { display: flex; align-items: center; gap: 10px; }
 .ac-ai-input { flex: 1; min-width: 0; height: 34px; border: 0; background: none; color: var(--ac-text); font: var(--ac-fs-base) var(--ac-font); outline: none; }
@@ -1622,7 +1633,7 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 
 /* toque: campo com fonte menor que 16px faz o Safari do iPhone dar zoom na página ao focar */
 @media (pointer: coarse) {
-  .ac-input, .ac-textarea, .ac-select, .ac-chips-field__input, .ac-phone__input, .ac-chat__input, .ac-command__input, .ac-number-field input { font-size: var(--ac-fs-touch); }
+  .ac-input, .ac-textarea, .ac-select, .ac-chips-field__input, .ac-phone__input, .ac-chat__input, .ac-command__input, .ac-number-field input, .ac-ai-input { font-size: var(--ac-fs-touch); }
 }
 
 /* ---------- cores em oklch (navegadores atuais); os hex acima ficam de reserva ---------- */
