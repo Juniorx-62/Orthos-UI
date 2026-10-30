@@ -7,11 +7,8 @@ a { color: inherit; }
 code { font-family: var(--ac-mono); font-size: max(var(--ac-fs-xs), .92em); }
 pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de novo dava 11px */
 :focus-visible { outline: 2px solid var(--ac-accent); outline-offset: 2px; }
-/* troca de tema: tudo muda no mesmo instante (sem transições de cor fora de hora) */
+/* troca de tema: as cores mudam todas no mesmo instante (o esmaecimento é só de opacidade, no JS) */
 .theme-switching, .theme-switching *, .theme-switching *::before, .theme-switching *::after { transition: none !important; }
-/* com View Transitions: a foto nova aparece por cima, recortada num círculo (a animação vem do JS) */
-html.theme-vt::view-transition-old(root), html.theme-vt::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
-html.theme-vt::view-transition-new(root) { z-index: 2; }
 .skip { position: absolute; left: 12px; top: -60px; z-index: 100; padding: 8px 12px; border-radius: 8px; background: var(--ac-primary); color: var(--ac-primary-text); }
 .skip:focus { top: 12px; }
 .only-m { display: none !important; }
