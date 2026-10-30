@@ -455,7 +455,8 @@
     ok($('[data-v="play"]', el).getAttribute('aria-label') === 'Tocar' && $('.ac-video__pill', el).textContent === 'Recife de coral visto do alto', 'rótulos');
     const sp = $('[data-v="speed"]', el); sp.click(); ok(v.playbackRate === 1.25 && sp.textContent === '1,25×', 'velocidade');
     key(el, 'm'); await w(30); ok(v.muted && $('[data-v="vol"]', el).getAttribute('aria-label') === 'Ligar o som', 'mudo'); key(el, 'm');
-    ok($$('.ac-video', palco)[1].classList.contains('ac-video--blur'), 'blur');
+    const seg = $('[data-video-glass]', palco); $('button[value="blur"]', seg).click();
+    ok($$('.ac-video', palco).length === 1 && el.classList.contains('ac-video--blur') && !el.classList.contains('ac-video--liquid'), 'seletor troca para blur');
   });
   await t('halftone: canvas com descrição e abas que trocam a imagem', async () => {
     mount('halftone'); await w(400); const el = $('.ac-halftone', palco), cv = $('canvas', el), tabs = $$('.ac-halftone__tabs button', el);
