@@ -81,7 +81,7 @@
       api: [['data-ac="banners"', 'div', '—', 'Fila de .ac-banners__item; mostra um por vez'], ['data-tone', '"critico" | "perigo" | "atencao" | "ok" | "neutro"', 'neutro', 'Cor da faixa e ordem padrão (do mais grave ao mais leve)'], ['data-priority', 'número', 'o tom', 'Ordem explícita (menor primeiro)'], ['data-dismissible', 'atributo', '—', 'Mostra o X; evento ac:dismiss com detail: { id }'], ['.ac-banners__long / __short', 'span', '—', 'Texto do computador e o curto, do celular (< 640 px)'], ['.ac-banners__icon / __text / __action', 'classes', '—', 'Ícone num quadrado translúcido, texto centralizado e ação sublinhada'], ['data-interval', 'ms', '10000', 'Tempo da troca automática']],
       a11y: ['Região nomeada (“Avisos da conta”); cada aviso começa com “Aviso 2 de 3” para o leitor de tela.', 'Trocar pelas setas ou dispensar anuncia o aviso novo numa região educada; a troca automática não interrompe ninguém.', 'Sem troca automática com movimento reduzido; ela também para com o mouse ou o foco em cima.'] },
 
-    { id: 'sheet-mobile', grupo: 'Feedback', nome: 'Diálogo no celular (bottom sheet)', aka: 'Bottom sheet, Dialog', novo: '2026-10-28',
+    { id: 'sheet-mobile', grupo: 'Feedback', nome: 'Diálogo no celular', aka: 'Bottom sheet', novo: '2026-10-28',
       desc: 'No celular (abaixo de 640 px), todo .ac-dialog sobe da borda de baixo, ocupa a largura toda e só os cantos de cima são arredondados. O conteúdo rola dentro dele e as ações ficam sempre à vista; quando o teclado virtual abre, o painel sobe junto e o campo focado continua visível.',
       ref: { nome: 'zero-7 · dialogo-teclado.js', url: '' },
       html: `<div style="display:grid;gap:12px;justify-items:center;text-align:center">
