@@ -488,7 +488,12 @@
     input.oninput = () => { act = 0; render(); };
     input.onkeydown = e => { if (e.key === 'ArrowDown') { e.preventDefault(); act = (act + 1) % Math.max(1, flat.length); render(); } if (e.key === 'ArrowUp') { e.preventDefault(); act = (act - 1 + flat.length) % Math.max(1, flat.length); render(); } if (e.key === 'Enter') { e.preventDefault(); run(act); } };
     lb.onclick = e => { const li = e.target.closest('[data-i]'); if (li) run(+li.dataset.i); };
-    input.value = ''; render(); open(dlg); input.focus();
+    // no toque (celular/tablet) o foco fica no próprio diálogo: a lista aparece inteira e o teclado só abre quando a pessoa toca no campo
+    const toque = matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches;
+    // (o showModal foca o primeiro campo sozinho; somente leitura nesse instante não chama o teclado)
+    if (toque) { dlg.tabIndex = -1; input.readOnly = true; } else dlg.removeAttribute('tabindex');
+    input.value = ''; render(); open(dlg);
+    if (toque) { dlg.focus(); input.readOnly = false; } else input.focus();
   }
 
   C.datepicker = el => {

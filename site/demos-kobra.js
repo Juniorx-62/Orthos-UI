@@ -57,12 +57,10 @@
       desc: 'Controles próprios sobre o <video> nativo, em vidro: título e “Assistir no YouTube” no alto; voltar 10 s, tocar e avançar 10 s no meio; barra com o tempo ao passar o mouse, som, velocidade, legendas, picture-in-picture e tela cheia. Os controles somem enquanto toca e voltam ao mexer o mouse. Duas aparências: “líquido” (brilho de borda e saturação) e “blur”.',
       ref: { nome: 'Kobra · Video', url: 'https://kobra.systems/components/video' },
       wide: true,
-      html: `<div style="display:grid;gap:18px;width:min(820px,100%);margin:0 auto">
-  <div data-ac="video" data-title="Recife de coral visto do alto" data-youtube="https://www.youtube.com/" data-glass="liquid">
+      html: `<div style="display:grid;gap:14px;justify-items:center;width:min(820px,100%);margin:0 auto">
+  <div class="ac-segmented" data-ac="segmented" aria-label="Estilo do vidro" data-video-glass><button type="button" value="liquid" aria-pressed="true">Vidro líquido</button><button type="button" value="blur">Vidro com blur</button></div>
+  <div data-ac="video" data-title="Recife de coral visto do alto" data-youtube="https://www.youtube.com/" data-glass="liquid" style="width:100%">
     <video src="${F}video/oceano-recife.mp4#t=0.1" preload="metadata" playsinline></video>
-  </div>
-  <div data-ac="video" data-title="Mesmo vídeo, vidro com blur" data-glass="blur" style="width:min(420px,100%);justify-self:center">
-    <video src="${F}video/oceano-recife.mp4#t=0.1" preload="metadata" playsinline muted></video>
   </div>
 </div>`,
       api: [['data-ac="video"', 'div', '—', 'Envolve um <video>; os controles nativos saem e entram os do Orthos'], ['data-title', 'texto', '—', 'Rótulo no canto de cima'], ['data-youtube', 'URL', '—', 'Mostra o botão “Assistir no YouTube”'], ['data-glass', 'texto', 'liquid', 'liquid ou blur'], ['<track kind="captions">', 'HTML', '—', 'Liga o botão de legendas'], ['teclado', '—', '—', 'Espaço/K tocar, J/L 10 s, ← → 5 s, ↑ ↓ volume, M som, F tela cheia, C legendas']],
@@ -84,6 +82,11 @@
       api: [['data-ac="morph-icon"', 'button', '—', 'Precisa de dois <svg>: data-off e data-on'], ['data-label-off / data-label-on', 'texto', '—', 'Rótulo de cada estado (vira o aria-label)'], ['data-revert', 'ms', '—', 'Volta ao primeiro estado sozinho (ex.: “Copiado”)'], ['--size / --stroke', 'CSS', '24px / 1.5', 'Tamanho e espessura do traço'], ['ac:change', 'evento', '—', 'detail: { on }']],
       a11y: ['Botão com aria-pressed e rótulo que muda com o estado.', 'Os desenhos são aria-hidden; o rótulo é o que o leitor ouve.', 'Com movimento reduzido, a troca é instantânea.'] }
   ];
+  // seletor do vídeo: troca o vidro dos controles (liquid ↔ blur) no mesmo player, sem recarregar o vídeo
+  window.DEMO_HOOKS.video = root => {
+    const seg = root.querySelector('[data-video-glass]'), v = root.querySelector('.ac-video'); if (!seg || !v) return;
+    seg.addEventListener('ac:change', () => { const g = seg.querySelector('[aria-pressed="true"]')?.value || 'liquid'; v.classList.remove('ac-video--liquid', 'ac-video--blur'); v.classList.add('ac-video--' + g); v.dataset.glass = g; });
+  };
   const D = window.DEMOS;
   NOVOS.forEach(n => { let at = -1; D.forEach((d, i) => { if (d.grupo === n.grupo) at = i; }); D.splice(at + 1, 0, n); });
 })();

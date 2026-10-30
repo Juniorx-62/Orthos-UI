@@ -478,6 +478,7 @@
 .ac-listbox__empty { padding: 18px 10px; text-align: center; color: var(--ac-text-3); font-size: var(--ac-fs-base); }
 .ac-listbox__group { padding: 8px 10px 4px; font-size: var(--ac-fs-xs); color: var(--ac-text-3); }
 .ac-command { width: min(560px, calc(100vw - 32px)); top: 14vh; bottom: auto; padding: 0; }
+.ac-command:focus { outline: none; } /* no toque o foco fica no diálogo (sem abrir o teclado); o anel apareceria em volta dele todo */
 .ac-command__input { display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid var(--ac-border); }
 .ac-command__input input { flex: 1; height: 54px; border: 0; background: none; color: var(--ac-text); font: var(--ac-fs-md) var(--ac-font); outline: none; }
 .ac-command__foot { display: flex; gap: 14px; padding: 10px 16px; border-top: 1px solid var(--ac-border); color: var(--ac-text-3); font-size: var(--ac-fs-xs); }
