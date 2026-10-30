@@ -1521,6 +1521,11 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 @keyframes ac-msg-in { from { opacity: 0; filter: blur(8px); transform: translateY(10px) scale(.94); } }
 @media (prefers-reduced-motion: reduce) { .ac-conversation .ac-msg.is-arriving, .ac-ai-new, .ac-ai-pop { animation: none; } }
 
+/* ---------- camadas contidas ----------
+   Componentes que empilham camadas internas (z-index) criam o próprio contexto: as camadas não passam por cima de
+   menus, barras fixas e diálogos da página. Pops, tooltips, avisos e telas cheias continuam por cima de propósito. */
+.ac-sphere, .ac-coverflow__stage, .ac-palette, .ac-otp__box, .ac-flip, .ac-marquee3d, .ac-ring3d__stage, .ac-chat__view, .ac-timeline, .ac-avatar-stack, .ac-choice-cards, .ac-ai-editor, .ac-halftone, .ac-gallery, .ac-carousel, .ac-video, .ac-tilt { isolation: isolate; }
+
 /* toque: campo com fonte menor que 16px faz o Safari do iPhone dar zoom na página ao focar */
 @media (pointer: coarse) {
   .ac-input, .ac-textarea, .ac-select, .ac-chips-field__input, .ac-phone__input, .ac-chat__input, .ac-command__input, .ac-number-field input { font-size: var(--ac-fs-touch); }
