@@ -84,7 +84,7 @@ ${inner}
       api: [['.ac-shell > .ac-shell__in', 'div', '—', 'O .ac-shell é medido (container query) e o __in é a grade menu + conteúdo'], ['.ac-shell__top / __kpis / __grid', 'div', '—', 'Topo, linha de números (4 → 2 → 1 colunas) e gráfico com painel de apoio (2/3 + 1/3)'], ['.ac-shell__brand-m', 'span', '—', 'Marca que aparece quando o menu lateral sai (abaixo de 720 px)']],
       a11y: ['Um <h2> por tela e regiões com nome (menu “Principal”).', 'Números sempre com o texto da tendência, não só a cor.', 'Gráficos com rótulo e a tabela com <caption> para leitor de tela.'] },
 
-    { id: 'tpl-login', grupo: 'Modelos', nome: 'Entrar', novo: '2026-10-28',
+    { id: 'tpl-login', grupo: 'Modelos', nome: 'Tela de entrada (login)', aka: 'Login, Sign in', novo: '2026-10-28',
       desc: 'Tela de entrada com foto e depoimento ao lado do formulário. Segue o GOV.UK e a NN/g: e-mail e senha com “mostrar senha” (o campo de senha do Orthos), colar permitido, “Esqueci a senha” à vista e a opção de entrar com um código por e-mail (Input OTP), sem senha.',
       ref: { nome: 'GOV.UK · Senhas e NN/g · Login sem senha', url: 'https://design-system.service.gov.uk/patterns/passwords/' },
       wide: true,
@@ -151,7 +151,7 @@ ${inner}
       api: [['.ac-checkout > .ac-checkout__in', 'div', '—', 'Formulário + resumo fixo ao lado; abaixo de 760 px o resumo vem primeiro'], ['.ac-checkout__secure', 'div', '—', 'Área do cartão destacada (aumenta a sensação de segurança, segundo a Baymard)'], ['data-ac="card-number"', 'div', '—', 'Espaça o número e mostra a bandeira (Visa, Mastercard, Elo, Amex, Hipercard) em data-brand'], ['.ac-checkout__lines', 'dl', '—', 'Linhas do resumo; .ac-checkout__total no total']],
       a11y: ['Campos com autocomplete de cartão e endereço (cc-number, cc-exp, cc-csc, postal-code).', 'Erros em texto ao lado do campo, sem apagar o que foi digitado.', 'A bandeira detectada é anunciada (aria-live).'] },
 
-    { id: 'tpl-pricing', grupo: 'Modelos', nome: 'Preços', novo: '2026-10-28',
+    { id: 'tpl-pricing', grupo: 'Modelos', nome: 'Página de preços', aka: 'Pricing', novo: '2026-10-28',
       desc: 'Página de planos: alternância mensal/anual que recalcula os preços, três planos com o do meio em destaque (Lei de Von Restorff), o que cada um inclui e perguntas frequentes. O preço aparece sempre (NN/g: esconder manda o cliente para o concorrente).',
       ref: { nome: 'NN/g · Mostre o preço e Laws of UX', url: 'https://www.nngroup.com/articles/show-price/' },
       wide: true,

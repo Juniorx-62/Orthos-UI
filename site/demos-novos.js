@@ -25,7 +25,7 @@
 
   const NOVOS = [
     /* ---------- Fundamentos ---------- */
-    { id: 'toggle', grupo: 'Fundamentos', nome: 'Toggle, Toolbar e grupos', novo: '2026-10-27',
+    { id: 'toggle', grupo: 'Fundamentos', nome: 'Alternador e barra de ferramentas', aka: 'Toggle, Toolbar, Toggle group', novo: '2026-10-27',
       desc: 'Botões liga/desliga, barra de ferramentas com um só ponto de Tab, grupo de botões unidos e separador.',
       ref: { nome: 'Radix · Toolbar', url: 'https://www.radix-ui.com/primitives/docs/components/toolbar' },
       html: `<div class="ac-toolbar" data-ac="toolbar" aria-label="Formatação">
@@ -49,7 +49,7 @@
       a11y: ['A toolbar tem um só ponto de Tab; ← → Home End andam entre os itens.', 'Toggle anuncia o estado por aria-pressed.', 'Botões só com ícone têm aria-label e dica.'] },
 
     /* ---------- Formulários ---------- */
-    { id: 'select', grupo: 'Formulários', nome: 'Select', novo: '2026-10-27',
+    { id: 'select', grupo: 'Formulários', nome: 'Lista de opções (Select)', aka: 'Select', novo: '2026-10-27',
       desc: 'Lista de opções desenhada sobre um <select> nativo: o formulário continua recebendo o valor, com grupos, opção desabilitada e busca por digitação.',
       ref: { nome: 'Radix · Select', url: 'https://www.radix-ui.com/primitives/docs/components/select' },
       html: `<div style="display:grid;gap:16px;width:min(300px,100%)">
@@ -63,7 +63,7 @@
       api: [['data-ac="select"', '<select>', '—', 'Melhora o select nativo; o valor segue no formulário'], ['data-placeholder', 'texto', 'Selecione', 'Texto quando vazio'], ['<optgroup> / disabled', 'HTML', '—', 'Grupos e opções indisponíveis'], ['change', 'evento', '—', 'Disparado no <select> original']],
       a11y: ['Padrão ARIA select-only combobox: ↑ ↓ Home End, Enter escolhe, Esc fecha.', 'Digitar letras pula para a opção.', 'O rótulo do <label> passa para o botão.'] },
 
-    { id: 'number', grupo: 'Formulários', nome: 'Number field', novo: '2026-10-27',
+    { id: 'number', grupo: 'Formulários', nome: 'Campo numérico', aka: 'Number field', novo: '2026-10-27',
       desc: 'Campo numérico com − e +, segurar para repetir, setas, Page Up/Down e formato brasileiro.',
       ref: { nome: 'Base UI · Number Field', url: 'https://base-ui.com/react/components/number-field' },
       html: `<div style="display:grid;gap:18px">
@@ -83,8 +83,8 @@
       api: [['data-ac="people"', 'div', '—', 'data-options: [{ id, name, detail }], data-value: ids'], ['data-ac="tags"', 'div', '—', 'data-value separado por vírgula, data-max'], ['ac:change', 'evento', '—', 'detail: lista atual']],
       a11y: ['Lista com aria-multiselectable; Enter marca e desmarca.', 'Cada etiqueta tem botão “Remover nome”.', 'Mudanças das tags são anunciadas.'] },
 
-    { id: 'daterange', grupo: 'Formulários', nome: 'Intervalo de datas', novo: '2026-10-27',
-      desc: 'Atalhos por nome e dois meses lado a lado (um no celular), com prévia do intervalo no hover.',
+    { id: 'daterange', grupo: 'Formulários', nome: 'Intervalo de datas', aka: 'Date range', novo: '2026-10-27',
+      desc: 'Atalhos por nome e dois meses lado a lado (um no celular), com prévia do intervalo ao passar o mouse.',
       ref: { nome: 'Ant Design · RangePicker', url: 'https://ant.design/components/date-picker' },
       html: `<div class="ac-field"><span class="ac-label" id="dr-l">Período do relatório</span><button class="ac-btn ac-btn--secondary ac-btn--square ac-date-trigger" type="button" data-ac="daterange" data-empty aria-labelledby="dr-l" style="width:260px">${ico(P.calendar)}<span>Escolha o período</span></button></div>`,
       api: [['data-ac="daterange"', 'button', '—', 'Abre atalhos e calendário duplo'], ['ac:change', 'evento', '—', 'detail: { de: Date, ate: Date }']],
@@ -125,7 +125,7 @@
       a11y: ['Botão do país com aria-label e lista com busca por teclado.', 'Número incompleto marca aria-invalid.', 'autocomplete="tel-national" para o preenchimento automático.'] },
 
     /* ---------- Navegação ---------- */
-    { id: 'contextmenu', grupo: 'Navegação', nome: 'Context menu e Menubar', novo: '2026-10-27',
+    { id: 'contextmenu', grupo: 'Navegação', nome: 'Menu de contexto e barra de menus', aka: 'Context menu, Menubar', novo: '2026-10-27',
       desc: 'Menu no botão direito (também por Shift+F10) e barra de menus de aplicativo com navegação por setas entre menus.',
       ref: { nome: 'Radix · Context Menu', url: 'https://www.radix-ui.com/primitives/docs/components/context-menu' },
       html: `<div class="ac-menubar" data-ac="menubar" aria-label="Editor">
@@ -141,7 +141,7 @@
       api: [['data-ac="contextmenu"', 'área', '—', 'data-target: o .ac-pop do menu'], ['data-ac="menubar"', 'container', '—', '.ac-menubar__trigger com data-target'], ['aria-checked', 'item', '—', 'Item marcável (menuitemcheckbox)'], ['ac:select', 'evento', '—', 'detail: item escolhido']],
       a11y: ['Menubar: ← → trocam de menu, ↓ abre, Esc fecha.', 'Context menu também abre por Shift+F10 ou tecla Menu.', 'Itens: ↑ ↓ Home End e letra inicial.'] },
 
-    { id: 'tabs-many', grupo: 'Navegação', nome: 'Abas com muitas seções', novo: '2026-10-27',
+    { id: 'tabs-many', grupo: 'Navegação', nome: 'Abas com rolagem', aka: 'Tabs overflow', novo: '2026-10-27',
       desc: 'Quando as abas não cabem, a lista rola de lado, as bordas esmaecem e aparecem setas; a aba escolhida sempre fica à vista. Vale para todo data-ac="tabs".',
       ref: { nome: '', url: '' },
       html: `<div class="ac-tabs" data-ac="tabs" style="width:min(420px,100%)">
@@ -166,8 +166,8 @@
       a11y: ['O balão é um diálogo não modal com título e texto ligados por aria-labelledby/describedby.', '← → andam entre os passos; Esc fecha e devolve o foco.', 'O foco vai para “Próximo” a cada passo.'] },
 
     /* ---------- Feedback ---------- */
-    { id: 'popover', grupo: 'Feedback', nome: 'Popover e Hover card', novo: '2026-10-27',
-      desc: 'Popover para conteúdo interativo curto ancorado a um botão; hover card para prévia rica ao passar o mouse ou focar um link.',
+    { id: 'popover', grupo: 'Feedback', nome: 'Balão e cartão de prévia (Popover, Hover card)', aka: 'Popover e Hover card', novo: '2026-10-27',
+      desc: 'Balão para conteúdo interativo curto, preso a um botão; cartão de prévia, com conteúdo rico, ao passar o mouse ou focar um link.',
       ref: { nome: 'Radix · Popover e Hover Card', url: 'https://www.radix-ui.com/primitives/docs/components/popover' },
       html: `<div class="ac-btn-group">
   <button class="ac-btn ac-btn--secondary" type="button" data-ac="popover" data-target="#pop-dim">${ico(P.filter)}Dimensões</button>
@@ -232,8 +232,8 @@
       api: [['data-ac="area"', 'div', '—', 'data-values, data-compare, data-labels, data-label'], ['.ac-hbars', '<ul>', '—', 'Cada <li>: rótulo, trilha com --v e valor'], ['.ac-goal', 'div', '—', '--v (atual) e --goal (marca da meta)'], ['.ac-stack', 'div', '—', 'Segmentos com --v (peso) e --c (cor)']],
       a11y: ['Área: foco no gráfico e ← → leem cada ponto.', '“Ver tabela” mostra os mesmos números em tabela.', 'Barras empilhadas têm descrição completa em aria-label.'] },
 
-    { id: 'collapsible', grupo: 'Dados', nome: 'Card e cartão recolhível', novo: '2026-10-27',
-      desc: 'O card base (cabeçalho, corpo e rodapé) e o cartão que abre e fecha com resumo, para listas longas de dados.',
+    { id: 'collapsible', grupo: 'Dados', nome: 'Cartão e cartão recolhível (Card)', aka: 'Card e cartão recolhível', novo: '2026-10-27',
+      desc: 'O cartão base (cabeçalho, corpo e rodapé) e o cartão que abre e fecha com resumo, para listas longas de dados.',
       ref: { nome: 'shadcn/ui · Collapsible', url: 'https://ui.shadcn.com/docs/components/collapsible' },
       html: `<div style="display:grid;gap:14px;width:min(440px,100%)">
   <article class="ac-card"><div class="ac-card__head"><h3 class="ac-card__title">Plano Pro</h3><p class="ac-card__desc">Renova em 12/11/2026</p></div><div class="ac-card__body" style="font-size:14px;color:var(--ac-text-2)">5 assentos, 200 GB e suporte prioritário.</div><div class="ac-card__foot"><button class="ac-btn ac-btn--ghost ac-btn--sm" type="button">Cancelar plano</button><button class="ac-btn ac-btn--sm" type="button">Gerenciar</button></div></article>

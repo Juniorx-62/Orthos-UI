@@ -67,15 +67,17 @@ Atalho de busca: `Ctrl K`.
 - Eventos: `ac:change`, `ac:select`, `ac:complete`, `ac:valid`.
 - Formulário com `data-ac="validate"`: com erro, o envio é barrado e o foco vai ao primeiro campo inválido. Válido, emite `ac:valid` (cancelável) e o formulário é enviado normalmente; para enviar por `fetch`, chame `e.preventDefault()` nesse evento.
 
-## Componentes (83) e modelos de tela (4)
+## Componentes (81) e modelos de tela (4)
 
-**Fundamentos:** Button (variantes, carregando, shimmer), Magnetic button, Badge e Kbd, Avatar, Tooltip, Toggle/Toolbar/grupo de botões/separador.
-**Formulários:** Input e Field, Validação, Input OTP (campo único no modelo do Kobra), Checkbox/Radio/Switch, Slider, Segmented, Combobox, Date picker, File dropzone, Color palette 3D, Select, Number field, Seletor de pessoas e tags, Intervalo de datas, Alterações não salvas, Campo de dinheiro, Telefone com país, Campo de senha (regras ao vivo, modo segredo), Campo copiável, Escolha em cartões.
-**Navegação:** Tabs, Sidebar, Dropdown menu, Command palette, Breadcrumb e Pagination, Stepper, Accordion, Context menu e Menubar, Abas com muitas seções, Tour de apresentação; Sidebar com largura ajustável.
-**Feedback:** Toast (pilha, promessa, arrastar, Alt+T), Alert e Banner, Dialog e confirmação, Sheet, Progress e Spinner, Skeleton automático (brilho, pulso, parado, cascata, atraso anti-pisca), Quatro pontos e carregando na área, Espera longa, Sincronizando, Empty state, Popover e Hover card, Páginas de erro e resultado, Carregamento com logo (SVG traçado ou imagem, tela inteira), Faixas de aviso em fila, Diálogo em bottom sheet no celular (com teclado virtual), Confirmar e alertar.
-**Dados:** Data table (busca, filtro, ordenação, seleção em lote com desfazer, paginação), Stat cards e gráficos, Gráficos de área/barras/meta/empilhada, Card e cartão recolhível, Tabela em cartões (pelo espaço da tabela, não pela tela), Linha do tempo, Conversa (chat), Carrossel acessível (com miniaturas e lightbox), Galeria e lightbox (grade, destaque, mosaico), Coverflow 3D, Banner com fotos.
-**Movimento:** Text effect, Text shimmer e scramble, Marquee, Cartão com inclinação 3D, Revelar ao rolar (com barra de leitura), Fundo com gradiente animado, Cartão que vira, Marquee 3D, Grade retrô, Nuvem em esfera 3D, Anel 3D, Palavras que viram em 3D; `Orthos.transition()` para trocas de tela com View Transitions (o site não usa na navegação, para a troca ser imediata).
-**Modelos:** Painel (dashboard), Entrar, Pagamento (checkout, com campo de cartão que detecta a bandeira), Preços. Todos em moldura Celular/Tablet/Computador e com layout por container query.
+Nomes em português; entre parênteses, o termo em inglês que o mercado usa (convenção de 30/10/2026). A busca do site também acha pelo nome em inglês.
+
+**Fundamentos:** Botão, Botão magnético, Selo e tecla (Badge, Kbd), Avatar, Dica (Tooltip), Alternador e barra de ferramentas (Toggle, Toolbar), Ícones que se transformam.
+**Formulários:** Campo de texto (Input), Validação de formulário, Código de verificação (OTP), Caixa de seleção, rádio e interruptor, Controle deslizante (Slider), Controle segmentado, Busca com lista (Combobox), Seletor de data (Date picker), Envio de arquivos (Dropzone), Paleta de cores 3D, Lista de opções (Select), Campo numérico, Seletor de pessoas e tags, Intervalo de datas, Alterações não salvas, Campo de dinheiro, Telefone com país, Campo de senha, Campo copiável, Escolha em cartões, Editor com IA.
+**Navegação:** Abas (Tabs), Menu lateral (Sidebar), Menu suspenso (Dropdown), Paleta de comandos, Trilha e paginação (Breadcrumb, Pagination), Etapas (Stepper), Acordeão (Accordion), Menu de contexto e barra de menus, Abas com rolagem, Tour de apresentação.
+**Feedback:** Aviso rápido (Toast), Alerta e faixa (Alert, Banner), Diálogo e confirmação (Dialog), Painel lateral (Sheet), Progresso e carregamento (Progress, Spinner), Esqueleto automático (Skeleton), Estado vazio, Balão e cartão de prévia (Popover, Hover card), Páginas de erro e resultado, Carregamento com logo, Faixas de aviso em fila, Diálogo no celular (bottom sheet), Confirmar e alertar, Carregamento com quatro pontos, Espera longa, Sincronizando.
+**Dados:** Tabela de dados (Data table), Cartões de indicadores (Stat cards), Gráficos: área, barras e meta, Cartão e cartão recolhível (Card), Tabela em cartões, Linha do tempo, Conversa, Carrossel, Galeria e visualizador (Lightbox), Carrossel de imagens, Destaque com fotos (Hero), Coverflow 3D, Conversa em sequência, Player de vídeo.
+**Movimento:** Texto animado por palavra, Brilho e embaralhamento de texto, Faixa rolante (Marquee), Cartão com inclinação 3D, Cartão que vira, Faixa rolante 3D, Grade retrô em perspectiva, Nuvem em esfera 3D, Anel 3D, Palavras que viram em 3D, Revelar ao rolar, Fundo com gradiente animado, Imagem em pontos (Halftone).
+**Modelos:** Painel (dashboard), Tela de entrada (login), Pagamento (checkout), Página de preços.
 
 As peças de 28/10/2026 foram reimplementadas em HTML/CSS/JS puro a partir de padrões observados; o detalhe está em `docs/mudancas-2026-10-28.md`.
 

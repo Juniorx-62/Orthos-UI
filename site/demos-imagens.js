@@ -27,7 +27,7 @@
     .map((n, i) => item(n, [0, 2, 4, 6, 8].includes(i) ? tall(n) : thumb(n))).join('\n    ');
 
   const NOVOS = [
-    { id: 'gallery', grupo: 'Dados', nome: 'Galeria e lightbox', novo: '2026-10-28',
+    { id: 'gallery', grupo: 'Dados', nome: 'Galeria e visualizador (Lightbox)', aka: 'Galeria e lightbox', novo: '2026-10-28',
       desc: 'Grade de imagens que abre um visualizador em tela cheia: setas, miniaturas, arrastar no celular, Home/End e Esc, com a legenda embaixo e a vizinha já carregada. Três arranjos: grade, destaque (a primeira ocupa 2×2) e mosaico (alturas livres).',
       ref: { nome: 'Ant Design · Image (preview) e Masonry', url: 'https://ant.design/components/image' },
       wide: true,
@@ -56,8 +56,8 @@
       api: [['data-thumbs', 'section', '—', 'Miniaturas das fotos no lugar das bolinhas'], ['data-lightbox', 'section', '—', 'Clicar na foto amplia no lightbox'], ['.ac-carousel__media', 'figure', '—', 'Slide de foto com <figcaption> sobre a imagem'], ['--ratio', 'CSS', '16 / 9', 'Proporção das fotos'], ['data-autoplay', 'ms', '—', 'Como no carrossel: troca sozinho, com pausa']],
       a11y: ['As miniaturas são botões “Imagem 2 de 6: …” com aria-current na atual.', 'Herda do carrossel: região com “carrossel”, slides “2 de 6” e os de fora da vista inert.'] },
 
-    { id: 'hero', grupo: 'Dados', nome: 'Banner com fotos', novo: '2026-10-28',
-      desc: 'Banner de abertura (login, página inicial, campanha): a foto ocupa tudo e troca sozinha com fade e um zoom lento; título com uma palavra em destaque, etiqueta com subtítulo e barrinhas de progresso no estilo stories, que também levam ao slide. Pausa no botão, no hover e no foco.',
+    { id: 'hero', grupo: 'Dados', nome: 'Destaque com fotos (Hero)', aka: 'Banner com fotos', novo: '2026-10-28',
+      desc: 'Destaque de abertura (login, página inicial, campanha): a foto ocupa tudo e troca sozinha com fade e um zoom lento; título com uma palavra em destaque, etiqueta com subtítulo e barrinhas de progresso no estilo stories, que também levam ao slide. Pausa no botão, ao passar o mouse e no foco.',
       ref: { nome: '', url: '' },
       wide: true,
       html: `<section class="ac-hero" data-ac="hero" data-interval="6000" aria-label="Destaques" style="--h:min(620px,78vh)">
