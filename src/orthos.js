@@ -730,9 +730,15 @@
       s.setProperty('--dx', dx.toFixed(2)); s.setProperty('--dy', dy.toFixed(2)); s.setProperty('--s', 1 - .03 * k); s.setProperty('--lift', '0px');
     });
     const select = it => { items.forEach(o => { o.b.setAttribute('aria-checked', o === it); o.b.tabIndex = o === it ? 0 : -1; }); el.dataset.value = it.color; el.dispatchEvent(new CustomEvent('ac:change', { detail: { name: it.name, color: it.color }, bubbles: true })); };
+    // mouse: a esfera sobe e afasta as vizinhas. Toque: só o retorno de pressionado, como na Kobra (sem "hover" que fica
+    // preso depois do toque nem vizinhas se mexendo); o foco que vem de um toque também não levanta a esfera.
+    let input = '';
+    el.addEventListener('keydown', () => { input = 'key'; }, true);
     items.forEach((it, i) => {
-      it.b.addEventListener('pointerenter', () => layout(it)); it.b.addEventListener('click', () => select(it));
-      it.b.addEventListener('focus', () => { if (!el.matches(':hover')) layout(it); }); it.b.addEventListener('blur', () => { if (!el.matches(':hover')) layout(null); });
+      it.b.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') layout(it); }); it.b.addEventListener('click', () => select(it));
+      it.b.addEventListener('pointerdown', e => { input = e.pointerType; if (e.pointerType === 'touch') it.b.classList.add('is-press'); });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => it.b.addEventListener(t, () => it.b.classList.remove('is-press')));
+      it.b.addEventListener('focus', () => { if (input !== 'touch' && !el.matches(':hover')) layout(it); }); it.b.addEventListener('blur', () => { if (!el.matches(':hover')) layout(null); });
       it.b.addEventListener('keydown', e => { const st = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key]; if (!st) return; e.preventDefault(); const n = items[(i + st + items.length) % items.length]; n.b.focus(); select(n); });
     });
     el.addEventListener('pointerleave', () => layout(null));

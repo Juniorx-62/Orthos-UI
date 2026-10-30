@@ -46,8 +46,8 @@
       api: [['data-ac="flip"', 'div', '—', 'O 1º filho é a frente e o 2º o verso'], ['data-label-back / data-label-front', 'texto', 'Ver o verso / Ver a frente', 'Rótulo do botão em cada lado'], ['.is-flipped', 'classe', '—', 'Estado virado (o botão tem aria-pressed)']],
       a11y: ['Botão com aria-pressed e rótulo que diz para onde vai.', 'A face de costas fica inert: nada escondido recebe foco.', 'Com movimento reduzido, a troca é instantânea.'] },
 
-    { id: 'marquee3d', grupo: 'Movimento', nome: 'Marquee 3D', novo: '2026-10-29',
-      desc: 'Uma grade inclinada em perspectiva com quatro colunas de imagens rolando em sentidos opostos, para topo de página, portfólio ou depoimentos. Só CSS 3D; pausa no hover, no foco e no botão; parada fora da tela.',
+    { id: 'marquee3d', grupo: 'Movimento', nome: 'Faixa rolante 3D', aka: 'Marquee 3D', novo: '2026-10-29',
+      desc: 'Uma grade inclinada em perspectiva com quatro colunas de imagens rolando em sentidos opostos, para topo de página, portfólio ou depoimentos. Só CSS 3D; pausa ao passar o mouse, no foco e no botão; parada fora da tela.',
       ref: { nome: 'Aceternity UI · 3D Marquee', url: 'https://ui.aceternity.com/components/3d-marquee' },
       wide: true,
       html: `<div data-ac="marquee3d" aria-label="Destinos em movimento" style="width:min(1080px,100%);margin:0 auto">

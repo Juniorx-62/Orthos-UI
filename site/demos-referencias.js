@@ -81,8 +81,8 @@
       api: [['data-ac="banners"', 'div', '—', 'Fila de .ac-banners__item; mostra um por vez'], ['data-tone', '"critico" | "perigo" | "atencao" | "ok" | "neutro"', 'neutro', 'Cor da faixa e ordem padrão (do mais grave ao mais leve)'], ['data-priority', 'número', 'o tom', 'Ordem explícita (menor primeiro)'], ['data-dismissible', 'atributo', '—', 'Mostra o X; evento ac:dismiss com detail: { id }'], ['.ac-banners__long / __short', 'span', '—', 'Texto do computador e o curto, do celular (< 640 px)'], ['.ac-banners__icon / __text / __action', 'classes', '—', 'Ícone num quadrado translúcido, texto centralizado e ação sublinhada'], ['data-interval', 'ms', '10000', 'Tempo da troca automática']],
       a11y: ['Região nomeada (“Avisos da conta”); cada aviso começa com “Aviso 2 de 3” para o leitor de tela.', 'Trocar pelas setas ou dispensar anuncia o aviso novo numa região educada; a troca automática não interrompe ninguém.', 'Sem troca automática com movimento reduzido; ela também para com o mouse ou o foco em cima.'] },
 
-    { id: 'sheet-mobile', grupo: 'Feedback', nome: 'Diálogo em bottom sheet', novo: '2026-10-28',
-      desc: 'No celular (abaixo de 640 px), todo .ac-dialog sobe da borda de baixo, ocupa a largura toda e só os cantos de cima são arredondados. O conteúdo rola dentro dele e as ações ficam sempre à vista; quando o teclado virtual abre, o sheet sobe junto e o campo focado continua visível.',
+    { id: 'sheet-mobile', grupo: 'Feedback', nome: 'Diálogo no celular (bottom sheet)', aka: 'Bottom sheet, Dialog', novo: '2026-10-28',
+      desc: 'No celular (abaixo de 640 px), todo .ac-dialog sobe da borda de baixo, ocupa a largura toda e só os cantos de cima são arredondados. O conteúdo rola dentro dele e as ações ficam sempre à vista; quando o teclado virtual abre, o painel sobe junto e o campo focado continua visível.',
       ref: { nome: 'zero-7 · dialogo-teclado.js', url: '' },
       html: `<div style="display:grid;gap:12px;justify-items:center;text-align:center">
   <button class="ac-btn ac-btn--secondary" type="button" data-ac-open="#bs-end">Novo endereço</button>
@@ -117,7 +117,7 @@
       a11y: ['role="alertdialog" com título e consequência ligados por aria-labelledby/describedby.', 'O foco começa em Cancelar e volta para quem abriu ao fechar.', 'Enquanto a ação roda, o diálogo fica aria-busy e não fecha; o erro entra em role="alert".'] },
 
     /* ---------- Dados ---------- */
-    { id: 'orbit', grupo: 'Feedback', nome: 'Quatro pontos e carregando na área', novo: '2026-10-28',
+    { id: 'orbit', grupo: 'Feedback', nome: 'Carregamento com quatro pontos', aka: 'Loader, Spinner', novo: '2026-10-28',
       desc: 'Quatro bolinhas nos cantos de um quadrado, cada uma mais clara, girando com um pulso a cada quarto de volta. Sozinho é o indicador de espera dentro de uma área; com .ac-loading-area vira o “carregando” centralizado de uma tela que está abrindo, com o texto embaixo.',
       ref: { nome: 'Uiverse · loader de AbanoubMagdy1 (licença MIT)', url: 'https://uiverse.io/' },
       html: `<div style="display:grid;gap:18px;width:min(520px,100%)">
@@ -171,7 +171,7 @@
       api: [['.ac-table--stack', 'classe na <table>', '—', 'Liga o modo cartão quando o .ac-table-wrap em volta fica abaixo de 640 px (container query)'], ['data-label', '<td>', '—', 'Rótulo mostrado antes do valor (::before)'], ['<td> sem data-label', '—', '—', 'Ocupa a linha inteira: use para o título do cartão'], ['.ac-table__actions', '<td>/<th>', '—', 'Vira a última linha, alinhada à direita'], ['.ac-table__select', '<td>/<th>', '—', 'Caixa de seleção no canto do cartão'], ['.ac-stack-host', 'classe', '—', 'Marca outro pai como o espaço medido, para tabela sem .ac-table-wrap'], ['data-ac="stack"', '<table>', 'opcional', 'Sem .ac-table-wrap, marca o pai como .ac-stack-host; Põe a classe e os papéis ARIA de tabela (o Safari perde a tabela com display: block)'], ['data-ac="table"', 'Data table', 'automático', 'Já gera data-label; a coluna name vira o título']],
       a11y: ['O cabeçalho some só da tela: continua na tabela para o leitor de tela.', 'Com data-ac="stack" (e no Data table), role="table/row/cell" garante que a tabela siga sendo lida como tabela.', 'Valores longos quebram dentro do cartão (sem rolagem de lado); um elemento ou texto por célula.'] },
 
-    { id: 'timeline', grupo: 'Dados', nome: 'Linha do tempo', novo: '2026-10-28',
+    { id: 'timeline', grupo: 'Dados', nome: 'Linha do tempo', aka: 'Timeline', novo: '2026-10-28',
       desc: 'Etapas de um pedido, saque ou aprovação: nó quadrado com ícone, linha fina por trás e estados feito, atual, falhou e próximo (tracejado). Cada item tem data, título com valor opcional à direita e detalhe. A versão horizontal vira vertical no celular.',
       ref: { nome: '', url: '' },
       html: `<div style="display:grid;gap:36px;width:min(640px,100%)">
@@ -191,7 +191,7 @@
       api: [['.ac-timeline', '<ol>', 'vertical', 'Lista de .ac-timeline__item'], ['.ac-timeline--h', 'classe', '—', 'Horizontal; vira vertical abaixo de 640 px'], ['.is-done / .is-current / .is-failed / .is-next', 'no item', 'neutro', 'Feito (verde), atual (âmbar), falhou (vermelho) e próximo (tracejado, texto apagado)'], ['.ac-timeline__node', 'span', '—', 'Quadrado de 32 px com ícone de 16 px'], ['__date / __head / __title / __value / __detail', 'classes', '—', 'Data, título com valor à direita e detalhe']],
       a11y: ['É uma lista ordenada com nome (aria-label); a ordem é a do tempo.', 'O estado não fica só na cor: o ícone muda e um texto oculto (“Concluído.”) diz o estado.', 'aria-current="step" marca a etapa atual.'] },
 
-    { id: 'chat', grupo: 'Dados', nome: 'Conversa', novo: '2026-10-28',
+    { id: 'chat', grupo: 'Dados', nome: 'Conversa', aka: 'Chat', novo: '2026-10-28',
       desc: 'Balões enviados à direita e recebidos à esquerda, colados quando seguidos. Tocar no balão mostra a hora; rascunho da IA, erro com “tentar de novo” e reação presa à borda. Longe do fim, aparece o botão para a mensagem mais nova. Ctrl/⌘+Enter envia.',
       ref: { nome: '', url: '' },
       html: `<section class="ac-chat" data-ac="chat" aria-label="Conversa com Marina Teles" style="width:min(420px,100%)">
@@ -213,8 +213,8 @@
       api: [['.ac-chat + data-ac="chat"', 'section', '—', 'Lista (.ac-chat__log) e campo de escrever (.ac-chat__composer)'], ['.ac-msg--in / --out', 'div', '—', 'Recebida (esquerda) e enviada (direita); o balão é .ac-msg__bubble'], ['.ac-msg--soft / --error', 'classe', '—', 'Rascunho da IA e não enviada (com .ac-msg__retry)'], ['data-time / data-author', 'texto', '—', 'Hora mostrada ao tocar no balão e quem falou (para o leitor de tela)'], ['.ac-msg__reaction', 'span', '—', 'Selo de reação preso à borda'], ['ac:send', 'evento', '—', 'detail: { text }; cancele para manter o texto no campo'], ['ac:retry', 'evento', '—', 'detail: { message } ao tocar em “tentar de novo”']],
       a11y: ['A lista é role="log" com aria-live educado: mensagem nova é lida sem roubar o foco.', 'Cada balão diz quem falou (texto oculto) e a hora está na árvore de acessibilidade mesmo fechada.', 'A lista recebe foco e rola pelo teclado; Ctrl/⌘+Enter envia e Enter quebra a linha.'] },
 
-    { id: 'carousel', grupo: 'Dados', nome: 'Carrossel', novo: '2026-10-28',
-      desc: 'Trilha com scroll-snap, setas e bolinhas numa cápsula, slides fora da vista fora do Tab e troca automática opcional que para no hover, no foco e no botão Pausar. Sem troca automática com movimento reduzido.',
+    { id: 'carousel', grupo: 'Dados', nome: 'Carrossel', aka: 'Carousel', novo: '2026-10-28',
+      desc: 'Trilha com scroll-snap, setas e bolinhas numa cápsula, slides fora da vista fora do Tab e troca automática opcional que para ao passar o mouse, no foco e no botão Pausar. Sem troca automática com movimento reduzido.',
       ref: { nome: 'WAI-ARIA APG · Carousel', url: 'https://www.w3.org/WAI/ARIA/apg/patterns/carousel/' },
       html: `<div style="display:grid;gap:30px;width:min(560px,100%)">
   <section class="ac-carousel" data-ac="carousel" data-autoplay="12000" aria-label="Novidades da loja">

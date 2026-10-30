@@ -607,16 +607,24 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-scramble { font-family: var(--ac-mono); }
 
 /* ---------- Sphere color palette (do projeto) ---------- */
-.ac-palette { --size: 200px; position: relative; width: var(--size); aspect-ratio: 1; container-type: size; perspective: 600px; border-radius: 50%; background: radial-gradient(circle at 50% 40%, #1d1d1f, #121213 80%); }
+.ac-palette { --size: 200px; position: relative; width: var(--size); aspect-ratio: 1; container-type: size; perspective: 600px; border-radius: 50%; background: var(--pal-bowl); box-shadow: var(--pal-shadow); max-width: 100%; }
+/* base da paleta: clara no tema claro (borda interna branca e sombra suave), escura no escuro; o anel de seleção acompanha */
+.ac-palette { --pal-bowl: radial-gradient(circle at 50% 38%, #fbfbfa, #e9e9e6 78%); --pal-shadow: inset 0 0 0 4px rgb(255 255 255 / .6), inset 0 -2px 8px rgb(0 0 0 / .05), 0 14px 28px -10px rgb(0 0 0 / .18); --pal-ring: rgb(11 11 12 / .85); }
+:root[data-theme="dark"] .ac-palette { --pal-bowl: radial-gradient(circle at 50% 40%, #1d1d1f, #121213 80%); --pal-shadow: 0 14px 28px -10px rgb(0 0 0 / .6); --pal-ring: rgb(255 255 255 / .9); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ac-palette { --pal-bowl: radial-gradient(circle at 50% 40%, #1d1d1f, #121213 80%); --pal-shadow: 0 14px 28px -10px rgb(0 0 0 / .6); --pal-ring: rgb(255 255 255 / .9); } }
 .ac-palette::before, .ac-palette::after { content: ""; position: absolute; inset: 0; border-radius: 50%; padding: 1.1cqw; pointer-events: none; background: conic-gradient(from 0deg, #ff4b6e, #ff9a3d 50deg, #ffd23a 90deg, #3ddc6a 130deg, #22d3c5 175deg, #3a74e0 215deg, #8a4fd8 250deg, #d03bb8 290deg, #ff4fa3 330deg, #ff4b6e); -webkit-mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); transition: opacity .5s var(--ac-ease), filter .5s var(--ac-ease); }
 .ac-palette::after { filter: blur(3px); opacity: .35; }
 .ac-palette:hover::after, .ac-palette:focus-within::after { opacity: .7; filter: blur(4px); }
 .ac-palette__sw { --dx: 0; --dy: 0; --s: 1; --lift: 0px; position: absolute; left: var(--x); top: var(--y); width: var(--d); aspect-ratio: 1; margin: calc(var(--d) / -2) 0 0 calc(var(--d) / -2); padding: 0; border: 0; border-radius: 50%; cursor: pointer; z-index: var(--z);
   background: radial-gradient(circle at 40% 32%, color-mix(in oklab, var(--c) 94%, white) 0%, var(--c) 55%, color-mix(in oklab, var(--c) 90%, black) 100%);
   box-shadow: inset 0 -0.5cqw 1cqw rgb(0 0 0 / .12), 0 0.6cqw 2.4cqw rgb(0 0 0 / .42), 0 0 0.8cqw rgb(0 0 0 / .22);
-  transform: translate3d(calc(var(--dx) * 1cqw), calc(var(--dy) * 1cqw), var(--lift)) scale(var(--s)); transition: transform .55s var(--ac-ease), box-shadow .55s var(--ac-ease), filter .55s var(--ac-ease); }
+  transform: translate3d(calc(var(--dx) * 1cqw), calc(var(--dy) * 1cqw), var(--lift)) scale(var(--s)); transition: transform .55s var(--ac-ease), box-shadow .55s var(--ac-ease), filter .55s var(--ac-ease), scale .18s var(--ac-ease); }
+/* toque: segurar encolhe só a esfera tocada (as vizinhas só se afastam com mouse) */
+.ac-palette__sw.is-press { scale: .92; }
+/* a escolhida sobe na camada: o anel aparece inteiro, sem as vizinhas por cima */
+.ac-palette__sw[aria-checked="true"] { z-index: 40; }
 .ac-palette__sw.is-hover { filter: brightness(1.05); box-shadow: inset 0 -0.5cqw 1cqw rgb(0 0 0 / .12), 0 2.4cqw 4.4cqw rgb(0 0 0 / .55), 0 0.4cqw 0.8cqw rgb(0 0 0 / .45); }
-.ac-palette__sw::after { content: ""; position: absolute; inset: -1.6cqw; border-radius: 50%; border: .5cqw solid rgb(255 255 255 / .9); opacity: 0; transform: scale(.88); transition: opacity .35s var(--ac-ease), transform .45s var(--ac-ease); }
+.ac-palette__sw::after { content: ""; position: absolute; inset: -1.6cqw; border-radius: 50%; border: .5cqw solid var(--pal-ring); opacity: 0; transform: scale(.88); transition: opacity .35s var(--ac-ease), transform .45s var(--ac-ease); }
 .ac-palette__sw[aria-checked="true"]::after { opacity: 1; transform: scale(1); }
 .ac-palette__sw:focus-visible { outline: .6cqw solid #fff; outline-offset: .8cqw; }
 
