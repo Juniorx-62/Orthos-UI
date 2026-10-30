@@ -396,6 +396,12 @@
 /* avisos no topo: toast({ position: 'top' }), centralizados; a pilha cresce para baixo */
 .ac-toaster--top { top: 16px; right: auto; bottom: auto; left: 50%; translate: -50% 0; width: min(380px, calc(100vw - 32px)); }
 .ac-toaster--top .ac-toast:not(.is-leaving) { animation-name: ac-toast-in-top; }
+/* pílula: confirmação curta de uma linha (ex.: "Copiado #ffffff"), centrada; o check vem num círculo cheio */
+.ac-toast.ac-toast--pill { display: inline-flex; align-items: center; justify-self: center; gap: 10px; width: auto; max-width: 100%; padding: 7px 18px 7px 7px; border-radius: var(--ac-r-full); font-size: var(--ac-fs-md); }
+.ac-toast.ac-toast--pill .ac-toast__title { margin: 0; font-weight: 450; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ac-toast.ac-toast--pill > .ac-icon { flex: none; width: 22px; height: 22px; margin: 0; padding: 4px; border-radius: 50%; background: var(--ac-accent); color: var(--ac-on-accent); stroke-width: 2.4; }
+.ac-toast.ac-toast--pill .ac-toast__desc { margin: 0; color: var(--ac-text-2); font: var(--ac-fs-sm) var(--ac-mono); white-space: nowrap; }
+.ac-toast.ac-toast--pill > .ac-toast__swatch { width: 22px; height: 22px; margin: 0; }
 .ac-toast__swatch { width: 18px; height: 18px; margin-top: 1px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12); }
 @keyframes ac-toast-in-top { from { opacity: 0; transform: translateY(-16px) scale(.96); } }
 .ac-toast { --k: 0; position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 2px 10px; align-items: start; padding: 14px 14px 14px 16px; border-radius: var(--ac-r); border: 1px solid var(--ac-border); background: var(--ac-surface); color: var(--ac-text); box-shadow: var(--ac-shadow-lg); font: var(--ac-fs-base)/1.45 var(--ac-font); animation: ac-toast-in .45s var(--ac-ease-spring); transition: transform var(--ac-dur-overlay) var(--ac-ease-out), opacity var(--ac-dur-overlay) var(--ac-ease-out); touch-action: pan-y; user-select: none; }
@@ -2082,7 +2088,8 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
     t.tabIndex = 0;
     const paint = (o) => {
       const type = o.type || 'default';
-      t.className = `ac-toast ac-toast--${type}`;
+      // variant: 'pill' = cápsula curta (ícone + uma linha), para confirmações rápidas como "Copiado #ffffff"
+      t.className = `ac-toast ac-toast--${type}${o.variant === 'pill' ? ' ac-toast--pill' : ''}`;
       if (type === 'danger') t.setAttribute('role', 'alert'); else t.removeAttribute('role');
       t.setAttribute('aria-busy', type === 'loading');
       // swatch: amostra de cor no lugar do ícone (só aceita uma cor CSS válida)
@@ -2668,15 +2675,20 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       if (r > lim) { dx -= nx / r * (r - lim); dy -= ny / r * (r - lim); }
       s.setProperty('--dx', dx.toFixed(2)); s.setProperty('--dy', dy.toFixed(2)); s.setProperty('--s', 1 - .03 * k); s.setProperty('--lift', '0px');
     });
-    const select = it => { items.forEach(o => { o.b.setAttribute('aria-checked', o === it); o.b.tabIndex = o === it ? 0 : -1; }); el.dataset.value = it.color; el.dispatchEvent(new CustomEvent('ac:change', { detail: { name: it.name, color: it.color }, bubbles: true })); };
+    const select = (it, copy) => {
+      items.forEach(o => { o.b.setAttribute('aria-checked', o === it); o.b.tabIndex = o === it ? 0 : -1; }); el.dataset.value = it.color; el.dispatchEvent(new CustomEvent('ac:change', { detail: { name: it.name, color: it.color }, bubbles: true }));
+      // data-copy: copia o código da cor e confirma numa pílula no topo (como a Kobra); só no clique, toque ou Enter
+      if (copy && el.dataset.copy !== undefined) copyText(it.color, el).then(ok => toast(ok ? { type: 'success', variant: 'pill', position: 'top', swatch: it.color, title: `Copiado: ${it.name}`, desc: it.color, duration: 2400 } : { type: 'danger', variant: 'pill', position: 'top', title: 'Não deu para copiar a cor' }));
+    };
     // mouse: a esfera sobe e afasta as vizinhas. Toque: só o retorno de pressionado, como na Kobra (sem "hover" que fica
     // preso depois do toque nem vizinhas se mexendo); o foco que vem de um toque também não levanta a esfera.
     let input = '';
     el.addEventListener('keydown', () => { input = 'key'; }, true);
     items.forEach((it, i) => {
-      it.b.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') layout(it); }); it.b.addEventListener('click', () => select(it));
-      it.b.addEventListener('pointerdown', e => { input = e.pointerType; if (e.pointerType === 'touch') it.b.classList.add('is-press'); });
-      ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => it.b.addEventListener(t, () => it.b.classList.remove('is-press')));
+      it.b.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') layout(it); }); it.b.addEventListener('click', () => select(it, true));
+      it.b.addEventListener('pointerdown', e => { input = e.pointerType; if (e.pointerType === 'touch') { it.b.classList.add('is-press'); it.pressAt = performance.now(); } });
+      // toque rápido: a leve retraída fica ao menos 170 ms na tela, senão o dedo sai antes de ela aparecer
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => it.b.addEventListener(t, () => { if (!it.b.classList.contains('is-press')) return; setTimeout(() => it.b.classList.remove('is-press'), Math.max(0, 170 - (performance.now() - (it.pressAt || 0)))); }));
       it.b.addEventListener('focus', () => { if (input !== 'touch' && !el.matches(':hover')) layout(it); }); it.b.addEventListener('blur', () => { if (!el.matches(':hover')) layout(null); });
       it.b.addEventListener('keydown', e => { const st = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key]; if (!st) return; e.preventDefault(); const n = items[(i + st + items.length) % items.length]; n.b.focus(); select(n); });
     });
@@ -4396,7 +4408,7 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
         // aviso no topo (data-toast="texto" troca a mensagem; data-toast="false" desliga). Com ele, a região viva do campo
         // fica calada para o leitor de tela não ouvir "Copiado" duas vezes.
         const tt = el.dataset.toast, withToast = tt !== 'false';
-        if (withToast) toast({ type: 'success', title: tt && tt !== 'true' ? tt : 'Copiado para a área de transferência', position: 'top', duration: 2200 });
+        if (withToast) toast({ type: 'success', variant: 'pill', title: tt && tt !== 'true' ? tt : 'Copiado', position: 'top', duration: 2400 });
         el.dataset.state = 'copied'; btn.setAttribute('aria-label', 'Copiado'); tip('Copiado'); live.textContent = withToast ? '' : 'Copiado'; hint.hidden = true;
         t = setTimeout(() => { delete el.dataset.state; btn.setAttribute('aria-label', label); tip('Copiar'); live.textContent = ''; }, 1500);
         el.dispatchEvent(new CustomEvent('ac:copy', { detail: { text }, bubbles: true }));
@@ -4728,10 +4740,10 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       api: [['data-ac="dropzone"', 'container', '—', 'Precisa de <input type=file> dentro e .ac-files logo após']],
       a11y: ['Focável e ativável com Enter/Espaço.', 'Progresso com role="progressbar".'] },
 
-    { id: 'palette', grupo: 'Formulários', nome: 'Paleta de cores 3D', aka: 'Color palette', desc: 'Seletor de cor em esferas, feito neste projeto. Com mouse, a esfera sobe e afasta as vizinhas; no toque, só a esfera tocada responde ao pressionar. A escolhida fica por cima, com anel, e a cor aparece num aviso no topo.',
+    { id: 'palette', grupo: 'Formulários', nome: 'Paleta de cores 3D', aka: 'Color palette', desc: 'Seletor de cor em esferas, feito neste projeto. Com mouse, a esfera sobe e afasta as vizinhas; no toque, a esfera tocada dá uma leve retraída. A escolhida fica por cima, com anel; com data-copy, o código é copiado e uma pílula no topo mostra a amostra, o nome e o código da cor.',
       ref: { nome: 'Kobra · Color Palette (inspiração visual)', url: 'https://kobra.systems/components/color-palette' },
-      html: `<div style="display:grid;gap:16px;justify-items:center"><div data-ac="palette" id="pal-demo" style="--size:200px"></div><p class="ac-hint" id="pal-out">Escolha uma cor</p></div>`,
-      api: [['data-ac="palette"', 'div', '—', 'Gera 19 esferas'], ['--size', 'CSS', '200px', 'Diâmetro'], ['ac:change', 'evento', '—', 'detail: { name, color }'], ['dataset.value', 'leitura', '—', 'Cor selecionada']],
+      html: `<div style="display:grid;gap:16px;justify-items:center"><div data-ac="palette" data-copy id="pal-demo" style="--size:200px"></div><p class="ac-hint" id="pal-out">Escolha uma cor</p></div>`,
+      api: [['data-copy', 'atributo', 'desligado', 'O clique, o toque ou o Enter copiam o código da cor e mostram "Copiado #hex" numa pílula no topo (as setas só escolhem)'], ['data-ac="palette"', 'div', '—', 'Gera 19 esferas'], ['--size', 'CSS', '200px', 'Diâmetro'], ['ac:change', 'evento', '—', 'detail: { name, color }'], ['dataset.value', 'leitura', '—', 'Cor selecionada']],
       a11y: ['radiogroup com setas para navegar.', 'Respeita prefers-reduced-motion.'] },
 
     /* ---------------- Navegação ---------------- */
@@ -4964,8 +4976,7 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       if (e.target.closest('[data-demo-deleted]')) Orthos.toast({ title: 'Projeto excluído' });
     }),
     command: root => { const b = root.querySelector('#cmd-demo'); b && b.addEventListener('click', () => window.openSiteCommand && window.openSiteCommand()); },
-    // a cor escolhida aparece num aviso no topo, com a amostra, o nome e o código
-    palette: root => { const p = root.querySelector('#pal-demo'), o = root.querySelector('#pal-out'); p && p.addEventListener('ac:change', e => { o.innerHTML = `Selecionada: <b style="color:var(--ac-text)">${e.detail.name}</b> <code>${e.detail.color}</code>`; Orthos.toast({ title: `Cor selecionada: ${e.detail.name}`, desc: e.detail.color, swatch: e.detail.color, position: 'top', duration: 2600 }); }); },
+    palette: root => { const p = root.querySelector('#pal-demo'), o = root.querySelector('#pal-out'); p && p.addEventListener('ac:change', e => { o.innerHTML = `Selecionada: <b style="color:var(--ac-text)">${e.detail.name}</b> <code>${e.detail.color}</code>`; }); },
     progress: root => { const b = root.querySelector('#pg-run'), bar = root.querySelector('#pg-bar'), v = root.querySelector('#pg-v'); b && b.addEventListener('click', () => { let x = 0; b.disabled = true; const t = setInterval(() => { x = Math.min(100, x + 4 + Math.random() * 9); bar.style.setProperty('--v', x + '%'); bar.setAttribute('aria-valuenow', Math.round(x)); v.textContent = Math.round(x) + '%'; if (x >= 100) { clearInterval(t); b.disabled = false; Orthos.toast({ type: 'success', title: '1.284 contatos importados' }); } }, 160); }); },
     skeleton: root => {
       const seg = root.querySelector('#skel-toggle'), card = root.querySelector('#skel-card'), anim = root.querySelector('#skel-anim'), cas = root.querySelector('#skel-cascade'); if (!seg) return;

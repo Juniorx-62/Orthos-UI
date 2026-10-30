@@ -143,7 +143,8 @@
     t.tabIndex = 0;
     const paint = (o) => {
       const type = o.type || 'default';
-      t.className = `ac-toast ac-toast--${type}`;
+      // variant: 'pill' = cápsula curta (ícone + uma linha), para confirmações rápidas como "Copiado #ffffff"
+      t.className = `ac-toast ac-toast--${type}${o.variant === 'pill' ? ' ac-toast--pill' : ''}`;
       if (type === 'danger') t.setAttribute('role', 'alert'); else t.removeAttribute('role');
       t.setAttribute('aria-busy', type === 'loading');
       // swatch: amostra de cor no lugar do ícone (só aceita uma cor CSS válida)
@@ -729,15 +730,20 @@
       if (r > lim) { dx -= nx / r * (r - lim); dy -= ny / r * (r - lim); }
       s.setProperty('--dx', dx.toFixed(2)); s.setProperty('--dy', dy.toFixed(2)); s.setProperty('--s', 1 - .03 * k); s.setProperty('--lift', '0px');
     });
-    const select = it => { items.forEach(o => { o.b.setAttribute('aria-checked', o === it); o.b.tabIndex = o === it ? 0 : -1; }); el.dataset.value = it.color; el.dispatchEvent(new CustomEvent('ac:change', { detail: { name: it.name, color: it.color }, bubbles: true })); };
+    const select = (it, copy) => {
+      items.forEach(o => { o.b.setAttribute('aria-checked', o === it); o.b.tabIndex = o === it ? 0 : -1; }); el.dataset.value = it.color; el.dispatchEvent(new CustomEvent('ac:change', { detail: { name: it.name, color: it.color }, bubbles: true }));
+      // data-copy: copia o código da cor e confirma numa pílula no topo (como a Kobra); só no clique, toque ou Enter
+      if (copy && el.dataset.copy !== undefined) copyText(it.color, el).then(ok => toast(ok ? { type: 'success', variant: 'pill', position: 'top', swatch: it.color, title: `Copiado: ${it.name}`, desc: it.color, duration: 2400 } : { type: 'danger', variant: 'pill', position: 'top', title: 'Não deu para copiar a cor' }));
+    };
     // mouse: a esfera sobe e afasta as vizinhas. Toque: só o retorno de pressionado, como na Kobra (sem "hover" que fica
     // preso depois do toque nem vizinhas se mexendo); o foco que vem de um toque também não levanta a esfera.
     let input = '';
     el.addEventListener('keydown', () => { input = 'key'; }, true);
     items.forEach((it, i) => {
-      it.b.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') layout(it); }); it.b.addEventListener('click', () => select(it));
-      it.b.addEventListener('pointerdown', e => { input = e.pointerType; if (e.pointerType === 'touch') it.b.classList.add('is-press'); });
-      ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => it.b.addEventListener(t, () => it.b.classList.remove('is-press')));
+      it.b.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') layout(it); }); it.b.addEventListener('click', () => select(it, true));
+      it.b.addEventListener('pointerdown', e => { input = e.pointerType; if (e.pointerType === 'touch') { it.b.classList.add('is-press'); it.pressAt = performance.now(); } });
+      // toque rápido: a leve retraída fica ao menos 170 ms na tela, senão o dedo sai antes de ela aparecer
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => it.b.addEventListener(t, () => { if (!it.b.classList.contains('is-press')) return; setTimeout(() => it.b.classList.remove('is-press'), Math.max(0, 170 - (performance.now() - (it.pressAt || 0)))); }));
       it.b.addEventListener('focus', () => { if (input !== 'touch' && !el.matches(':hover')) layout(it); }); it.b.addEventListener('blur', () => { if (!el.matches(':hover')) layout(null); });
       it.b.addEventListener('keydown', e => { const st = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key]; if (!st) return; e.preventDefault(); const n = items[(i + st + items.length) % items.length]; n.b.focus(); select(n); });
     });
@@ -2457,7 +2463,7 @@
         // aviso no topo (data-toast="texto" troca a mensagem; data-toast="false" desliga). Com ele, a região viva do campo
         // fica calada para o leitor de tela não ouvir "Copiado" duas vezes.
         const tt = el.dataset.toast, withToast = tt !== 'false';
-        if (withToast) toast({ type: 'success', title: tt && tt !== 'true' ? tt : 'Copiado para a área de transferência', position: 'top', duration: 2200 });
+        if (withToast) toast({ type: 'success', variant: 'pill', title: tt && tt !== 'true' ? tt : 'Copiado', position: 'top', duration: 2400 });
         el.dataset.state = 'copied'; btn.setAttribute('aria-label', 'Copiado'); tip('Copiado'); live.textContent = withToast ? '' : 'Copiado'; hint.hidden = true;
         t = setTimeout(() => { delete el.dataset.state; btn.setAttribute('aria-label', label); tip('Copiar'); live.textContent = ''; }, 1500);
         el.dispatchEvent(new CustomEvent('ac:copy', { detail: { text }, bubbles: true }));

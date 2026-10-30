@@ -546,9 +546,17 @@
     mount('palette'); const sw = $$('.ac-palette__sw', palco), b = sw[3];
     b.dispatchEvent(new PointerEvent('pointerenter', { pointerType: 'touch' })); b.dispatchEvent(new PointerEvent('pointerdown', { pointerType: 'touch', bubbles: true }));
     ok(b.classList.contains('is-press') && !b.classList.contains('is-hover'), 'toque levantou a esfera'); ok(sw.every(s => !s.style.getPropertyValue('--dx') || s.style.getPropertyValue('--dx') === '0'), 'vizinhas mexeram no toque');
-    b.dispatchEvent(new PointerEvent('pointerup', { pointerType: 'touch', bubbles: true })); b.click(); await w(20);
+    b.dispatchEvent(new PointerEvent('pointerup', { pointerType: 'touch', bubbles: true })); ok(b.classList.contains('is-press'), 'retraída sumiu antes de ser vista'); b.click(); await w(220);
     ok(!b.classList.contains('is-press') && b.getAttribute('aria-checked') === 'true' && getComputedStyle(b).zIndex === '40', 'escolhida não ficou por cima');
     b.dispatchEvent(new PointerEvent('pointerenter', { pointerType: 'mouse' })); ok(b.classList.contains('is-hover'), 'mouse perdeu o efeito');
+  });
+  await t('paleta com data-copy: copia o código e mostra a pílula no topo', async () => {
+    mount('palette'); const b = $$('.ac-palette__sw', palco)[5]; let copied = null;
+    navigator.clipboard.writeText = async x => { copied = x; };
+    try { b.click(); await w(40); } finally { delete navigator.clipboard.writeText; }
+    const pill = $$('.ac-toaster--top .ac-toast--pill').pop();
+    ok(copied === '#14b98b', 'copiou ' + copied); ok(pill && pill.textContent.includes('Esmeralda') && pill.textContent.includes('#14b98b') && $('.ac-toast__swatch', pill), 'sem pílula com a amostra'); ok(parseFloat(getComputedStyle(pill).borderTopLeftRadius) >= pill.offsetHeight / 2 - 1, 'não é pílula');
+    const k0 = $$('.ac-toaster--top .ac-toast').length; b.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })); await w(30); ok($$('.ac-toaster--top .ac-toast').length === k0, 'seta copiou');
   });
   // ajustes de 30/10/2026
   await t('paginação: o clique troca a página e emite ac:change', async () => {
