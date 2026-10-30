@@ -38,7 +38,6 @@
     const list = [];
     REFS.forEach(r => list.push(Object.assign({}, r, { origem: 'externa' })));
     LOC.telas.forEach(r => list.push(r));
-    LOC.vitrine.forEach(r => list.push(r));
     pers.user.forEach(u => list.push(Object.assign({}, u, { origem: 'pessoal', tipo: u.tipo || 'recurso', ctx: u.ctx || 'ambos', t: u.tags || [], d: u.desc || '' })));
     list.forEach(it => {
       it.d = it.d ?? it.desc ?? '';
@@ -302,10 +301,10 @@
     const q = norm(S.q), tipo = S.pecaTipo || '';
     let list = LOC.pecas.filter(p => (!tipo || p.tipoPeca === tipo) && (!q || norm(p.nome + ' ' + p.arquivo + ' ' + p.desc).includes(q)));
     const groups = new Map(); list.forEach(p => groups.set(p.arquivo, [...(groups.get(p.arquivo) || []), p]));
-    let h = `<div class="cab"><h1>X · Código do 4squad (peças)</h1><p>Inventário do que <code>components/base</code> exporta no projeto original: ${LOC.pecas.length} peças (componentes, hooks e funções) com a descrição escrita no código. A vitrine ao vivo desses componentes está preservada no arquivo original.</p><p><a class="btn btn--sec" href="legacy/biblioteca-4squad-original.html" target="_blank" rel="noopener">Abrir a biblioteca original do 4squad</a></p></div>`;
+    let h = `<div class="cab"><h1>X · Código do 4squad (peças)</h1><p>Inventário do que <code>components/base</code> exporta no projeto original: ${LOC.pecas.length} peças (componentes, hooks e funções) com a descrição escrita no código.</p></div>`;
     h += `<div class="barra"><label class="sr" for="f-peca">Tipo de peça</label><select id="f-peca"><option value="">Todos os tipos</option>${['componente', 'hook', 'funcao'].map(t => `<option value="${t}"${t === tipo ? ' selected' : ''}>${{ componente: 'Componentes', hook: 'Hooks', funcao: 'Funções' }[t]}</option>`).join('')}</select><span class="total" aria-live="polite">${list.length} peças</span></div>`;
     if (!list.length) h += emptyHtml('Nenhuma peça encontrada');
-    groups.forEach((arr, arq) => { h += `<h2 class="grupo-t">${esc(arq)}</h2><div class="lista">${arr.map(p => `<div class="item-p"><code>${esc(p.tipoPeca === 'componente' ? '<' + p.nome + '>' : p.nome)}</code>${p.naVitrine ? '<span class="badge badge--ok">Na vitrine</span>' : '<span></span>'}<p>${esc(p.desc || 'Sem descrição no código.')}</p></div>`).join('')}</div>`; });
+    groups.forEach((arr, arq) => { h += `<h2 class="grupo-t">${esc(arq)}</h2><div class="lista">${arr.map(p => `<div class="item-p"><code>${esc(p.tipoPeca === 'componente' ? '<' + p.nome + '>' : p.nome)}</code><p>${esc(p.desc || 'Sem descrição no código.')}</p></div>`).join('')}</div>`; });
     main.innerHTML = h;
     const s = $('#f-peca'); if (s) s.onchange = () => { S.pecaTipo = s.value; viewPecas(); };
     bindMais(viewPecas);
@@ -339,7 +338,7 @@
     const fonteUrl = it.url ? safeUrl(it.url) : '';
     let main_ = '';
     main_ += `<div class="cab"><div class="crumbs"><a href="#/">Biblioteca</a> › <a href="#/c/${esc(it.cat)}">${esc(cat ? cat.nome : '')}</a></div><h1>${esc(it.nome)}</h1><div class="card__topo" style="padding:0;margin-top:8px">${badges(it)}</div></div>`;
-    main_ += `<div class="linha-acoes"><button class="btn btn--sec" id="i-fav" type="button" aria-pressed="${fav}">${fav ? '★ Nos favoritos' : '☆ Favoritar'}</button><button class="btn btn--sec" id="i-cmp" type="button" aria-pressed="${cmp}">${cmp ? 'Na comparação' : 'Comparar'}</button>${fonteUrl ? `<a class="btn" href="${esc(fonteUrl)}" target="_blank" rel="noopener noreferrer">Abrir fonte original ↗</a>` : ''}${it.legado ? `<a class="btn" href="${esc(it.legado)}" target="_blank" rel="noopener">Abrir na vitrine original ↗</a>` : ''}${it.origem === 'pessoal' ? '<button class="btn btn--perigo" id="i-del" type="button">Excluir</button>' : ''}</div>`;
+    main_ += `<div class="linha-acoes"><button class="btn btn--sec" id="i-fav" type="button" aria-pressed="${fav}">${fav ? '★ Nos favoritos' : '☆ Favoritar'}</button><button class="btn btn--sec" id="i-cmp" type="button" aria-pressed="${cmp}">${cmp ? 'Na comparação' : 'Comparar'}</button>${fonteUrl ? `<a class="btn" href="${esc(fonteUrl)}" target="_blank" rel="noopener noreferrer">Abrir fonte original ↗</a>` : ''}${it.origem === 'pessoal' ? '<button class="btn btn--perigo" id="i-del" type="button">Excluir</button>' : ''}</div>`;
     if (it.imagens) {
       const tema = temaAtual();
       main_ += `<section><h2>Referência visual</h2><div class="ficha__img"><button type="button" id="i-zoom" aria-label="Ampliar imagem"><img id="i-img" src="${esc(it.imagens[tema] || it.imagens.claro)}" alt="Captura de tela: ${esc(it.nome)}" data-fallback></button><div class="seg" role="group" aria-label="Tema da captura"><button type="button" data-tema-img="claro" aria-pressed="${tema === 'claro'}">Claro</button><button type="button" data-tema-img="escuro" aria-pressed="${tema === 'escuro'}">Escuro</button></div></div><p style="margin-top:6px;color:var(--tx3);font-size:13px">Captura do sistema 4squad com dados fictícios, tirada da biblioteca original.</p></section>`;

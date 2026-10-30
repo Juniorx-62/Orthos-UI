@@ -244,14 +244,15 @@
     { id: 'command', grupo: 'Navegação', nome: 'Command palette', desc: 'Busca de ações e páginas com agrupamento, teclado e atalho global.',
       ref: { nome: 'shadcn/ui · Command (cmdk)', url: 'https://ui.shadcn.com/docs/components/command' },
       html: `<button class="ac-btn ac-btn--secondary" type="button" id="cmd-demo" style="min-width:260px;justify-content:space-between">${I('search')}<span style="flex:1;text-align:left;color:var(--ac-text-3)">Buscar…</span><kbd class="ac-kbd">Ctrl K</kbd></button>`,
-      api: [['Orthos.command({ items })', 'função', '—', 'items: { label, group, hint, keywords, run }']],
-      a11y: ['Combobox dentro de <dialog>; foco preso e Esc fecha.'] },
+      api: [['Orthos.command({ items, groups })', 'função', '—', 'Abre a paleta (um <dialog> só, reaproveitado)'], ['items', 'array', '—', '{ label, group, hint, keywords, run }; hint aparece à direita do item (ex.: "novo")'], ['groups', 'objeto', '—', '{ "Nome do grupo": { icon, color } }: ícone (nome de Orthos.icon ou <path …/> de 24×24) e cor (qualquer cor CSS, inclusive var(--x)) no título do grupo'], ['limit', 'número', '60', 'Máximo de resultados; Infinity mostra todos'], ['placeholder', 'texto', 'Buscar comandos…', 'Texto do campo de busca']],
+      a11y: ['Combobox dentro de <dialog>; foco preso e Esc fecha.', '↑ ↓ movem o item ativo (aria-activedescendant e aria-selected) e Enter abre; o ativo e o título do seu grupo ficam sempre à vista.', 'Título de grupo é só visual (role="presentation") e o ícone tem aria-hidden; o nome do grupo continua sendo buscado.'] },
 
     { id: 'breadcrumb', grupo: 'Navegação', nome: 'Breadcrumb e Pagination', desc: 'Trilha de localização e paginação compacta.',
       ref: { nome: 'shadcn/ui · Breadcrumb', url: 'https://ui.shadcn.com/docs/components/breadcrumb' },
       html: `<nav aria-label="Trilha"><ol class="ac-crumbs"><li><a href="#">Início</a></li><li><a href="#">Projetos</a></li><li><a href="#">Site 2026</a></li><li><span aria-current="page">Configurações</span></li></ol></nav>
-<nav class="ac-pager" aria-label="Paginação"><button type="button" disabled aria-label="Anterior">${I('left')}</button><button type="button" aria-current="page">1</button><button type="button">2</button><button type="button">3</button><span>…</span><button type="button">12</button><button type="button" aria-label="Próxima">${I('right')}</button></nav>`,
-      api: [['.ac-crumbs', '<ol>', '—', 'Trilha'], ['.ac-pager', '<nav>', '—', 'Paginação; aria-current="page" na atual']],
+<nav class="ac-pager" data-ac="pagination" data-pages="12" data-page="1" aria-label="Paginação"></nav>
+<p class="ac-hint" id="pg-out" aria-live="polite">Mostrando a página 1 de 12.</p>`,
+      api: [['.ac-crumbs', '<ol>', '—', 'Trilha'], ['data-ac="pagination"', '<nav>', '—', 'Monta a paginação; o clique troca a página e emite ac:change (número)'], ['data-pages / data-page', 'número', '1 / 1', 'Total de páginas e página atual'], ['data-siblings', 'número', '1', 'Quantas páginas vizinhas da atual aparecem antes do "…"'], ['el._pagination.go(n)', 'JS', '—', 'Vai para a página n sem emitir evento'], ['.ac-pager', '<nav>', '—', 'Só o visual (sem data-ac); aria-current="page" na atual']],
       a11y: ['<nav> com aria-label; página atual com aria-current.'] },
 
     { id: 'stepper', grupo: 'Navegação', nome: 'Stepper', desc: 'Etapas com progresso preenchendo a linha e conclusão animada.',
@@ -409,6 +410,7 @@
 
   /* comportamentos extras só das demonstrações */
   window.DEMO_HOOKS = {
+    breadcrumb: root => { const p = root.querySelector('[data-ac="pagination"]'), o = root.querySelector('#pg-out'); p && p.addEventListener('ac:change', e => { o.textContent = `Mostrando a página ${e.detail} de ${p.dataset.pages}.`; }); },
     // a biblioteca só valida; a demo simula o envio e o retorno de sucesso
     form: root => { const f = root.querySelector('[data-ac="validate"]'); f && f.addEventListener('ac:valid', e => {
       e.preventDefault();
@@ -427,7 +429,8 @@
       if (e.target.closest('[data-demo-deleted]')) Orthos.toast({ title: 'Projeto excluído' });
     }),
     command: root => { const b = root.querySelector('#cmd-demo'); b && b.addEventListener('click', () => window.openSiteCommand && window.openSiteCommand()); },
-    palette: root => { const p = root.querySelector('#pal-demo'), o = root.querySelector('#pal-out'); p && p.addEventListener('ac:change', e => { o.innerHTML = `Selecionada: <b style="color:var(--ac-text)">${e.detail.name}</b> <code>${e.detail.color}</code>`; }); },
+    // a cor escolhida aparece num aviso no topo, com a amostra, o nome e o código
+    palette: root => { const p = root.querySelector('#pal-demo'), o = root.querySelector('#pal-out'); p && p.addEventListener('ac:change', e => { o.innerHTML = `Selecionada: <b style="color:var(--ac-text)">${e.detail.name}</b> <code>${e.detail.color}</code>`; Orthos.toast({ title: `Cor selecionada: ${e.detail.name}`, desc: e.detail.color, swatch: e.detail.color, position: 'top', duration: 2600 }); }); },
     progress: root => { const b = root.querySelector('#pg-run'), bar = root.querySelector('#pg-bar'), v = root.querySelector('#pg-v'); b && b.addEventListener('click', () => { let x = 0; b.disabled = true; const t = setInterval(() => { x = Math.min(100, x + 4 + Math.random() * 9); bar.style.setProperty('--v', x + '%'); bar.setAttribute('aria-valuenow', Math.round(x)); v.textContent = Math.round(x) + '%'; if (x >= 100) { clearInterval(t); b.disabled = false; Orthos.toast({ type: 'success', title: '1.284 contatos importados' }); } }, 160); }); },
     skeleton: root => {
       const seg = root.querySelector('#skel-toggle'), card = root.querySelector('#skel-card'), anim = root.querySelector('#skel-anim'), cas = root.querySelector('#skel-cascade'); if (!seg) return;

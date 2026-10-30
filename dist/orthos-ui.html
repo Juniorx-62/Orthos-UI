@@ -41,6 +41,8 @@
   --ac-surface-3: #ebebe8;
   --ac-border: #e6e6e3;
   --ac-border-strong: #d4d4d0;
+  /* borda de campo: 3:1 contra o fundo (WCAG 1.4.11); as outras bordas continuam suaves */
+  --ac-border-input: #8e8f95;
   --ac-text: #0b0b0c;
   --ac-text-2: #55565b;
   --ac-text-3: #6b6c72;
@@ -92,6 +94,7 @@
   --ac-surface-3: #222226;
   --ac-border: #232327;
   --ac-border-strong: #33333a;
+  --ac-border-input: #6b6b73;
   --ac-text: #f4f4f5;
   --ac-text-2: #a6a7ad;
   --ac-text-3: #8b8c93;
@@ -115,7 +118,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --ac-bg: #0a0a0b; --ac-surface: #121214; --ac-surface-2: #19191c; --ac-surface-3: #222226;
-    --ac-border: #232327; --ac-border-strong: #33333a; --ac-text: #f4f4f5; --ac-text-2: #a6a7ad; --ac-text-3: #8b8c93;
+    --ac-border: #232327; --ac-border-strong: #33333a; --ac-border-input: #6b6b73; --ac-text: #f4f4f5; --ac-text-2: #a6a7ad; --ac-text-3: #8b8c93;
     --ac-primary: #f4f4f5; --ac-primary-text: #0b0b0c; --ac-accent: #7b93ff;
     --ac-success: #4ad08a; --ac-warning: #f2b54a; --ac-danger: #ff6b5e;
     --ac-success-bg: #11281b; --ac-warning-bg: #2c2210; --ac-danger-bg: #2f1411; --ac-on-accent: #0b0b0c; --ac-on-danger: #0b0b0c;
@@ -126,6 +129,8 @@
 }
 
 .ac, .ac * { box-sizing: border-box; }
+/* toque: sem o retângulo azul que o Android e o iOS pintam ao tocar; cada componente já mostra o próprio estado */
+.ac, .ac *, [class^="ac-"], [class*=" ac-"] { -webkit-tap-highlight-color: transparent; }
 .ac-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .ac-icon { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
@@ -202,11 +207,12 @@
 .ac-error { margin: 0; font-size: var(--ac-fs-base); color: var(--ac-danger); display: flex; gap: 6px; align-items: center; }
 .ac-input, .ac-textarea, .ac-select {
   width: 100%; height: 40px; padding: 0 12px; border-radius: var(--ac-r-sm);
-  border: 1px solid var(--ac-border-strong); background: var(--ac-surface); color: var(--ac-text);
+  border: 1px solid var(--ac-border-input); background: var(--ac-surface); color: var(--ac-text);
   font: var(--ac-fs-base) var(--ac-font); transition: border-color var(--ac-dur), box-shadow var(--ac-dur);
 }
 .ac-textarea { height: auto; min-height: 96px; padding: 10px 12px; resize: vertical; line-height: 1.5; }
 .ac-input::placeholder, .ac-textarea::placeholder { color: var(--ac-text-3); }
+.ac-input { text-overflow: ellipsis; }
 .ac-input:hover, .ac-textarea:hover { border-color: var(--ac-text-3); }
 .ac-input:focus, .ac-textarea:focus, .ac-select:focus { outline: none; border-color: var(--ac-accent); box-shadow: 0 0 0 3px var(--ac-ring); }
 .ac-input[aria-invalid="true"], .ac-textarea[aria-invalid="true"] { border-color: var(--ac-danger); }
@@ -222,7 +228,7 @@
 
 /* ---------- Checkbox / Radio / Switch ---------- */
 .ac-check { display: inline-flex; align-items: flex-start; gap: 10px; cursor: pointer; font: var(--ac-fs-base)/1.4 var(--ac-font); color: var(--ac-text); }
-.ac-check input { appearance: none; flex: none; width: 18px; height: 18px; margin: 1px 0 0; border: 1px solid var(--ac-border-strong); background: var(--ac-surface); border-radius: 5px; display: grid; place-items: center; cursor: pointer; transition: background var(--ac-dur), border-color var(--ac-dur), box-shadow var(--ac-dur); }
+.ac-check input { appearance: none; flex: none; width: 18px; height: 18px; margin: 1px 0 0; border: 1px solid var(--ac-border-input); background: var(--ac-surface); border-radius: 5px; display: grid; place-items: center; cursor: pointer; transition: background var(--ac-dur), border-color var(--ac-dur), box-shadow var(--ac-dur); }
 .ac-check input[type="radio"] { border-radius: 50%; }
 .ac-check input::after { content: ""; width: 10px; height: 10px; transform: scale(0); transition: transform .2s var(--ac-ease-spring); background: var(--ac-primary-text); clip-path: polygon(14% 52%, 0 66%, 38% 100%, 100% 22%, 86% 8%, 38% 72%); }
 .ac-check input[type="radio"]::after { width: 8px; height: 8px; border-radius: 50%; clip-path: none; }
@@ -234,7 +240,7 @@
 .ac-check small { display: block; color: var(--ac-text-3); font-size: var(--ac-fs-sm); }
 
 .ac-switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font: var(--ac-fs-base) var(--ac-font); color: var(--ac-text); }
-.ac-switch input { appearance: none; position: relative; width: 40px; height: 24px; margin: 0; border-radius: 999px; background: var(--ac-surface-3); border: 1px solid var(--ac-border-strong); cursor: pointer; transition: background .25s var(--ac-ease), border-color .25s; flex: none; }
+.ac-switch input { appearance: none; position: relative; width: 40px; height: 24px; margin: 0; border-radius: 999px; background: var(--ac-surface-3); border: 1px solid var(--ac-border-input); cursor: pointer; transition: background .25s var(--ac-ease), border-color .25s; flex: none; }
 .ac-switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgb(0 0 0 / .25); transition: transform .3s var(--ac-ease-spring), width .2s; }
 .ac-switch input:active::after { width: 22px; }
 .ac-switch input:checked { background: var(--ac-primary); border-color: var(--ac-primary); }
@@ -387,6 +393,11 @@
 /* ---------- Toast ---------- */
 .ac-toaster { position: fixed; z-index: 2000; right: 20px; bottom: 20px; display: grid; gap: 8px; width: min(360px, calc(100vw - 40px)); outline: none; }
 .ac-toaster:empty { pointer-events: none; }
+/* avisos no topo: toast({ position: 'top' }), centralizados; a pilha cresce para baixo */
+.ac-toaster--top { top: 16px; right: auto; bottom: auto; left: 50%; translate: -50% 0; width: min(380px, calc(100vw - 32px)); }
+.ac-toaster--top .ac-toast:not(.is-leaving) { animation-name: ac-toast-in-top; }
+.ac-toast__swatch { width: 18px; height: 18px; margin-top: 1px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12); }
+@keyframes ac-toast-in-top { from { opacity: 0; transform: translateY(-16px) scale(.96); } }
 .ac-toast { --k: 0; position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 2px 10px; align-items: start; padding: 14px 14px 14px 16px; border-radius: var(--ac-r); border: 1px solid var(--ac-border); background: var(--ac-surface); color: var(--ac-text); box-shadow: var(--ac-shadow-lg); font: var(--ac-fs-base)/1.45 var(--ac-font); animation: ac-toast-in .45s var(--ac-ease-spring); transition: transform var(--ac-dur-overlay) var(--ac-ease-out), opacity var(--ac-dur-overlay) var(--ac-ease-out); touch-action: pan-y; user-select: none; }
 .ac-toast:focus-visible { outline: none; box-shadow: var(--ac-shadow-lg), 0 0 0 3px var(--ac-ring); }
 .ac-toast.is-leaving { animation: ac-toast-out .25s var(--ac-ease) forwards; }
@@ -402,6 +413,8 @@
 .ac-toaster:not(:hover):not(:focus-within) .ac-toast { grid-area: 1 / 1; align-self: end; }
 .ac-toaster:not(:hover):not(:focus-within) .ac-toast:not(:last-child) { transform: translateY(calc(var(--k) * -10px)) scale(calc(1 - var(--k) * .05)); opacity: calc(1 - var(--k) * .25); pointer-events: none; }
 .ac-toaster:not(:hover):not(:focus-within) .ac-toast:not(:last-child) > * { visibility: hidden; }
+.ac-toaster--top:not(:hover):not(:focus-within) .ac-toast { align-self: start; }
+.ac-toaster--top:not(:hover):not(:focus-within) .ac-toast:not(:last-child) { transform: translateY(calc(var(--k) * 10px)) scale(calc(1 - var(--k) * .05)); }
 
 /* ---------- Accordion ---------- */
 .ac-accordion { border-top: 1px solid var(--ac-border); font-family: var(--ac-font); }
@@ -437,6 +450,13 @@
 .ac-steps li[data-state="done"]::before { content: "✓"; background: var(--ac-primary); color: var(--ac-primary-text); border-color: var(--ac-primary); }
 .ac-steps li[data-state="current"] { color: var(--ac-text); font-weight: 500; }
 .ac-steps li[data-state="current"]::before { border-color: var(--ac-text); box-shadow: 0 0 0 4px var(--ac-surface-3); color: var(--ac-text); }
+/* estreito (celular): só a etapa atual mostra o nome; as outras ficam no número, e nada empurra a tela para o lado */
+.ac-steps { container-type: inline-size; }
+@container (max-width: 480px) {
+  .ac-steps li:not([data-state="current"]) { gap: 0; font-size: 0; }
+  .ac-steps li:not([data-state="current"])::after { margin-left: 8px; }
+  .ac-steps li[data-state="current"] { white-space: nowrap; }
+}
 
 /* ---------- Input OTP (modelo do Kobra: um campo invisível sobre as casas, anel que desliza, dígitos que giram) ---------- */
 .ac-otp { --otp-r: 12px; --otp-size: 56px; --otp-gap: clamp(6px, 2.4vw, 12px); --otp-spring: cubic-bezier(.3, 1.3, .5, 1); --otp-ink: var(--ac-text); --otp-trail: color-mix(in oklab, var(--ac-text) 45%, transparent);
@@ -492,12 +512,31 @@
 .ac-option small { margin-left: auto; color: var(--ac-text-3); font-size: var(--ac-fs-xs); }
 .ac-listbox__empty { padding: 18px 10px; text-align: center; color: var(--ac-text-3); font-size: var(--ac-fs-base); }
 .ac-listbox__group { padding: 8px 10px 4px; font-size: var(--ac-fs-xs); color: var(--ac-text-3); }
-.ac-command { width: min(560px, calc(100vw - 32px)); top: 14vh; bottom: auto; padding: 0; }
+/* o diálogo é uma coluna: campo e rodapé fixos, só a lista rola (nada de rolagem dupla) e ela usa a altura que sobra na tela */
+.ac-command { width: min(560px, calc(100vw - 32px)); top: 14vh; bottom: auto; padding: 0; overflow: hidden; max-height: min(620px, calc(86vh - 24px)); max-height: min(620px, calc(100dvh - 14vh - 24px)); }
+.ac-command[open] { display: flex; flex-direction: column; }
 .ac-command:focus { outline: none; } /* no toque o foco fica no diálogo (sem abrir o teclado); o anel apareceria em volta dele todo */
-.ac-command__input { display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid var(--ac-border); }
+.ac-command__input { flex: none; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 1px solid var(--ac-border); }
 .ac-command__input input { flex: 1; height: 54px; border: 0; background: none; color: var(--ac-text); font: var(--ac-fs-md) var(--ac-font); outline: none; }
-.ac-command__foot { display: flex; gap: 14px; padding: 10px 16px; border-top: 1px solid var(--ac-border); color: var(--ac-text-3); font-size: var(--ac-fs-xs); }
+.ac-command .ac-listbox { flex: 1 1 auto; min-height: 0; max-height: none; padding: 2px 8px 10px; overscroll-behavior: contain; }
+.ac-command__foot { flex: none; display: flex; gap: 14px; padding: 10px 16px; border-top: 1px solid var(--ac-border); color: var(--ac-text-3); font-size: var(--ac-fs-xs); }
 .ac-command__foot span { display: inline-flex; align-items: center; gap: 6px; }
+/* título do grupo: ícone na cor do grupo (--ac-group, vinda de groups[nome].color) e uma linha separando do grupo de cima */
+.ac-command__group { display: flex; align-items: center; gap: 8px; margin: 14px 0 4px; padding: 14px 8px 0; border-top: 1px solid var(--ac-border); font: 600 var(--ac-fs-base)/1.35 var(--ac-font); color: var(--ac-text); letter-spacing: .01em; }
+.ac-command__group:first-child { margin-top: 0; padding-top: 10px; border-top: 0; }
+.ac-command__group .ac-icon { width: 17px; height: 17px; color: var(--ac-group, var(--ac-text-3)); stroke-width: 1.7; }
+.ac-command__group + .ac-option { margin-top: 2px; }
+/* itens: ponto à esquerda (fica na 1ª linha quando o nome quebra); o ativo das setas ganha fundo, contorno e ponto cheio */
+.ac-command .ac-option { gap: 8px; height: auto; min-height: 34px; padding: 6px 8px; line-height: 1.35; color: var(--ac-text-2); }
+.ac-command .ac-option::before { content: ""; flex: none; align-self: flex-start; width: 5px; height: 5px; margin-top: .5em; border-radius: 50%; background: var(--ac-border-strong); }
+.ac-command .ac-option:hover { color: var(--ac-text); }
+.ac-command .ac-option[aria-selected="true"] { background: var(--ac-surface-2); color: var(--ac-text); box-shadow: var(--ac-shadow-sm), inset 0 0 0 1px var(--ac-border-strong); }
+.ac-command .ac-option[aria-selected="true"]::before { background: var(--ac-text); }
+.ac-command .ac-option small { flex: none; align-self: flex-start; margin-top: 1px; }
+/* celular: a paleta desce do topo e vai até perto da borda de baixo (ou do teclado, via --ac-visible-h) */
+@media (max-width: 640px) { .ac-command { top: 12px; width: calc(100vw - 24px); max-width: none; max-height:calc(var(--ac-visible-h, 100dvh) - 24px); } }
+/* só toque: as dicas de teclado do rodapé não servem e o espaço vai para a lista */
+@media (hover: none) and (pointer: coarse) { .ac-command__foot { display: none; } }
 
 /* ---------- Date picker / Calendar ---------- */
 .ac-cal { width: 280px; padding: 12px; font: var(--ac-fs-base) var(--ac-font); color: var(--ac-text); }
@@ -532,6 +571,8 @@
 .ac-table-wrap { border: 1px solid var(--ac-border); border-radius: var(--ac-r-lg); background: var(--ac-surface); overflow: hidden; font-family: var(--ac-font); }
 .ac-table-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; border-bottom: 1px solid var(--ac-border); }
 .ac-table-tools .ac-input-wrap { flex: 1; min-width: 180px; max-width: 280px; }
+/* celular: a busca ocupa a linha inteira (o texto de exemplo cabia cortado ao lado do filtro) */
+@media (max-width: 560px) { .ac-table-tools .ac-input-wrap { flex-basis: 100%; max-width: none; } .ac-table-tools .ac-select { flex: 1; } }
 .ac-table-tools .ac-input { height: 34px; }
 .ac-table-scroll { overflow-x: auto; }
 .ac-table { width: 100%; border-collapse: collapse; font-size: var(--ac-fs-base); color: var(--ac-text); }
@@ -566,6 +607,7 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-sidebar__label { padding: 12px 10px 4px; font-size: var(--ac-fs-xs); color: var(--ac-text-3); white-space: nowrap; }
 .ac-sidebar__item { position: relative; display: flex; align-items: center; gap: 12px; height: 36px; padding: 0 10px; border-radius: 8px; color: var(--ac-text-2); text-decoration: none; white-space: nowrap; transition: background .15s, color .15s; }
 .ac-sidebar__item:hover { background: var(--ac-surface-2); color: var(--ac-text); }
+.ac-sidebar__item:active { background: var(--ac-surface-3); }
 .ac-sidebar__item[aria-current="page"] { background: var(--ac-surface-2); color: var(--ac-text); font-weight: 500; }
 .ac-sidebar__item[aria-current="page"]::before { content: ""; position: absolute; left: -12px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--ac-text); }
 .ac-sidebar__item .ac-icon { width: 18px; height: 18px; }
@@ -638,7 +680,8 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 /* ---------- Toggle / Toolbar / Button group / Separator ---------- */
 .ac-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 34px; height: 34px; padding: 0 9px; border: 1px solid transparent; border-radius: var(--ac-r-sm); background: none; color: var(--ac-text-2); font: 500 var(--ac-fs-base) var(--ac-font); cursor: pointer; transition: background var(--ac-dur-fast) var(--ac-ease-standard), color var(--ac-dur-fast); }
 .ac-toggle:hover { background: var(--ac-surface-2); color: var(--ac-text); }
-.ac-toggle[aria-pressed="true"] { background: var(--ac-surface-3); color: var(--ac-text); }
+.ac-toggle[aria-pressed="true"], .ac-toggle[aria-checked="true"] { background: var(--ac-surface-3); color: var(--ac-text); }
+.ac-toggle-group { display: inline-flex; gap: 2px; }
 .ac-toggle:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ac-ring); }
 .ac-toggle--outline { border-color: var(--ac-border-strong); }
 .ac-toolbar { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 4px; border: 1px solid var(--ac-border); border-radius: var(--ac-r); background: var(--ac-surface); box-shadow: var(--ac-shadow-sm); }
@@ -651,7 +694,7 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-btn-joined > .ac-btn:focus-visible { z-index: 1; }
 
 /* ---------- Number field ---------- */
-.ac-number-field { display: inline-flex; align-items: stretch; height: 40px; border: 1px solid var(--ac-border-strong); border-radius: var(--ac-r-sm); background: var(--ac-surface); overflow: hidden; transition: border-color var(--ac-dur-fast), box-shadow var(--ac-dur-fast); }
+.ac-number-field { display: inline-flex; align-items: stretch; height: 40px; border: 1px solid var(--ac-border-input); border-radius: var(--ac-r-sm); background: var(--ac-surface); overflow: hidden; transition: border-color var(--ac-dur-fast), box-shadow var(--ac-dur-fast); }
 .ac-number-field:focus-within { border-color: var(--ac-accent); box-shadow: 0 0 0 3px var(--ac-ring); }
 .ac-number-field input { width: 9ch; border: 0; background: none; color: var(--ac-text); font: 500 var(--ac-fs-base) var(--ac-font); text-align: center; font-variant-numeric: tabular-nums; outline: none; }
 .ac-number-field__btn { display: grid; place-items: center; width: 38px; border: 0; background: none; color: var(--ac-text-2); cursor: pointer; }
@@ -661,7 +704,7 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-number-field__btn:last-child { border-left: 1px solid var(--ac-border); }
 
 /* ---------- Chips field (pessoas, tags) ---------- */
-.ac-chips-field { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 40px; padding: 5px 8px; border: 1px solid var(--ac-border-strong); border-radius: var(--ac-r-sm); background: var(--ac-surface); cursor: text; transition: border-color var(--ac-dur-fast), box-shadow var(--ac-dur-fast); }
+.ac-chips-field { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 40px; padding: 5px 8px; border: 1px solid var(--ac-border-input); border-radius: var(--ac-r-sm); background: var(--ac-surface); cursor: text; transition: border-color var(--ac-dur-fast), box-shadow var(--ac-dur-fast); }
 .ac-chips-field:focus-within { border-color: var(--ac-accent); box-shadow: 0 0 0 3px var(--ac-ring); }
 .ac-chips { display: contents; margin: 0; padding: 0; list-style: none; }
 .ac-chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 2px 0 8px; border-radius: 999px; background: var(--ac-surface-2); border: 1px solid var(--ac-border); color: var(--ac-text); font: 500 var(--ac-fs-sm) var(--ac-font); animation: ac-pop-sm .2s var(--ac-ease-spring); }
@@ -735,18 +778,41 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-datarow { display: flex; justify-content: space-between; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--ac-border); font-size: var(--ac-fs-base); }
 .ac-datarow span { color: var(--ac-text-3); }
 
-/* ---------- Página de resultado / erro ---------- */
-.ac-result { display: grid; justify-items: center; gap: 8px; max-width: 460px; margin: 0 auto; padding: 32px 16px; text-align: center; font-family: var(--ac-font); }
-.ac-result__icon { position: relative; display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 10px; border-radius: 18px; border: 1px solid var(--ac-border); background: var(--ac-surface); box-shadow: var(--ac-shadow); color: var(--ac-text); }
-.ac-result__icon .ac-icon { width: 26px; height: 26px; }
-.ac-result__icon::after { content: ""; position: absolute; right: -5px; bottom: -5px; width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--ac-bg); background: var(--ac-text-3); }
-.ac-result[data-tone="danger"] .ac-result__icon::after { background: var(--ac-danger); }
-.ac-result[data-tone="success"] .ac-result__icon { color: var(--ac-success); }
-.ac-result[data-tone="success"] .ac-result__icon::after { background: var(--ac-success); }
-.ac-result__code { margin: 0; font: 600 var(--ac-fs-xs) var(--ac-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ac-text-3); }
-.ac-result__title { margin: 0; font: 650 var(--ac-fs-2xl)/1.25 var(--ac-font); letter-spacing: -.02em; color: var(--ac-text); }
-.ac-result__text { margin: 0 0 10px; font-size: var(--ac-fs-md); line-height: 1.55; color: var(--ac-text-2); }
-.ac-result__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+/* ---------- Página de resultado / erro ----------
+   No desenho das páginas de erro do 4squad: a ilustração (ícone num quadrado sobre uma mancha, selo no canto), o
+   código grande, título, texto, o botão principal e um link embaixo. --ac-result-bg é o fundo onde a página fica (o
+   anel do selo usa ele); .ac-result--page ocupa a tela toda e centraliza. */
+.ac-result { --ac-result-bg: var(--ac-bg); display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 520px; margin: 0 auto; padding: 32px 16px 48px; text-align: center; font-family: var(--ac-font); color: var(--ac-text); }
+.ac-result--page { min-height: 100vh; min-height: 100dvh; justify-content: center; }
+.ac-result__art { position: relative; flex: none; width: 150px; height: 112px; margin-bottom: 8px; }
+.ac-result__art::before { content: ""; position: absolute; inset: 6px 0 0; border-radius: 48% 52% 46% 54% / 60% 55% 45% 40%; background: var(--ac-surface-2); }
+.ac-result__icon { position: absolute; left: 50%; top: 50%; display: grid; place-items: center; width: 76px; height: 76px; border-radius: 18px; background: var(--ac-primary); color: var(--ac-primary-text); box-shadow: 0 12px 24px -10px rgb(10 10 12 / .45); transform: translate(-50%, -46%); }
+.ac-result__icon .ac-icon { width: 40px; height: 40px; stroke-width: 1.6; }
+.ac-result__badge { position: absolute; left: calc(50% + 22px); top: calc(50% + 14px); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ac-accent); color: var(--ac-on-accent); box-shadow: 0 0 0 3px var(--ac-result-bg); }
+.ac-result__badge .ac-icon { width: 16px; height: 16px; stroke-width: 2.4; }
+.ac-result[data-tone="danger"] .ac-result__badge { background: var(--ac-danger); color: var(--ac-on-danger); }
+.ac-result[data-tone="warning"] .ac-result__badge { background: var(--ac-warning); color: var(--ac-on-warning); }
+.ac-result[data-tone="success"] .ac-result__icon { background: var(--ac-success); color: var(--ac-on-success); box-shadow: 0 12px 24px -10px color-mix(in oklab, var(--ac-success) 70%, transparent); }
+:root[data-theme="dark"] .ac-result:not([data-tone="success"]) .ac-result__icon { background: color-mix(in oklab, var(--ac-text) 6%, var(--ac-surface-3)); color: var(--ac-text); box-shadow: 0 0 0 1px rgb(255 255 255 / .08), 0 12px 24px -10px rgb(0 0 0 / .6); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ac-result:not([data-tone="success"]) .ac-result__icon { background: color-mix(in oklab, var(--ac-text) 6%, var(--ac-surface-3)); color: var(--ac-text); box-shadow: 0 0 0 1px rgb(255 255 255 / .08), 0 12px 24px -10px rgb(0 0 0 / .6); } }
+.ac-result__code { margin: 0; font: 750 clamp(64px, 12vw, 96px)/1 var(--ac-font); letter-spacing: -.04em; color: var(--ac-text); font-variant-numeric: tabular-nums; }
+.ac-result__title { margin: 10px 0 0; font: 600 var(--ac-fs-2xl)/1.3 var(--ac-font); letter-spacing: -.01em; color: var(--ac-text); text-wrap: balance; }
+.ac-result__text { max-width: 46ch; margin: 10px 0 0; font-size: var(--ac-fs-md); line-height: 1.55; color: var(--ac-text-2); text-wrap: pretty; }
+.ac-result__meta { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 16px; margin: 8px 0 0; font-size: var(--ac-fs-sm); line-height: 1.5; color: var(--ac-text-3); font-variant-numeric: tabular-nums; }
+.ac-result__meta code { font: 500 var(--ac-fs-sm) var(--ac-mono); color: var(--ac-text-2); overflow-wrap: anywhere; }
+.ac-result__id { display: inline-flex; align-items: center; gap: 4px; }
+.ac-result__copy { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; padding: 0; border: 0; border-radius: var(--ac-r-sm); background: transparent; color: var(--ac-text-3); cursor: pointer; transition: background var(--ac-dur-fast), color var(--ac-dur-fast); }
+.ac-result__copy:hover { background: var(--ac-surface-2); color: var(--ac-text); }
+.ac-result__copy .ac-icon { grid-area: 1 / 1; width: 15px; height: 15px; transition: opacity var(--ac-dur-fast), transform var(--ac-dur-fast) var(--ac-ease-out); }
+.ac-result__copy .ac-icon + .ac-icon, .ac-result__copy[data-state="copied"] .ac-icon:first-child { opacity: 0; transform: scale(.6); }
+.ac-result__copy[data-state="copied"] { color: var(--ac-success); }
+.ac-result__copy[data-state="copied"] .ac-icon + .ac-icon { opacity: 1; transform: none; }
+.ac-result__actions { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 28px; }
+.ac-result__actions:empty { display: none; }
+.ac-result__link { min-height: 24px; padding: 2px 4px; border: 0; border-radius: 4px; background: none; color: var(--ac-text-2); font: 500 var(--ac-fs-base)/1.4 var(--ac-font); text-decoration: underline; text-decoration-color: var(--ac-border-strong); text-underline-offset: 3px; cursor: pointer; }
+.ac-result__link:hover { color: var(--ac-text); text-decoration-color: currentColor; }
+.ac-result__link:focus-visible, .ac-result__copy:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ac-ring); }
+@media (prefers-reduced-motion: reduce) { .ac-result__copy, .ac-result__copy .ac-icon { transition: none; } }
 
 /* alvo mínimo de toque (WCAG 2.5.8) para controles compactos */
 @media (pointer: coarse) { .ac-btn--sm, .ac-toggle, .ac-menubar__trigger, .ac-pager button { min-height: 32px; } }
@@ -798,6 +864,8 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-money__label { margin: 0; color: var(--ac-text-3); font-size: var(--ac-fs-sm); font-weight: 500; }
 .ac-money__stage { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; min-height: 68px; padding: 0 12px; border-radius: 12px; color: var(--ac-text); font-size: clamp(40px, 11vw, 56px); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.035em; line-height: 1; cursor: text; }
 .ac-money__stage:focus-within { box-shadow: 0 0 0 3px var(--ac-ring); }
+/* o "R$" fica fora do número (para o valor continuar centrado): a folga igual dos dois lados mantém o prefixo dentro do contorno */
+.ac-money__stage { padding-inline: 1.1em; }
 .ac-money__field { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; color: transparent; font-size: 16px; caret-color: transparent; opacity: 0; cursor: text; }
 .ac-money__value { position: relative; display: inline-flex; align-items: center; height: var(--cell); }
 .ac-money__placeholder { position: relative; display: inline-flex; align-items: baseline; line-height: var(--cell); color: var(--ac-text-3); opacity: .5; white-space: nowrap; }
@@ -825,7 +893,7 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 @keyframes ac-money-caret { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 
 /* ---------- Telefone com país ---------- */
-.ac-phone { display: flex; align-items: stretch; height: 40px; border: 1px solid var(--ac-border-strong); border-radius: var(--ac-r-sm); background: var(--ac-surface); overflow: hidden; transition: border-color var(--ac-dur-fast), box-shadow var(--ac-dur-fast); }
+.ac-phone { display: flex; align-items: stretch; height: 40px; border: 1px solid var(--ac-border-input); border-radius: var(--ac-r-sm); background: var(--ac-surface); overflow: hidden; transition: border-color var(--ac-dur-fast), box-shadow var(--ac-dur-fast); }
 .ac-phone:focus-within { border-color: var(--ac-accent); box-shadow: 0 0 0 3px var(--ac-ring); }
 .ac-phone:has(.ac-phone__input[aria-invalid="true"]) { border-color: var(--ac-danger); }
 .ac-phone__country { display: inline-flex; align-items: center; gap: 6px; padding: 0 8px 0 10px; border: 0; border-right: 1px solid var(--ac-border); background: var(--ac-surface-2); color: var(--ac-text); font: 500 var(--ac-fs-base) var(--ac-font); cursor: pointer; }
@@ -994,20 +1062,20 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-chat__down { position: absolute; left: 50%; bottom: 12px; z-index: 2; display: grid; place-items: center; width: 36px; height: 36px; margin-left: -18px; padding: 0; border: 1px solid var(--ac-border); border-radius: 50%; background: var(--ac-surface); color: var(--ac-text); box-shadow: var(--ac-shadow); cursor: pointer; opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity var(--ac-dur-base), transform var(--ac-dur-base) var(--ac-ease-out), visibility 0s linear var(--ac-dur-base); }
 .ac-chat__down.is-on { opacity: 1; visibility: visible; transform: none; transition: opacity var(--ac-dur-base), transform var(--ac-dur-base) var(--ac-ease-out), visibility 0s; }
 .ac-chat__down:focus-visible { outline: none; box-shadow: var(--ac-shadow), 0 0 0 3px var(--ac-ring); }
-.ac-chat__composer { display: flex; align-items: flex-end; gap: 6px; margin: 0 10px 10px; padding: 5px 5px 5px 14px; border: 1px solid var(--ac-border-strong); border-radius: 22px; background: var(--ac-surface); transition: border-color var(--ac-dur-fast), box-shadow var(--ac-dur-fast); }
+.ac-chat__composer { display: flex; align-items: flex-end; gap: 6px; margin: 0 10px 10px; padding: 5px 5px 5px 14px; border: 1px solid var(--ac-border-input); border-radius: 22px; background: var(--ac-surface); transition: border-color var(--ac-dur-fast), box-shadow var(--ac-dur-fast); }
 .ac-chat__composer:focus-within { border-color: var(--ac-accent); box-shadow: 0 0 0 3px var(--ac-ring); }
 .ac-chat__input { flex: 1; min-width: 0; height: 32px; max-height: 160px; margin: 0; padding: 6px 0; border: 0; background: none; color: var(--ac-text); font: var(--ac-fs-base)/20px var(--ac-font); resize: none; outline: none; overflow-y: auto; }
 .ac-chat__input::placeholder { color: var(--ac-text-3); }
 .ac-chat__composer .ac-btn { --h: 32px; flex: none; }
 
 /* ---------- Campo copiável ---------- */
-.ac-copyfield { --h: 40px; display: flex; align-items: stretch; width: 100%; min-width: 0; height: var(--h); border: 1px solid var(--ac-border-strong); border-radius: var(--ac-r-sm); background: var(--ac-surface-2); font-family: var(--ac-font); }
+.ac-copyfield { --h: 40px; display: flex; align-items: stretch; width: 100%; min-width: 0; height: var(--h); border: 1px solid var(--ac-border-input); border-radius: var(--ac-r-sm); background: var(--ac-surface-2); font-family: var(--ac-font); }
 .ac-copyfield--sm { --h: 32px; }
 .ac-copyfield--lg { --h: 48px; }
 .ac-copyfield__value { flex: 1; min-width: 0; align-self: center; padding: 0 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ac-text); font: var(--ac-fs-base)/1.5 var(--ac-mono); user-select: all; }
 .ac-copyfield--sm .ac-copyfield__value { padding: 0 10px; font-size: var(--ac-fs-sm); }
 .ac-copyfield--lg .ac-copyfield__value { padding: 0 14px; font-size: var(--ac-fs-md); }
-.ac-copyfield__btn { position: relative; display: grid; place-items: center; width: var(--h); flex: none; padding: 0; border: 0; border-left: 1px solid var(--ac-border-strong); border-radius: 0 calc(var(--ac-r-sm) - 1px) calc(var(--ac-r-sm) - 1px) 0; background: var(--ac-surface); color: var(--ac-text-2); cursor: pointer; transition: background var(--ac-dur-fast), color var(--ac-dur-fast); }
+.ac-copyfield__btn { position: relative; display: grid; place-items: center; width: var(--h); flex: none; padding: 0; border: 0; border-left: 1px solid var(--ac-border-input); border-radius: 0 calc(var(--ac-r-sm) - 1px) calc(var(--ac-r-sm) - 1px) 0; background: var(--ac-surface); color: var(--ac-text-2); cursor: pointer; transition: background var(--ac-dur-fast), color var(--ac-dur-fast); }
 .ac-copyfield__btn:hover { background: var(--ac-surface-2); color: var(--ac-text); }
 .ac-copyfield__btn:focus-visible { z-index: 1; outline: none; box-shadow: 0 0 0 3px var(--ac-ring); }
 .ac-copyfield__icons { display: grid; }
@@ -1435,6 +1503,12 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 /* ---------- Player de vídeo com controles em vidro ---------- */
 .ac-video { --glass: rgb(255 255 255 / .16); --glass-line: rgb(255 255 255 / .28); position: relative; overflow: hidden; aspect-ratio: 16 / 9; border: 1px solid var(--ac-border); border-radius: var(--ac-r-lg); background: #000; color: #fff; font-family: var(--ac-font); outline: none; isolation: isolate; }
 .ac-video:focus-visible { box-shadow: 0 0 0 3px var(--ac-ring); }
+/* a largura vem de fora: sem isso a barra de controles impunha a largura mínima e o player passava do contêiner no celular */
+.ac-video { max-width: 100%; container-type: inline-size; }
+.ac-video__ui { grid-template-columns: minmax(0, 1fr); }
+.ac-video__top > .ac-video__pill { min-width: 0; flex: 0 1 auto; }
+/* player estreito: "Assistir no YouTube" fica só no ícone (o nome continua no texto, para leitores de tela) */
+@container (max-width: 440px) { .ac-video__pill:not(.ac-video__title) { flex: none; gap: 0; padding: 6px; font-size: 0; } }
 .ac-video > video { display: block; width: 100%; height: 100%; object-fit: cover; }
 .ac-video__ui { position: absolute; inset: 0; display: grid; grid-template-rows: auto 1fr auto; padding: 12px; background: linear-gradient(rgb(0 0 0 / .35), transparent 26%, transparent 62%, rgb(0 0 0 / .55)); transition: opacity .3s var(--ac-ease); }
 .ac-video.is-idle .ac-video__ui { opacity: 0; cursor: none; }
@@ -1494,6 +1568,11 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-ai-editor__title { margin: 0 0 12px; font: 650 var(--ac-fs-2xl)/1.25 var(--ac-font); letter-spacing: -.02em; }
 .ac-ai-editor__doc { display: grid; gap: 12px; outline: none; font-size: var(--ac-fs-md); line-height: 1.7; color: var(--ac-text-2); caret-color: var(--ac-accent); }
 .ac-ai-editor__doc > * { margin: 0; }
+/* área do texto: borda própria com respiro (o contorno genérico de foco ficava colado nas letras) */
+.ac-ai-editor__doc { padding: 12px 14px; border: 1px solid transparent; border-radius: var(--ac-r); transition: border-color var(--ac-dur-fast), box-shadow var(--ac-dur-fast); }
+.ac-ai-editor__doc:hover { border-color: var(--ac-border); }
+.ac-ai-editor__doc:focus, .ac-ai-editor__doc:focus-visible { outline: none; border-color: var(--ac-border-input); box-shadow: 0 0 0 3px var(--ac-ring); }
+.ac-ai-editor__title { padding-inline: 15px; }
 .ac-ai-editor__doc code { padding: 1px 5px; border-radius: 5px; background: var(--ac-surface-2); font-family: var(--ac-mono); font-size: .9em; }
 .ac-ai-editor__doc ::selection { background: color-mix(in oklab, var(--ac-text) 16%, transparent); }
 ::highlight(ac-ai) { background-color: color-mix(in oklab, var(--ac-text) 14%, transparent); }
@@ -1630,12 +1709,13 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 #nav::-webkit-scrollbar, .panel::-webkit-scrollbar { display: none; }
 .nav__g { display: flex; align-items: center; gap: 8px; margin: 14px 0 4px; padding: 14px 8px 0; border-top: 1px solid var(--ac-border); font: 600 var(--site-small) var(--ac-font); color: var(--ac-text); letter-spacing: .01em; }
 .nav__g .ac-icon { width: 17px; height: 17px; flex: none; color: var(--g, var(--ac-text-3)); stroke-width: 1.7; }
-/* cor de cada categoria: tons médios no claro, mais claros no escuro */
-.nav__g[data-g="fundamentos"] { --g: #0f9f6e; } .nav__g[data-g="formularios"] { --g: #2f6fe4; } .nav__g[data-g="navegacao"] { --g: #7c4ddb; } .nav__g[data-g="dados"] { --g: #0e93a8; }
-.nav__g[data-g="feedback"] { --g: #d97706; } .nav__g[data-g="movimento"] { --g: #db2777; } .nav__g[data-g="modelos"] { --g: #ea580c; }
-:root[data-theme="dark"] .nav__g[data-g="fundamentos"] { --g: #34d399; } :root[data-theme="dark"] .nav__g[data-g="formularios"] { --g: #60a5fa; } :root[data-theme="dark"] .nav__g[data-g="navegacao"] { --g: #a78bfa; } :root[data-theme="dark"] .nav__g[data-g="dados"] { --g: #22d3ee; }
-:root[data-theme="dark"] .nav__g[data-g="feedback"] { --g: #fbbf24; } :root[data-theme="dark"] .nav__g[data-g="movimento"] { --g: #f472b6; } :root[data-theme="dark"] .nav__g[data-g="modelos"] { --g: #fb923c; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nav__g[data-g="fundamentos"] { --g: #34d399; } :root:not([data-theme="light"]) .nav__g[data-g="formularios"] { --g: #60a5fa; } :root:not([data-theme="light"]) .nav__g[data-g="navegacao"] { --g: #a78bfa; } :root:not([data-theme="light"]) .nav__g[data-g="dados"] { --g: #22d3ee; } :root:not([data-theme="light"]) .nav__g[data-g="feedback"] { --g: #fbbf24; } :root:not([data-theme="light"]) .nav__g[data-g="movimento"] { --g: #f472b6; } :root:not([data-theme="light"]) .nav__g[data-g="modelos"] { --g: #fb923c; } }
+/* cor de cada categoria: tons médios no claro, mais claros no escuro. Ficam em --g-* no :root para o menu e a busca
+   (Ctrl K) usarem as mesmas; no menu, cada título lê a sua em --g pelo data-g */
+:root { --g-fundamentos: #0f9f6e; --g-formularios: #2f6fe4; --g-navegacao: #7c4ddb; --g-dados: #0e93a8; --g-feedback: #d97706; --g-movimento: #db2777; --g-modelos: #ea580c; }
+:root[data-theme="dark"] { --g-fundamentos: #34d399; --g-formularios: #60a5fa; --g-navegacao: #a78bfa; --g-dados: #22d3ee; --g-feedback: #fbbf24; --g-movimento: #f472b6; --g-modelos: #fb923c; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --g-fundamentos: #34d399; --g-formularios: #60a5fa; --g-navegacao: #a78bfa; --g-dados: #22d3ee; --g-feedback: #fbbf24; --g-movimento: #f472b6; --g-modelos: #fb923c; } }
+.nav__g[data-g="fundamentos"] { --g: var(--g-fundamentos); } .nav__g[data-g="formularios"] { --g: var(--g-formularios); } .nav__g[data-g="navegacao"] { --g: var(--g-navegacao); } .nav__g[data-g="dados"] { --g: var(--g-dados); }
+.nav__g[data-g="feedback"] { --g: var(--g-feedback); } .nav__g[data-g="movimento"] { --g: var(--g-movimento); } .nav__g[data-g="modelos"] { --g: var(--g-modelos); }
 .nav__g + .nav__a { margin-top: 2px; }
 .nav__a { display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 6px 8px; line-height: 1.35; border-radius: 8px; color: var(--ac-text-2); text-decoration: none; font-size: var(--site-read); transition: background .15s, color .15s; }
 .nav__a:hover { background: var(--ac-surface-2); color: var(--ac-text); }
@@ -1646,6 +1726,15 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 .side__foot { border-top: 1px solid var(--ac-border); padding-top: 10px; }
 .side__foot .ac-btn { width: 100%; justify-content: flex-start; font-size: var(--site-read); }
 .veil { position: fixed; inset: 0; z-index: 40; background: rgb(0 0 0 / .4); }
+
+/* ---------- busca (Ctrl K) com a mesma cara do menu ----------
+   ícone e cor de cada categoria chegam por Orthos.command({ groups }) (openSiteCommand); aqui só o que é do site:
+   itens em 16 px como no menu, selo "novo" igual ao do menu e rolagem invisível como a do #nav */
+.ac-command .ac-option { font-size: var(--site-read); }
+.ac-command .ac-option small { padding: 1px 6px; border-radius: 99px; background: var(--ac-surface-2); font: var(--site-small) var(--ac-font); color: var(--ac-text-3); }
+.ac-command .ac-option[aria-selected="true"] small { background: var(--ac-surface); box-shadow: inset 0 0 0 1px var(--ac-border); }
+.ac-command .ac-listbox { scrollbar-width: none; -ms-overflow-style: none; }
+.ac-command .ac-listbox::-webkit-scrollbar { display: none; }
 
 /* ---------- página de componente: palco + painel ---------- */
 .main { min-width: 0; outline: none; }
@@ -1800,6 +1889,8 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 .prose h2 { margin: 36px 0 12px; font: 600 var(--ac-fs-lg) var(--ac-font); }
 .prose .lead { color: var(--ac-text-2); font-size: var(--site-read); line-height: 1.6; max-width: 70ch; }
 .prose .api { max-width: 860px; }
+/* nomes longos de token (--ac-dur-fast/base/slow/overlay) quebram em qualquer ponto: sem isso a tabela passava 16px da tela no celular */
+.prose .api code { overflow-wrap: anywhere; }
 .nav__a .n { font-family: var(--ac-font); font-size: var(--site-small); padding: 1px 6px; border-radius: 99px; background: var(--ac-surface-2); }
 /* item do menu com nome longo: cresce em altura; ponto e selo "novo" ficam alinhados à primeira linha */
 .nav__a i { align-self: flex-start; margin-top: .5em; }
@@ -1957,10 +2048,12 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
      A região de avisos existe desde o carregamento (aria-live polite), para o leitor de tela anunciar até o primeiro
      aviso. Alt+T leva o foco aos avisos; a pilha recolhida abre no hover/foco; arrastar para o lado dispensa.
      Padrões observados no Sonner (sonner.emilkowal.ski, 27/10/2026), implementação própria. */
-  function toaster() {
-    let host = $('.ac-toaster');
+  // dois cantos: o padrão (embaixo, à direita) e o topo centralizado, para confirmações ligadas ao que está no alto da tela
+  function toaster(pos) {
+    const top = pos === 'top';
+    let host = $(top ? '.ac-toaster--top' : '.ac-toaster:not(.ac-toaster--top)');
     if (!host) {
-      host = document.createElement('section'); host.className = 'ac ac-toaster'; host.tabIndex = -1;
+      host = document.createElement('section'); host.className = top ? 'ac ac-toaster ac-toaster--top' : 'ac ac-toaster'; host.tabIndex = -1;
       host.setAttribute('aria-label', 'Notificações (Alt+T)'); host.setAttribute('aria-live', 'polite'); host.setAttribute('aria-relevant', 'additions text');
       document.body.appendChild(host);
     }
@@ -1969,11 +2062,11 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
   const restack = host => { const ts = $$('.ac-toast:not(.is-leaving)', host); ts.forEach((t, i) => t.style.setProperty('--k', ts.length - 1 - i)); };
   let toastReturn = null;
   document.addEventListener('keydown', e => {
-    if (e.altKey && !e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 't') { const h = $('.ac-toaster'); const last = h && $$('.ac-toast', h).pop(); if (last) { e.preventDefault(); if (!h.contains(document.activeElement)) toastReturn = document.activeElement; last.focus(); } }
+    if (e.altKey && !e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 't') { const last = $$('.ac-toaster .ac-toast').pop(), h = last && last.closest('.ac-toaster'); if (last) { e.preventDefault(); if (!h.contains(document.activeElement)) toastReturn = document.activeElement; last.focus(); } }
   });
   function toast(o) {
     if (typeof o === 'string') o = { title: o };
-    const host = toaster();
+    const host = toaster(o.position);
     const t = document.createElement('div');
     t.tabIndex = 0;
     const paint = (o) => {
@@ -1981,7 +2074,9 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       t.className = `ac-toast ac-toast--${type}`;
       if (type === 'danger') t.setAttribute('role', 'alert'); else t.removeAttribute('role');
       t.setAttribute('aria-busy', type === 'loading');
-      const lead = type === 'loading' ? '<span class="ac-spinner" aria-hidden="true"></span>' : icon(type === 'success' ? 'check' : type === 'danger' ? 'alert' : 'info');
+      // swatch: amostra de cor no lugar do ícone (só aceita uma cor CSS válida)
+      const sw = o.swatch && CSS.supports('color', o.swatch) ? `<span class="ac-toast__swatch" style="background:${esc(o.swatch)}" aria-hidden="true"></span>` : '';
+      const lead = type === 'loading' ? '<span class="ac-spinner" aria-hidden="true"></span>' : sw || icon(type === 'success' ? 'check' : type === 'danger' ? 'alert' : 'info');
       t.innerHTML = `${lead}<div class="ac-toast__title">${esc(o.title)}</div>${o.desc ? `<div class="ac-toast__desc">${esc(o.desc)}</div>` : ''}${o.action ? `<button class="ac-btn ac-btn--secondary ac-btn--sm ac-toast__action" type="button">${esc(o.action.label)}</button>` : ''}`;
       if (o.action) t.querySelector('.ac-toast__action').onclick = () => { o.action.onClick && o.action.onClick(); kill(); };
     };
@@ -2308,18 +2403,29 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
     let dlg = $('#ac-command');
     if (!dlg) {
       dlg = document.createElement('dialog'); dlg.id = 'ac-command'; dlg.className = 'ac ac-dialog ac-command'; dlg.setAttribute('aria-label', 'Paleta de comandos');
-      dlg.innerHTML = `<div class="ac-command__input">${icon('search')}<input type="text" placeholder="${esc(o.placeholder || 'Buscar comandos…')}" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="ac-command-list"></div><ul class="ac-listbox" id="ac-command-list" role="listbox" style="max-height:340px"></ul><div class="ac-command__foot"><span><kbd class="ac-kbd">↑</kbd><kbd class="ac-kbd">↓</kbd> navegar</span><span><kbd class="ac-kbd">↵</kbd> abrir</span><span><kbd class="ac-kbd">esc</kbd> fechar</span></div>`;
+      dlg.innerHTML = `<div class="ac-command__input">${icon('search')}<input type="text" placeholder="${esc(o.placeholder || 'Buscar comandos…')}" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="ac-command-list"></div><ul class="ac-listbox" id="ac-command-list" role="listbox"></ul><div class="ac-command__foot"><span><kbd class="ac-kbd">↑</kbd><kbd class="ac-kbd">↓</kbd> navegar</span><span><kbd class="ac-kbd">↵</kbd> abrir</span><span><kbd class="ac-kbd">esc</kbd> fechar</span></div>`;
       document.body.appendChild(dlg);
     }
     const input = $('input', dlg), lb = $('ul', dlg); let act = 0, flat = [];
     const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    // groups: { 'Nome': { icon, color } } dá ícone e cor ao título de cada grupo. icon é um nome de Orthos.icon ou o
+    // miolo de um <svg> 24×24 (<path …/>); color é qualquer cor CSS, inclusive var(--x), e fica em --ac-group.
+    const G = o.groups || {}, max = o.limit || 60;
+    const gIcon = v => !v ? '' : /^\s*</.test(v) ? `<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true">${v}</svg>` : icon(v);
+    const head = g => { const c = G[g] || {}; return `<li class="ac-listbox__group ac-command__group" role="presentation"${c.color ? ` style="--ac-group:${esc(c.color)}"` : ''}>${gIcon(c.icon)}<span>${esc(g)}</span></li>`; };
     const render = () => {
-      const q = norm(input.value); flat = o.items.filter(i => norm(i.label + ' ' + (i.group || '') + ' ' + (i.keywords || '')).includes(q)).slice(0, 60);
+      const q = norm(input.value); flat = o.items.filter(i => norm(i.label + ' ' + (i.group || '') + ' ' + (i.keywords || '')).includes(q)).slice(0, max);
       act = Math.min(act, Math.max(0, flat.length - 1)); let g = null, h = '';
-      flat.forEach((it, i) => { if (it.group !== g) { g = it.group; h += `<li class="ac-listbox__group" role="presentation">${esc(g || '')}</li>`; } h += `<li class="ac-option" role="option" id="ac-cmd-${i}" data-i="${i}" aria-selected="${i === act}">${esc(it.label)}${it.hint ? `<small>${esc(it.hint)}</small>` : ''}</li>`; });
+      flat.forEach((it, i) => { if (it.group !== g) { g = it.group; if (g) h += head(g); } h += `<li class="ac-option" role="option" id="ac-cmd-${i}" data-i="${i}" aria-selected="${i === act}">${esc(it.label)}${it.hint ? `<small>${esc(it.hint)}</small>` : ''}</li>`; });
       lb.innerHTML = h || '<li class="ac-listbox__empty">Nenhum resultado.</li>';
       input.setAttribute('aria-activedescendant', flat.length ? 'ac-cmd-' + act : '');
-      reveal($('#ac-cmd-' + act, lb));
+      // nas pontas a lista vai até o começo/fim (com o 1º título e sem o último item colado no rodapé); no 1º item de um
+      // grupo, o título aparece junto, para a categoria não ficar escondida
+      const li = $('#ac-cmd-' + act, lb), prev = li && li.previousElementSibling;
+      if (!li) return;
+      if (act === 0) lb.scrollTop = 0;
+      else if (act === flat.length - 1) lb.scrollTop = lb.scrollHeight;
+      else { if (prev && prev.classList.contains('ac-command__group')) reveal(prev); reveal(li); }
     };
     const run = i => { const it = flat[i]; if (!it) return; close(dlg); it.run && setTimeout(it.run, 120); };
     input.oninput = () => { act = 0; render(); };
@@ -2329,7 +2435,8 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
     const toque = matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches;
     // (o showModal foca o primeiro campo sozinho; somente leitura nesse instante não chama o teclado)
     if (toque) { dlg.tabIndex = -1; input.readOnly = true; } else dlg.removeAttribute('tabindex');
-    input.value = ''; render(); open(dlg);
+    input.value = ''; input.placeholder = o.placeholder || 'Buscar comandos…'; render(); open(dlg);
+    lb.scrollTop = 0; // a lista é a mesma entre aberturas: sem isso reabriria rolada onde a pessoa parou
     if (toque) { dlg.focus(); input.readOnly = false; } else input.focus();
   }
 
@@ -2679,6 +2786,46 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
   /* Toggle: botão liga/desliga (negrito, favoritar). */
   C.toggle = b => { if (!b.hasAttribute('aria-pressed')) b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', () => { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); b.dispatchEvent(new CustomEvent('ac:change', { detail: on, bubbles: true })); }); };
 
+  /* Paginação: data-pages (total) e data-page (atual). Mostra a primeira, a última e as vizinhas da atual, com "…" no meio;
+     o clique troca a página, o foco fica no mesmo controle depois de redesenhar e sai o evento ac:change com o número. */
+  C.pagination = nav => {
+    nav.classList.add('ac-pager'); if (!nav.hasAttribute('aria-label')) nav.setAttribute('aria-label', 'Paginação');
+    const total = () => Math.max(1, +nav.dataset.pages || $$('button', nav).map(b => +b.textContent).filter(Boolean).pop() || 1);
+    let page = Math.min(total(), Math.max(1, +nav.dataset.page || +($('[aria-current="page"]', nav) || {}).textContent || 1));
+    const list = () => { const n = total(), s = +nav.dataset.siblings || 1, out = []; for (let i = 1; i <= n; i++) if (i === 1 || i === n || Math.abs(i - page) <= s) out.push(i); else if (out[out.length - 1] !== '…') out.push('…'); return out; };
+    const render = focus => {
+      const n = total();
+      nav.innerHTML = `<button type="button" data-go="${page - 1}" ${page === 1 ? 'disabled' : ''} aria-label="Página anterior">${icon('left')}</button>`
+        + list().map(i => i === '…' ? '<span aria-hidden="true">…</span>' : `<button type="button" data-go="${i}" aria-label="Página ${i}"${i === page ? ' aria-current="page"' : ''}>${i}</button>`).join('')
+        + `<button type="button" data-go="${page + 1}" ${page === n ? 'disabled' : ''} aria-label="Próxima página">${icon('right')}</button>`;
+      if (focus) { const b = $(`[aria-label="${focus}"]`, nav); (b && !b.disabled ? b : $('[aria-current="page"]', nav)).focus(); }
+    };
+    nav.addEventListener('click', e => {
+      const b = e.target.closest('[data-go]'); if (!b || b.disabled) return;
+      const to = Math.min(total(), Math.max(1, +b.dataset.go)); if (to === page) return;
+      const keep = nav.contains(document.activeElement) ? b.getAttribute('aria-label') : null;
+      page = to; nav.dataset.page = page; render(keep);
+      nav.dispatchEvent(new CustomEvent('ac:change', { detail: page, bubbles: true }));
+    });
+    render();
+    nav._pagination = { go: p => { page = Math.min(total(), Math.max(1, p)); nav.dataset.page = page; render(); } };
+  };
+
+  /* Grupo de escolha única (alinhamento, visualização): marcar um desmarca os outros e sempre fica um marcado.
+     Semântica de rádio do WAI-ARIA (radiogroup + radio + aria-checked), como no exemplo de toolbar da APG.
+     Fora de uma toolbar, as setas andam e já marcam; dentro dela, as setas são da toolbar e Espaço/Enter marcam. */
+  C['toggle-group'] = g => {
+    if (!g.hasAttribute('role')) g.setAttribute('role', 'radiogroup');
+    const its = () => $$('.ac-toggle:not([disabled])', g);
+    const pick = (b, emit) => { its().forEach(x => { x.setAttribute('aria-checked', x === b); if (!g.closest('[data-ac~="toolbar"]')) x.tabIndex = x === b ? 0 : -1; }); if (emit) g.dispatchEvent(new CustomEvent('ac:change', { detail: b.value || b.getAttribute('aria-label'), bubbles: true })); };
+    its().forEach(b => { b.setAttribute('role', 'radio'); b.removeAttribute('aria-pressed'); b.addEventListener('click', () => { if (b.getAttribute('aria-checked') !== 'true') pick(b, true); }); });
+    pick(its().find(b => b.getAttribute('aria-checked') === 'true') || its()[0], false);
+    if (!g.closest('[data-ac~="toolbar"]')) g.addEventListener('keydown', e => {
+      const it = its(), i = it.indexOf(document.activeElement), n = { ArrowRight: i + 1, ArrowDown: i + 1, ArrowLeft: i - 1, ArrowUp: i - 1 }[e.key];
+      if (i < 0 || n === undefined) return; e.preventDefault(); const b = it[(n + it.length) % it.length]; pick(b, true); b.focus();
+    });
+  };
+
   /* Toolbar: um só ponto de Tab; as setas andam entre os controles (roving tabindex). */
   C.toolbar = bar => {
     bar.setAttribute('role', 'toolbar');
@@ -2872,27 +3019,96 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
     tr.addEventListener('click', () => { const on = !el.classList.contains('is-open'); el.classList.toggle('is-open', on); tr.setAttribute('aria-expanded', on); });
   };
 
-  /* Página de resultado e erro.
-     data-code: 401, 403, 404, 500, 503, offline, success. O conteúdo de dentro, se houver, substitui as ações padrão. */
+  /* Páginas de erro e resultado, no desenho das páginas de erro do 4squad: a ilustração do caso (o ícone num quadrado
+     sobre uma mancha, com um selo no canto), o código grande, título, texto, o botão principal e um link embaixo.
+     data-code: 401, 403, 404, 500, 503, offline, error (erro inesperado na tela) e success.
+     Quem está vendo (data-audience: guest, user ou admin) muda o "voltar": para o início, para o app ou para o painel.
+     Ações próprias (o conteúdo de dentro, que substitui as padrão) com data-for="admin" (ou "user admin"…) só aparecem
+     para esse público: o painel nunca aparece para quem não é da equipe. Endereços: data-home ("/" sem ele), data-login
+     (401) e data-support (com ele, o 403 oferece "Falar com o suporte"). 500 e error mostram o horário; data-error-id
+     mostra o código para o suporte, com botão de copiar; data-retry-at ("15:30" ou data ISO) dá a previsão de volta do
+     503. Cada ação dispara ac:action ({ action, code }, cancelável): sem preventDefault, "Tentar de novo" recarrega a
+     página e "Voltar para a página anterior" volta no histórico. Sem internet, a página recarrega sozinha quando a
+     conexão volta (ac:online, cancelável).
+     Cada caso: [ícone, título, texto, ação principal, ação secundária, selo, tom, tipos das ações]. */
   const RESULTS = {
-    404: ['search', 'Página não encontrada', 'O endereço pode ter mudado ou sido digitado errado. Confira o link ou volte ao início.', 'Voltar ao início', 'Buscar no site'],
-    403: ['lock', 'Você não tem acesso a esta página', 'Sua conta não tem permissão para ver este conteúdo. Peça acesso a um administrador.', 'Pedir acesso', 'Voltar ao início'],
-    401: ['lock', 'Sua sessão terminou', 'Por segurança, saímos da sua conta depois de um tempo sem uso. Entre de novo para continuar de onde parou.', 'Entrar de novo', ''],
-    500: ['alert', 'Algo deu errado do nosso lado', 'Não foi culpa sua. Já fomos avisados. Tente de novo em alguns instantes; nada do que você salvou foi perdido.', 'Tentar de novo', 'Ver status do serviço'],
-    503: ['gear', 'Estamos em manutenção', 'Voltamos em poucos minutos. Seus dados estão seguros.', 'Atualizar a página', 'Ver status do serviço'],
-    offline: ['wifi', 'Você está sem internet', 'Verifique o Wi-Fi ou os dados móveis. Quando a conexão voltar, a página se atualiza sozinha.', 'Tentar de novo', ''],
-    success: ['check', 'Tudo certo', 'A ação foi concluída com sucesso.', 'Continuar', '']
+    404: ['search', 'Página não encontrada', 'A página que você procura pode ter sido removida, mudado de endereço ou não existir mais.', 'Voltar para o início', 'Voltar para a página anterior', 'help', 'neutral', 'home back'],
+    403: ['lock', 'Acesso negado', 'Esta área é de outro tipo de acesso. Se você acha que é um engano, fale com o suporte.', 'Voltar para o início', '', 'block', 'danger', 'home'],
+    401: ['user', 'Sessão encerrada', 'Por segurança, a sua sessão fechou. Entre de novo para continuar de onde parou.', 'Entrar de novo', '', 'bang', 'warning', 'login'],
+    500: ['server', 'Erro no servidor', 'Algo falhou do nosso lado. Tente de novo; se continuar, avise o suporte com as informações abaixo.', 'Tentar de novo', 'Voltar para o início', 'x', 'danger', 'retry home'],
+    503: ['gear', 'Em manutenção', 'Estamos atualizando o sistema e voltamos em breve. Nada do que você fez se perdeu.', 'Tentar de novo', '', 'clock', 'warning', 'retry'],
+    offline: ['signal', 'Sem conexão', 'Não foi possível falar com o servidor. Confira a internet; a página volta sozinha quando a conexão voltar.', 'Tentar de novo', '', 'x', 'danger', 'retry'],
+    error: ['browser', 'Algo deu errado', 'Aconteceu um erro inesperado. Tente de novo em alguns instantes.', 'Tentar de novo', 'Voltar para o início', 'bang', 'warning', 'retry home'],
+    success: ['check', 'Tudo certo', 'A ação foi concluída. Você já pode seguir.', 'Continuar', '', '', 'success', 'next'],
+    // textos que não são de um caso só
+    labels: { home: 'Voltar para o início', user: 'Voltar para o app', admin: 'Voltar para o painel', back: 'Voltar para a página anterior', retry: 'Tentar de novo', login: 'Entrar de novo', support: 'Falar com o suporte', next: 'Continuar', time: 'Horário', id: 'Código do erro', copy: 'Copiar o código do erro', copied: 'Código copiado', returnAt: 'Previsão de volta', today: 'hoje', at: 'às', code: 'código' }
   };
   ICONS.lock = '<path d="M12 14.5V17.5M13 14.5C13 15.0523 12.5523 15.5 12 15.5C11.4477 15.5 11 15.0523 11 14.5C11 13.9477 11.4477 13.5 12 13.5C12.5523 13.5 13 13.9477 13 14.5Z"/><path d="M16.5 9V6.5C16.5 4.01472 14.4853 2 12 2C9.51471 2 7.49999 4.01472 7.49999 6.5V9"/><path d="M4.2678 18.8447C4.49268 20.515 5.87612 21.8235 7.55965 21.9009C8.97627 21.966 10.4153 22 12 22C13.5847 22 15.0237 21.966 16.4403 21.9009C18.1239 21.8235 19.5073 20.515 19.7322 18.8447C19.8789 17.7547 20 16.6376 20 15.5C20 14.3624 19.8789 13.2453 19.7322 12.1553C19.5073 10.485 18.1239 9.17649 16.4403 9.09909C15.0237 9.03397 13.5847 9 12 9C10.4153 9 8.97627 9.03397 7.55965 9.09909C5.87612 9.17649 4.49268 10.485 4.2678 12.1553C4.12104 13.2453 3.99999 14.3624 3.99999 15.5C3.99999 16.6376 4.12104 17.7547 4.2678 18.8447Z"/>';
   ICONS.gear = '<path d="M21.3175 7.14139L20.8239 6.28479C20.4506 5.63696 20.264 5.31305 19.9464 5.18388C19.6288 5.05472 19.2696 5.15664 18.5513 5.36048L17.3311 5.70418C16.8725 5.80994 16.3913 5.74994 15.9726 5.53479L15.6357 5.34042C15.2766 5.11043 15.0004 4.77133 14.8475 4.37274L14.5136 3.37536C14.294 2.71534 14.1842 2.38533 13.9228 2.19657C13.6615 2.00781 13.3143 2.00781 12.6199 2.00781H11.5051C10.8108 2.00781 10.4636 2.00781 10.2022 2.19657C9.94085 2.38533 9.83106 2.71534 9.61149 3.37536L9.27753 4.37274C9.12465 4.77133 8.84845 5.11043 8.48937 5.34042L8.15249 5.53479C7.73374 5.74994 7.25259 5.80994 6.79398 5.70418L5.57375 5.36048C4.85541 5.15664 4.49625 5.05472 4.17867 5.18388C3.86109 5.31305 3.67445 5.63696 3.30115 6.28479L2.80757 7.14139C2.45766 7.74864 2.2827 8.05227 2.31666 8.37549C2.35061 8.69871 2.58483 8.95918 3.05326 9.48012L4.0843 10.6328C4.3363 10.9518 4.51521 11.5078 4.51521 12.0077C4.51521 12.5078 4.33636 13.0636 4.08433 13.3827L3.05326 14.5354C2.58483 15.0564 2.35062 15.3168 2.31666 15.6401C2.2827 15.9633 2.45766 16.2669 2.80757 16.8741L3.30114 17.7307C3.67443 18.3785 3.86109 18.7025 4.17867 18.8316C4.49625 18.9608 4.85542 18.8589 5.57377 18.655L6.79394 18.3113C7.25263 18.2055 7.73387 18.2656 8.15267 18.4808L8.4895 18.6752C8.84851 18.9052 9.12464 19.2442 9.2775 19.6428L9.61149 20.6403C9.83106 21.3003 9.94085 21.6303 10.2022 21.8191C10.4636 22.0078 10.8108 22.0078 11.5051 22.0078H12.6199C13.3143 22.0078 13.6615 22.0078 13.9228 21.8191C14.1842 21.6303 14.294 21.3003 14.5136 20.6403L14.8476 19.6428C15.0004 19.2442 15.2765 18.9052 15.6356 18.6752L15.9724 18.4808C16.3912 18.2656 16.8724 18.2055 17.3311 18.3113L18.5513 18.655C19.2696 18.8589 19.6288 18.9608 19.9464 18.8316C20.264 18.7025 20.4506 18.3785 20.8239 17.7307L21.3175 16.8741C21.6674 16.2669 21.8423 15.9633 21.8084 15.6401C21.7744 15.3168 21.5402 15.0564 21.0718 14.5354L20.0407 13.3827C19.7887 13.0636 19.6098 12.5078 19.6098 12.0077C19.6098 11.5078 19.7888 10.9518 20.0407 10.6328L21.0718 9.48012C21.5402 8.95918 21.7744 8.69871 21.8084 8.37549C21.8423 8.05227 21.6674 7.74864 21.3175 7.14139Z"/><path d="M15.5195 12C15.5195 13.933 13.9525 15.5 12.0195 15.5C10.0865 15.5 8.51953 13.933 8.51953 12C8.51953 10.067 10.0865 8.5 12.0195 8.5C13.9525 8.5 15.5195 10.067 15.5195 12Z"/>';
   ICONS.wifi = '<path d="M14.5002 15L9.50016 20M14.5002 20L9.50016 15"/><path d="M18.5 13C14.7324 9 9.5 9 5.5 13"/><path d="M2 8C8.31579 2.66669 15.6842 2.66668 22 7.99989"/>';
+  Object.assign(ICONS, {
+    user: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="9.5" r="3"/><path d="M7 18C8.3 16.2 10 15.3 12 15.3C14 15.3 15.7 16.2 17 18"/>',
+    server: '<rect x="3" y="3" width="18" height="7.5" rx="2.5"/><rect x="3" y="13.5" width="18" height="7.5" rx="2.5"/><path d="M7 6.75H7.01M7 17.25H7.01M11 6.75H17M11 17.25H17"/>',
+    browser: '<rect x="2.5" y="3.5" width="19" height="17" rx="3.5"/><path d="M2.5 8.5H21.5"/><path d="M6 6H6.01M9 6H9.01M9.5 12.5H9.51M14.5 12.5H14.51"/><path d="M9.5 17C10.9 15.6 13.1 15.6 14.5 17"/>',
+    refresh: '<path d="M20 12A8 8 0 1 1 17.66 6.34L20 8.5"/><path d="M20 4V8.5H15.5"/>',
+    'arrow-left': '<path d="M4 12H20"/><path d="M9 17C9 17 4 13.32 4 12C4 10.68 9 7 9 7"/>',
+    'arrow-right': '<path d="M20 12H4"/><path d="M15 17C15 17 20 13.32 20 12C20 10.68 15 7 15 7"/>',
+    headset: '<path d="M4 15V12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12V15"/><path d="M4 14.5C4 13.4 4.9 12.5 6 12.5H7.5V18.5H6C4.9 18.5 4 17.6 4 16.5V14.5Z"/><path d="M20 14.5C20 13.4 19.1 12.5 18 12.5H16.5V18.5H18C19.1 18.5 20 17.6 20 16.5V14.5Z"/><path d="M16.5 18.5C16.5 20 15 21 12.5 21"/>',
+    signal: '<path d="M2 8.5C8.32 3.17 15.68 3.17 22 8.5"/><path d="M5.5 12.5C9.5 8.83 14.5 8.83 18.5 12.5"/><path d="M9 16.25C10.8 14.75 13.2 14.75 15 16.25"/><path d="M12 19.75H12.01"/>',
+    help: '<path d="M8.5 8.75C8.5 6.68 10.07 5 12 5C13.93 5 15.5 6.68 15.5 8.75C15.5 10.3 14.6 11.6 13.3 12.2C12.5 12.55 12 13.3 12 14.15V14.75"/><path d="M12 19H12.01"/>',
+    block: '<circle cx="12" cy="12" r="8"/><path d="M6.4 6.4L17.6 17.6"/>',
+    bang: '<path d="M12 5V14"/><path d="M12 19H12.01"/>'
+  });
   C.result = el => {
-    const code = el.dataset.code || '404', r = RESULTS[code] || RESULTS[404];
-    const custom = el.innerHTML.trim();
-    el.classList.add('ac-result'); el.dataset.tone = code === 'success' ? 'success' : /^5|offline/.test(code) ? 'danger' : 'neutral';
-    el.innerHTML = `<span class="ac-result__icon" aria-hidden="true">${icon(r[0])}</span>${/^\d+$/.test(code) ? `<p class="ac-result__code">Erro ${esc(code)}</p>` : ''}<h2 class="ac-result__title">${esc(el.dataset.title || r[1])}</h2><p class="ac-result__text">${esc(el.dataset.text || r[2])}</p>
-      <div class="ac-result__actions">${custom || `<button class="ac-btn" type="button" data-result-action="primary">${esc(r[3])}</button>${r[4] ? `<button class="ac-btn ac-btn--ghost" type="button" data-result-action="secondary">${esc(r[4])}</button>` : ''}`}</div>`;
-    if (code === 'offline') addEventListener('online', () => el.dispatchEvent(new CustomEvent('ac:online', { bubbles: true })), { once: true });
+    const d = el.dataset, L = RESULTS.labels, code = d.code || '404', r = Array.isArray(RESULTS[code]) ? RESULTS[code] : RESULTS[404];
+    const who = /^(user|admin)$/.test(d.audience) ? d.audience : 'guest', num = /^\d+$/.test(code), lv = /^[1-6]$/.test(d.level) ? d.level : 2;
+    // ações próprias: os nós de dentro são mantidos (componentes neles seguem vivos); data-for filtra pelo público
+    const own = document.createDocumentFragment(); while (el.firstChild) own.appendChild(el.firstChild);
+    $$('[data-for]', own).forEach(n => { if (!n.dataset.for.split(/\s+/).includes(who)) n.remove(); });
+    const hasOwn = [...own.childNodes].some(n => n.nodeType === 1 || n.textContent.trim());
+    el.classList.add('ac-result'); d.tone = r[6] || (code === 'success' ? 'success' : /^5|offline/.test(code) ? 'danger' : 'neutral');
+    if (!el.hasAttribute('role') || d.resultRole) { const role = code === 'success' ? 'status' : code === '404' ? '' : 'alert'; if (role) el.setAttribute('role', role); else el.removeAttribute('role'); d.resultRole = '1'; }
+    // ações padrão: o tipo diz o que fazem; com data-support, o 403 troca o "voltar" por "Falar com o suporte"
+    const swap = code === '403' && !!d.support, kinds = swap ? ['support', 'home'] : (r[7] || 'primary secondary').split(/\s+/).slice(0, 2);
+    const label = (k, i) => (k === 'home' && (d.homeLabel || (who !== 'guest' && L[who]))) || (swap ? L[k] : r[3 + i]) || L[k] || '';
+    const href = { home: d.home || '/', login: d.login || d.home || '/', support: d.support };
+    const act = (k, i) => {
+      const t = label(k, i); if (!t || (k === 'back' && history.length < 2)) return '';
+      const at = `class="${i ? 'ac-result__link' : 'ac-btn ac-btn--lg'}" data-result-action="${i ? 'secondary' : 'primary'}" data-action="${esc(k)}"`;
+      const ico = !i && { home: 'arrow-left', retry: 'refresh', support: 'headset' }[k];
+      const body = (ico ? icon(ico) : '') + esc(t) + (!i && k === 'login' ? icon('arrow-right') : '');
+      return href[k] ? `<a ${at} href="${esc(href[k])}"${k === 'support' && /^https?:/i.test(href[k]) ? ' target="_blank" rel="noopener noreferrer"' : ''}>${body}</a>` : `<button type="button" ${at}>${body}</button>`;
+    };
+    // o que ajuda a relatar ou esperar: horário (500 e error), código do erro e previsão de volta (503)
+    const meta = [], stamp = (t, s) => `<time datetime="${t.toISOString()}">${esc(s)}</time>`;
+    if (code === '500' || code === 'error') { const n = new Date(); meta.push(`<span>${esc(L.time)}: ${stamp(n, n.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }))}</span>`); }
+    if (d.errorId) meta.push(`<span class="ac-result__id">${esc(L.id)}: <code>${esc(d.errorId)}</code><button type="button" class="ac-result__copy" data-action="copy" aria-label="${esc(L.copy)}">${icon('copy')}${icon('check')}</button></span>`);
+    if (code === '503' && d.retryAt) {
+      const m = /^(\d{1,2}):(\d{2})$/.exec(d.retryAt), t = m ? new Date() : new Date(d.retryAt); if (m) t.setHours(+m[1], +m[2], 0, 0);
+      const day = isNaN(t) ? '' : t.toDateString() === new Date().toDateString() ? L.today : t.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      meta.push(`<span>${esc(L.returnAt)}: ${isNaN(t) ? esc(d.retryAt) : stamp(t, `${day} ${L.at} ${t.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`)}</span>`);
+    }
+    el.innerHTML = `<span class="ac-result__art" aria-hidden="true"><span class="ac-result__icon">${icon(r[0])}</span>${r[5] ? `<span class="ac-result__badge">${icon(r[5])}</span>` : ''}</span>`
+      + (num ? `<p class="ac-result__code" aria-hidden="true">${esc(code)}</p>` : '')
+      + `<h${lv} class="ac-result__title">${esc(d.title || r[1])}${num ? `<span class="ac-sr"> (${esc(L.code)} ${esc(code)})</span>` : ''}</h${lv}><p class="ac-result__text">${esc(d.text || r[2])}</p>`
+      + (meta.length ? `<p class="ac-result__meta">${meta.join('')}</p>` : '') + '<span class="ac-sr" aria-live="polite"></span>'
+      + `<div class="ac-result__actions">${hasOwn ? '' : kinds.map(act).join('')}</div>`;
+    if (hasOwn) $('.ac-result__actions', el).appendChild(own);
+    el.addEventListener('click', async e => {
+      const b = e.target.closest('[data-action], [data-result-action]'); if (!b || !el.contains(b)) return;
+      const action = b.dataset.action || b.dataset.resultAction;
+      if (!el.dispatchEvent(new CustomEvent('ac:action', { detail: { action, code }, bubbles: true, cancelable: true }))) { e.preventDefault(); return; }
+      if (action === 'retry') location.reload();
+      else if (action === 'back') history.back();
+      else if (action === 'copy') {
+        const live = $(':scope > [aria-live]', el);
+        if (!await copyText(d.errorId, el)) { getSelection().selectAllChildren(b.previousElementSibling); return; }
+        b.dataset.state = 'copied'; b.setAttribute('aria-label', L.copied); live.textContent = L.copied; clearTimeout(b.t);
+        b.t = setTimeout(() => { delete b.dataset.state; b.setAttribute('aria-label', L.copy); live.textContent = ''; }, 1600);
+      }
+    });
+    // sem internet: volta sozinha quando a conexão voltar
+    if (code === 'offline') { const back = () => { removeEventListener('online', back); if (el.isConnected && el.dispatchEvent(new CustomEvent('ac:online', { bubbles: true, cancelable: true }))) location.reload(); }; addEventListener('online', back); }
   };
 
 
@@ -3662,7 +3878,7 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 
   /* ---------- Peças estudadas na Kobra (29/10/2026): vídeo, halftone e ícones que se transformam ---------- */
   // Hugeicons (stroke rounded)
-  Object.assign(ICONS, { back10: '<path d="M12 5L10.8961 3.45459C10.4851 2.87911 10.2795 2.59137 10.4093 2.32411C10.5391 2.05684 10.8689 2.04153 11.5286 2.01092C11.6848 2.00367 11.842 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 8.72836 3.57111 5.82368 6 3.99927"/><path d="M7.99219 11.004C8.52019 10.584 9.00019 9.89143 9.30019 10.02C9.60019 10.1486 9.50419 10.572 9.50419 11.232C9.50419 11.892 9.50419 14.6847 9.50419 16.008"/><path d="M16.0022 12.6C16.0022 11.22 16.0682 10.848 15.8042 10.404C15.5402 9.96001 14.8802 9.99841 14.2202 9.99841C13.5602 9.99841 13.0802 9.96001 12.7622 10.32C12.3722 10.74 12.5402 11.52 12.4922 12.6C12.6002 14.04 12.3062 15.18 12.7562 15.66C13.0802 16.056 13.6553 15.996 14.3402 16.008C15.0201 15.9997 15.4322 16.032 15.7682 15.648C16.1402 15.312 15.9602 13.98 16.0022 12.6Z"/>', fwd10: '<path d="M12 5L13.1039 3.45459C13.5149 2.87911 13.7205 2.59137 13.5907 2.32411C13.4609 2.05684 13.1311 2.04153 12.4714 2.01092C12.3152 2.00367 12.158 2 12 2C6.4772 2 2 6.47715 2 12C2 17.5228 6.4772 22 12 22C17.5229 22 22 17.5228 22 12C22 8.72836 20.4289 5.82368 18 3.99927"/><path d="M7.99219 11.004C8.52019 10.584 9.00019 9.89143 9.30019 10.02C9.60019 10.1486 9.50419 10.572 9.50419 11.232C9.50419 11.892 9.50419 14.6847 9.50419 16.008"/><path d="M16.0022 12.6C16.0022 11.22 16.0682 10.848 15.8042 10.404C15.5402 9.96001 14.8802 9.99841 14.2202 9.99841C13.5602 9.99841 13.0802 9.96001 12.7622 10.32C12.3722 10.74 12.5402 11.52 12.4922 12.6C12.6002 14.04 12.3062 15.18 12.7562 15.66C13.0802 16.056 13.6553 15.996 14.3402 16.008C15.0201 15.9997 15.4322 16.032 15.7682 15.648C16.1402 15.312 15.9602 13.98 16.0022 12.6Z"/>', vol: '<path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z"/><path d="M17 9C17.6254 9.81968 18 10.8634 18 12C18 13.1366 17.6254 14.1803 17 15"/><path d="M20 7C21.2508 8.36613 22 10.1057 22 12C22 13.8943 21.2508 15.6339 20 17"/>', mute: '<path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z"/><path d="M18 10L22 14M18 14L22 10"/>', full: '<path d="M19.9264 22.2516V20.691C19.9264 20.288 20.0525 19.8966 20.2639 19.5531C21.7583 17.1245 22.2279 14.5196 21.9002 13.505C20.857 11.3418 17.3758 10.4907 15.76 10.2878L16.7966 5.12292C16.9705 4.30387 16.3513 3.47938 15.4135 3.28136C14.4758 3.08334 13.5746 3.58679 13.4007 4.40583L11.3462 14.0815L8.77462 12.4424C8.77462 12.4424 7.47969 11.406 6.44041 12.4424C5.40114 13.4788 6.44041 14.7701 6.44041 14.7701L10.3488 19.7776C10.6003 20.0997 10.7468 20.4908 10.7688 20.8984L10.8401 22.2177"/><path d="M7.32936 1.85194C7.32936 1.85194 9.54861 1.58797 9.867 1.90156C10.1124 2.14335 9.867 4.36134 9.867 4.36134M9.867 1.90156L6.89808 4.84002M4.6477 9.59694C4.6477 9.59694 2.42845 9.86092 2.11005 9.54732C1.86463 9.30553 2.11005 7.08754 2.11005 7.08754M2.11005 9.54732L5.07898 6.60886"/>', unfull: '<path d="M19.9264 22.2502V20.6912C19.9264 20.2886 20.0525 19.8976 20.2639 19.5545C21.7583 17.1282 22.2279 14.5259 21.9002 13.5123C20.857 11.3512 17.3758 10.5009 15.76 10.2983L16.7966 5.13851C16.9705 4.32028 16.3513 3.4966 15.4135 3.29877C14.4758 3.10095 13.5746 3.6039 13.4007 4.42213L11.3462 14.0882L8.77462 12.4508C8.77462 12.4508 7.47969 11.4154 6.44041 12.4508C5.40114 13.4861 6.44041 14.7762 6.44041 14.7762L10.3488 19.7787C10.6003 20.1005 10.7468 20.4912 10.7688 20.8984L10.8401 22.2164"/><path d="M6.95693 2.2382C6.95693 2.2382 6.7053 4.50936 6.95693 4.75695M6.95693 4.75695C7.28338 5.07806 9.55878 4.80775 9.55878 4.80775M6.95693 4.75695L10.001 1.74805M5.04502 9.24998C5.04502 9.24998 5.29665 6.97882 5.04502 6.73124M5.04502 6.73124C4.71857 6.41012 2.44317 6.68043 2.44317 6.68043M5.04502 6.73124L2.00098 9.74014"/>', pip: '<path d="M11.5 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C21.947 6.29018 21.9976 8.05974 21.9999 11.5"/><path d="M20.5 14H15.5C14.6716 14 14 14.6716 14 15.5V18.5C14 19.3284 14.6716 20 15.5 20H20.5C21.3284 20 22 19.3284 22 18.5V15.5C22 14.6716 21.3284 14 20.5 14Z"/><path d="M11 9.5V12C11.0475 12.5744 10.6034 13.0238 10 13H7.5M6 8L10 12"/>', cc: '<path d="M2 12C2 8.02033 2 6.03049 3.0528 4.70201C3.22119 4.48953 3.40678 4.29302 3.60746 4.11473C4.86213 3 6.74142 3 10.5 3H13.5C17.2586 3 19.1379 3 20.3925 4.11473C20.5932 4.29302 20.7788 4.48953 20.9472 4.70201C22 6.03049 22 8.02033 22 12C22 15.9797 22 17.9695 20.9472 19.298C20.7788 19.5105 20.5932 19.707 20.3925 19.8853C19.1379 21 17.2586 21 13.5 21H10.5C6.74142 21 4.86213 21 3.60746 19.8853C3.40678 19.707 3.22119 19.5105 3.0528 19.298C2 17.9695 2 15.9797 2 12Z"/><path d="M10.5 9H10C9.06812 9 8.60218 9 8.23463 9.15224C7.74458 9.35523 7.35523 9.74458 7.15224 10.2346C7 10.6022 7 11.0681 7 12C7 12.9319 7 13.3978 7.15224 13.7654C7.35523 14.2554 7.74458 14.6448 8.23463 14.8478C8.60218 15 9.06812 15 10 15H10.5M17 9H16.5C15.5681 9 15.1022 9 14.7346 9.15224C14.2446 9.35523 13.8552 9.74458 13.6522 10.2346C13.5 10.6022 13.5 11.0681 13.5 12C13.5 12.9319 13.5 13.3978 13.6522 13.7654C13.8552 14.2554 14.2446 14.6448 14.7346 14.8478C15.1022 15 15.5681 15 16.5 15H17"/>', youtube: '<path d="M12 20.5C13.8097 20.5 15.5451 20.3212 17.1534 19.9934C19.1623 19.5839 20.1668 19.3791 21.0834 18.2006C22 17.0221 22 15.6693 22 12.9635V11.0365C22 8.33073 22 6.97787 21.0834 5.79937C20.1668 4.62088 19.1623 4.41613 17.1534 4.00662C15.5451 3.67877 13.8097 3.5 12 3.5C10.1903 3.5 8.45489 3.67877 6.84656 4.00662C4.83766 4.41613 3.83321 4.62088 2.9166 5.79937C2 6.97787 2 8.33073 2 11.0365V12.9635C2 15.6693 2 17.0221 2.9166 18.2006C3.83321 19.3791 4.83766 19.5839 6.84656 19.9934C8.45489 20.3212 10.1903 20.5 12 20.5Z"/><path d="M15.9621 12.3129C15.8137 12.9187 15.0241 13.3538 13.4449 14.2241C11.7272 15.1705 10.8684 15.6438 10.1728 15.4615C9.9372 15.3997 9.7202 15.2911 9.53799 15.1438C9 14.7089 9 13.8059 9 12C9 10.1941 9 9.29112 9.53799 8.85618C9.7202 8.70886 9.9372 8.60029 10.1728 8.53854C10.8684 8.35621 11.7272 8.82945 13.4449 9.77593C15.0241 10.6462 15.8137 11.0813 15.9621 11.6871C16.0126 11.8933 16.0126 12.1067 15.9621 12.3129Z"/>' });
+  Object.assign(ICONS, { back10: '<path d="M12 5L10.8961 3.45459C10.4851 2.87911 10.2795 2.59137 10.4093 2.32411C10.5391 2.05684 10.8689 2.04153 11.5286 2.01092C11.6848 2.00367 11.842 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 8.72836 3.57111 5.82368 6 3.99927"/><path d="M7.99219 11.004C8.52019 10.584 9.00019 9.89143 9.30019 10.02C9.60019 10.1486 9.50419 10.572 9.50419 11.232C9.50419 11.892 9.50419 14.6847 9.50419 16.008"/><path d="M16.0022 12.6C16.0022 11.22 16.0682 10.848 15.8042 10.404C15.5402 9.96001 14.8802 9.99841 14.2202 9.99841C13.5602 9.99841 13.0802 9.96001 12.7622 10.32C12.3722 10.74 12.5402 11.52 12.4922 12.6C12.6002 14.04 12.3062 15.18 12.7562 15.66C13.0802 16.056 13.6553 15.996 14.3402 16.008C15.0201 15.9997 15.4322 16.032 15.7682 15.648C16.1402 15.312 15.9602 13.98 16.0022 12.6Z"/>', fwd10: '<path d="M12 5L13.1039 3.45459C13.5149 2.87911 13.7205 2.59137 13.5907 2.32411C13.4609 2.05684 13.1311 2.04153 12.4714 2.01092C12.3152 2.00367 12.158 2 12 2C6.4772 2 2 6.47715 2 12C2 17.5228 6.4772 22 12 22C17.5229 22 22 17.5228 22 12C22 8.72836 20.4289 5.82368 18 3.99927"/><path d="M7.99219 11.004C8.52019 10.584 9.00019 9.89143 9.30019 10.02C9.60019 10.1486 9.50419 10.572 9.50419 11.232C9.50419 11.892 9.50419 14.6847 9.50419 16.008"/><path d="M16.0022 12.6C16.0022 11.22 16.0682 10.848 15.8042 10.404C15.5402 9.96001 14.8802 9.99841 14.2202 9.99841C13.5602 9.99841 13.0802 9.96001 12.7622 10.32C12.3722 10.74 12.5402 11.52 12.4922 12.6C12.6002 14.04 12.3062 15.18 12.7562 15.66C13.0802 16.056 13.6553 15.996 14.3402 16.008C15.0201 15.9997 15.4322 16.032 15.7682 15.648C16.1402 15.312 15.9602 13.98 16.0022 12.6Z"/>', vol: '<path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z"/><path d="M17 9C17.6254 9.81968 18 10.8634 18 12C18 13.1366 17.6254 14.1803 17 15"/><path d="M20 7C21.2508 8.36613 22 10.1057 22 12C22 13.8943 21.2508 15.6339 20 17"/>', mute: '<path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z"/><path d="M18 10L22 14M18 14L22 10"/>', full: '<path d="M8 3H6C4.34315 3 3 4.34315 3 6V8"/><path d="M16 3H18C19.6569 3 21 4.34315 21 6V8"/><path d="M8 21H6C4.34315 21 3 19.6569 3 18V16"/><path d="M16 21H18C19.6569 21 21 19.6569 21 18V16"/>', unfull: '<path d="M3 8H5C6.65685 8 8 6.65685 8 5V3"/><path d="M21 8H19C17.3431 8 16 6.65685 16 5V3"/><path d="M3 16H5C6.65685 16 8 17.3431 8 19V21"/><path d="M21 16H19C17.3431 16 16 17.3431 16 19V21"/>', pip: '<path d="M11.5 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C21.947 6.29018 21.9976 8.05974 21.9999 11.5"/><path d="M20.5 14H15.5C14.6716 14 14 14.6716 14 15.5V18.5C14 19.3284 14.6716 20 15.5 20H20.5C21.3284 20 22 19.3284 22 18.5V15.5C22 14.6716 21.3284 14 20.5 14Z"/><path d="M11 9.5V12C11.0475 12.5744 10.6034 13.0238 10 13H7.5M6 8L10 12"/>', cc: '<path d="M2 12C2 8.02033 2 6.03049 3.0528 4.70201C3.22119 4.48953 3.40678 4.29302 3.60746 4.11473C4.86213 3 6.74142 3 10.5 3H13.5C17.2586 3 19.1379 3 20.3925 4.11473C20.5932 4.29302 20.7788 4.48953 20.9472 4.70201C22 6.03049 22 8.02033 22 12C22 15.9797 22 17.9695 20.9472 19.298C20.7788 19.5105 20.5932 19.707 20.3925 19.8853C19.1379 21 17.2586 21 13.5 21H10.5C6.74142 21 4.86213 21 3.60746 19.8853C3.40678 19.707 3.22119 19.5105 3.0528 19.298C2 17.9695 2 15.9797 2 12Z"/><path d="M10.5 9H10C9.06812 9 8.60218 9 8.23463 9.15224C7.74458 9.35523 7.35523 9.74458 7.15224 10.2346C7 10.6022 7 11.0681 7 12C7 12.9319 7 13.3978 7.15224 13.7654C7.35523 14.2554 7.74458 14.6448 8.23463 14.8478C8.60218 15 9.06812 15 10 15H10.5M17 9H16.5C15.5681 9 15.1022 9 14.7346 9.15224C14.2446 9.35523 13.8552 9.74458 13.6522 10.2346C13.5 10.6022 13.5 11.0681 13.5 12C13.5 12.9319 13.5 13.3978 13.6522 13.7654C13.8552 14.2554 14.2446 14.6448 14.7346 14.8478C15.1022 15 15.5681 15 16.5 15H17"/>', youtube: '<path d="M12 20.5C13.8097 20.5 15.5451 20.3212 17.1534 19.9934C19.1623 19.5839 20.1668 19.3791 21.0834 18.2006C22 17.0221 22 15.6693 22 12.9635V11.0365C22 8.33073 22 6.97787 21.0834 5.79937C20.1668 4.62088 19.1623 4.41613 17.1534 4.00662C15.5451 3.67877 13.8097 3.5 12 3.5C10.1903 3.5 8.45489 3.67877 6.84656 4.00662C4.83766 4.41613 3.83321 4.62088 2.9166 5.79937C2 6.97787 2 8.33073 2 11.0365V12.9635C2 15.6693 2 17.0221 2.9166 18.2006C3.83321 19.3791 4.83766 19.5839 6.84656 19.9934C8.45489 20.3212 10.1903 20.5 12 20.5Z"/><path d="M15.9621 12.3129C15.8137 12.9187 15.0241 13.3538 13.4449 14.2241C11.7272 15.1705 10.8684 15.6438 10.1728 15.4615C9.9372 15.3997 9.7202 15.2911 9.53799 15.1438C9 14.7089 9 13.8059 9 12C9 10.1941 9 9.29112 9.53799 8.85618C9.7202 8.70886 9.9372 8.60029 10.1728 8.53854C10.8684 8.35621 11.7272 8.82945 13.4449 9.77593C15.0241 10.6462 15.8137 11.0813 15.9621 11.6871C16.0126 11.8933 16.0126 12.1067 15.9621 12.3129Z"/>' });
   const clock = s => { s = Math.max(0, Math.floor(s || 0)); const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, ss = String(s % 60).padStart(2, '0'); return h ? `${h}:${String(m).padStart(2, '0')}:${ss}` : `${m}:${ss}`; };
 
   /* Player de vídeo: controles próprios sobre um <video> nativo, em "vidro" (data-glass="liquid" ou "blur").
@@ -3901,6 +4117,15 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
     document.addEventListener('selectionchange', onSel);
     doc.addEventListener('keydown', e => { if (e.key === 'F10' && e.altKey && mode === 'bar') { e.preventDefault(); $('button', pop).focus(); } }); // Alt+F10 leva à barra
     el.addEventListener('focusout', e => { if (mode === 'card' || el.contains(e.relatedTarget)) return; setTimeout(() => { if (!el.contains(document.activeElement) && mode !== 'card') close(false); }, 0); });
+    // clicar fora do texto (no fundo, no título, em outro campo) fecha a barra, a pergunta e o cartão; sem isso, um clique
+    // num lugar que não recebe foco não tirava a seleção e "Perguntar à IA" ficava preso na tela
+    const outside = e => {
+      if (!el.isConnected) { document.removeEventListener('pointerdown', outside, true); return; }
+      if (pop.hidden || pop.contains(e.target) || doc.contains(e.target)) return;
+      const s = getSelection(); if (s.rangeCount && doc.contains(s.anchorNode)) s.removeAllRanges();
+      close(false);
+    };
+    document.addEventListener('pointerdown', outside, true);
   };
 
   /* Conversa em sequência: lista de mensagens (os balões da Conversa) que entram uma a uma quando aparecem na tela,
@@ -4151,7 +4376,11 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       if (!el.contains(document.activeElement)) btn.focus({ preventScroll: true });
       clearTimeout(t);
       if (ok) {
-        el.dataset.state = 'copied'; btn.setAttribute('aria-label', 'Copiado'); tip('Copiado'); live.textContent = 'Copiado'; hint.hidden = true;
+        // aviso no topo (data-toast="texto" troca a mensagem; data-toast="false" desliga). Com ele, a região viva do campo
+        // fica calada para o leitor de tela não ouvir "Copiado" duas vezes.
+        const tt = el.dataset.toast, withToast = tt !== 'false';
+        if (withToast) toast({ type: 'success', title: tt && tt !== 'true' ? tt : 'Copiado para a área de transferência', position: 'top', duration: 2200 });
+        el.dataset.state = 'copied'; btn.setAttribute('aria-label', 'Copiado'); tip('Copiado'); live.textContent = withToast ? '' : 'Copiado'; hint.hidden = true;
         t = setTimeout(() => { delete el.dataset.state; btn.setAttribute('aria-label', label); tip('Copiar'); live.textContent = ''; }, 1500);
         el.dispatchEvent(new CustomEvent('ac:copy', { detail: { text }, bubbles: true }));
       } else {
@@ -4533,14 +4762,15 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
     { id: 'command', grupo: 'Navegação', nome: 'Command palette', desc: 'Busca de ações e páginas com agrupamento, teclado e atalho global.',
       ref: { nome: 'shadcn/ui · Command (cmdk)', url: 'https://ui.shadcn.com/docs/components/command' },
       html: `<button class="ac-btn ac-btn--secondary" type="button" id="cmd-demo" style="min-width:260px;justify-content:space-between">${I('search')}<span style="flex:1;text-align:left;color:var(--ac-text-3)">Buscar…</span><kbd class="ac-kbd">Ctrl K</kbd></button>`,
-      api: [['Orthos.command({ items })', 'função', '—', 'items: { label, group, hint, keywords, run }']],
-      a11y: ['Combobox dentro de <dialog>; foco preso e Esc fecha.'] },
+      api: [['Orthos.command({ items, groups })', 'função', '—', 'Abre a paleta (um <dialog> só, reaproveitado)'], ['items', 'array', '—', '{ label, group, hint, keywords, run }; hint aparece à direita do item (ex.: "novo")'], ['groups', 'objeto', '—', '{ "Nome do grupo": { icon, color } }: ícone (nome de Orthos.icon ou <path …/> de 24×24) e cor (qualquer cor CSS, inclusive var(--x)) no título do grupo'], ['limit', 'número', '60', 'Máximo de resultados; Infinity mostra todos'], ['placeholder', 'texto', 'Buscar comandos…', 'Texto do campo de busca']],
+      a11y: ['Combobox dentro de <dialog>; foco preso e Esc fecha.', '↑ ↓ movem o item ativo (aria-activedescendant e aria-selected) e Enter abre; o ativo e o título do seu grupo ficam sempre à vista.', 'Título de grupo é só visual (role="presentation") e o ícone tem aria-hidden; o nome do grupo continua sendo buscado.'] },
 
     { id: 'breadcrumb', grupo: 'Navegação', nome: 'Breadcrumb e Pagination', desc: 'Trilha de localização e paginação compacta.',
       ref: { nome: 'shadcn/ui · Breadcrumb', url: 'https://ui.shadcn.com/docs/components/breadcrumb' },
       html: `<nav aria-label="Trilha"><ol class="ac-crumbs"><li><a href="#">Início</a></li><li><a href="#">Projetos</a></li><li><a href="#">Site 2026</a></li><li><span aria-current="page">Configurações</span></li></ol></nav>
-<nav class="ac-pager" aria-label="Paginação"><button type="button" disabled aria-label="Anterior">${I('left')}</button><button type="button" aria-current="page">1</button><button type="button">2</button><button type="button">3</button><span>…</span><button type="button">12</button><button type="button" aria-label="Próxima">${I('right')}</button></nav>`,
-      api: [['.ac-crumbs', '<ol>', '—', 'Trilha'], ['.ac-pager', '<nav>', '—', 'Paginação; aria-current="page" na atual']],
+<nav class="ac-pager" data-ac="pagination" data-pages="12" data-page="1" aria-label="Paginação"></nav>
+<p class="ac-hint" id="pg-out" aria-live="polite">Mostrando a página 1 de 12.</p>`,
+      api: [['.ac-crumbs', '<ol>', '—', 'Trilha'], ['data-ac="pagination"', '<nav>', '—', 'Monta a paginação; o clique troca a página e emite ac:change (número)'], ['data-pages / data-page', 'número', '1 / 1', 'Total de páginas e página atual'], ['data-siblings', 'número', '1', 'Quantas páginas vizinhas da atual aparecem antes do "…"'], ['el._pagination.go(n)', 'JS', '—', 'Vai para a página n sem emitir evento'], ['.ac-pager', '<nav>', '—', 'Só o visual (sem data-ac); aria-current="page" na atual']],
       a11y: ['<nav> com aria-label; página atual com aria-current.'] },
 
     { id: 'stepper', grupo: 'Navegação', nome: 'Stepper', desc: 'Etapas com progresso preenchendo a linha e conclusão animada.',
@@ -4698,6 +4928,7 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 
   /* comportamentos extras só das demonstrações */
   window.DEMO_HOOKS = {
+    breadcrumb: root => { const p = root.querySelector('[data-ac="pagination"]'), o = root.querySelector('#pg-out'); p && p.addEventListener('ac:change', e => { o.textContent = `Mostrando a página ${e.detail} de ${p.dataset.pages}.`; }); },
     // a biblioteca só valida; a demo simula o envio e o retorno de sucesso
     form: root => { const f = root.querySelector('[data-ac="validate"]'); f && f.addEventListener('ac:valid', e => {
       e.preventDefault();
@@ -4716,7 +4947,8 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       if (e.target.closest('[data-demo-deleted]')) Orthos.toast({ title: 'Projeto excluído' });
     }),
     command: root => { const b = root.querySelector('#cmd-demo'); b && b.addEventListener('click', () => window.openSiteCommand && window.openSiteCommand()); },
-    palette: root => { const p = root.querySelector('#pal-demo'), o = root.querySelector('#pal-out'); p && p.addEventListener('ac:change', e => { o.innerHTML = `Selecionada: <b style="color:var(--ac-text)">${e.detail.name}</b> <code>${e.detail.color}</code>`; }); },
+    // a cor escolhida aparece num aviso no topo, com a amostra, o nome e o código
+    palette: root => { const p = root.querySelector('#pal-demo'), o = root.querySelector('#pal-out'); p && p.addEventListener('ac:change', e => { o.innerHTML = `Selecionada: <b style="color:var(--ac-text)">${e.detail.name}</b> <code>${e.detail.color}</code>`; Orthos.toast({ title: `Cor selecionada: ${e.detail.name}`, desc: e.detail.color, swatch: e.detail.color, position: 'top', duration: 2600 }); }); },
     progress: root => { const b = root.querySelector('#pg-run'), bar = root.querySelector('#pg-bar'), v = root.querySelector('#pg-v'); b && b.addEventListener('click', () => { let x = 0; b.disabled = true; const t = setInterval(() => { x = Math.min(100, x + 4 + Math.random() * 9); bar.style.setProperty('--v', x + '%'); bar.setAttribute('aria-valuenow', Math.round(x)); v.textContent = Math.round(x) + '%'; if (x >= 100) { clearInterval(t); b.disabled = false; Orthos.toast({ type: 'success', title: '1.284 contatos importados' }); } }, 160); }); },
     skeleton: root => {
       const seg = root.querySelector('#skel-toggle'), card = root.querySelector('#skel-card'), anim = root.querySelector('#skel-anim'), cas = root.querySelector('#skel-cascade'); if (!seg) return;
@@ -4766,9 +4998,11 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
   <button class="ac-toggle" type="button" data-ac="toggle" aria-label="Itálico" data-tip="Itálico (Ctrl I)">${ico(P.italic)}</button>
   <button class="ac-toggle" type="button" data-ac="toggle" aria-label="Sublinhado" data-tip="Sublinhado (Ctrl U)">${ico(P.under)}</button>
   <hr class="ac-sep ac-sep--v" aria-orientation="vertical">
-  <button class="ac-toggle" type="button" data-ac="toggle" aria-pressed="true" aria-label="Alinhar à esquerda">${ico(P.left)}</button>
-  <button class="ac-toggle" type="button" data-ac="toggle" aria-label="Centralizar">${ico(P.center)}</button>
-  <button class="ac-toggle" type="button" data-ac="toggle" aria-label="Alinhar à direita">${ico(P.right)}</button>
+  <div class="ac-toggle-group" data-ac="toggle-group" aria-label="Alinhamento">
+    <button class="ac-toggle" type="button" aria-checked="true" aria-label="Alinhar à esquerda" value="esquerda">${ico(P.left)}</button>
+    <button class="ac-toggle" type="button" aria-label="Centralizar" value="centro">${ico(P.center)}</button>
+    <button class="ac-toggle" type="button" aria-label="Alinhar à direita" value="direita">${ico(P.right)}</button>
+  </div>
   <hr class="ac-sep ac-sep--v" aria-orientation="vertical">
   <button class="ac-toggle" type="button" aria-label="Inserir link">${ico(P.link)}</button>
 </div>
@@ -4776,7 +5010,7 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
   <div class="ac-btn-joined" role="group" aria-label="Arquivo"><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button">Anterior</button><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button">Hoje</button><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button">Próximo</button></div>
   <button class="ac-toggle ac-toggle--outline" type="button" data-ac="toggle">${ico(P.star)}Favoritar</button>
 </div>`,
-      api: [['data-ac="toggle"', 'button', '—', 'Alterna aria-pressed; evento ac:change (true/false)'], ['data-ac="toolbar"', 'container', '—', 'role=toolbar e setas entre controles'], ['.ac-btn-joined', 'grupo', '—', 'Botões colados com raio só nas pontas'], ['.ac-sep / .ac-sep--v', '<hr>', 'horizontal', 'Separador']],
+      api: [['data-ac="toggle"', 'button', '—', 'Alterna aria-pressed; evento ac:change (true/false)'], ['data-ac="toggle-group"', 'container de .ac-toggle', '1º marcado', 'Escolha única (alinhamento, visualização): marcar um desmarca os outros; aria-checked; evento ac:change com o value'], ['data-ac="toolbar"', 'container', '—', 'role=toolbar e setas entre controles'], ['.ac-btn-joined', 'grupo', '—', 'Botões colados com raio só nas pontas'], ['.ac-sep / .ac-sep--v', '<hr>', 'horizontal', 'Separador']],
       a11y: ['A toolbar tem um só ponto de Tab; ← → Home End andam entre os itens.', 'Toggle anuncia o estado por aria-pressed.', 'Botões só com ícone têm aria-label e dica.'] },
 
     /* ---------- Formulários ---------- */
@@ -4915,15 +5149,18 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       a11y: ['Popover: role="dialog", foco vai para o 1º campo e Esc devolve o foco ao botão.', 'Hover card abre também com foco de teclado e não deve conter a única forma de fazer algo.'] },
 
     { id: 'result', grupo: 'Feedback', nome: 'Páginas de erro e resultado', novo: '2026-10-27',
-      desc: 'Uma página só que muda pelo código: 401, 403, 404, 500, 503, sem internet e sucesso. Diz o que houve, o que fazer e oferece a saída.',
+      desc: 'Uma página só que muda pelo código: 401, 403, 404, 500, 503, sem internet, erro na tela e sucesso. No desenho das páginas de erro do 4squad: ilustração, código grande, o que houve, o que fazer e a saída certa para quem está vendo.',
       ref: { nome: 'Ant Design · Result', url: 'https://ant.design/components/result' },
       wide: true,
-      html: `<div style="display:grid;gap:18px;justify-items:center;width:100%;grid-template-columns:minmax(0,1fr)">
-  <div class="ac-segmented" data-ac="segmented" id="res-codes" aria-label="Código"><button type="button" value="404" aria-pressed="true">404</button><button type="button" value="403">403</button><button type="button" value="401">401</button><button type="button" value="500">500</button><button type="button" value="503">503</button><button type="button" value="offline">Offline</button><button type="button" value="success">Sucesso</button></div>
-  <div data-ac="result" data-code="404" id="res-demo"></div>
+      html: `<div style="display:grid;gap:12px;justify-items:center;width:100%;grid-template-columns:minmax(0,1fr)">
+  <div class="ac-segmented" data-ac="segmented" id="res-codes" aria-label="Código" style="white-space:nowrap"><button type="button" value="404" aria-pressed="true">404</button><button type="button" value="403">403</button><button type="button" value="401">401</button><button type="button" value="500">500</button><button type="button" value="503">503</button><button type="button" value="offline">Sem internet</button><button type="button" value="error">Erro na tela</button><button type="button" value="success">Sucesso</button></div>
+  <div class="ac-segmented" data-ac="segmented" id="res-who" aria-label="Quem está vendo"><button type="button" value="guest" aria-pressed="true">Sem login</button><button type="button" value="user">Usuário</button><button type="button" value="admin">Equipe</button></div>
+  <div style="width:100%;margin-top:6px;border:1px solid var(--ac-border);border-radius:var(--ac-r-lg);background:var(--ac-bg);overflow:hidden">
+    <div data-ac="result" data-code="404" data-audience="guest" data-support="#suporte" id="res-demo"></div>
+  </div>
 </div>`,
-      api: [['data-ac="result"', 'div', '—', 'Desenha a página a partir do código'], ['data-code', '"401"…"503" | "offline" | "success"', '404', 'Caso'], ['data-title / data-text', 'texto', 'padrão do caso', 'Substitui título e texto'], ['conteúdo interno', 'HTML', 'ações padrão', 'Substitui os botões'], ['Orthos.results', 'objeto', '—', 'Textos padrão, para traduzir ou ajustar']],
-      a11y: ['Título em <h2> diz o problema em linguagem simples; nada de código técnico sozinho.', 'Sempre há uma ação de saída.', 'Offline avisa (evento ac:online) quando a conexão volta.'] },
+      api: [['data-ac="result"', 'div', '—', 'Desenha a página a partir do código'], ['data-code', '"401" | "403" | "404" | "500" | "503" | "offline" | "error" | "success"', '404', 'Caso'], ['data-audience', '"guest" | "user" | "admin"', 'guest', 'Quem está vendo: muda o “voltar” (início, app ou painel)'], ['data-home / data-login / data-support', 'URL', '"/"', 'Destinos do “voltar”, do “Entrar de novo” (401) e do “Falar com o suporte” (403, só com ele)'], ['data-home-label', 'texto', 'pelo público', 'Rótulo do “voltar”'], ['data-error-id', 'texto', '—', 'Código para o suporte, com botão de copiar (500 e error mostram também o horário)'], ['data-retry-at', '"15:30" | data ISO', '—', 'Previsão de volta do 503'], ['data-title / data-text', 'texto', 'padrão do caso', 'Substitui título e texto'], ['data-level', '1…6', '2', 'Nível do título (1 numa página só de erro)'], ['conteúdo interno', 'HTML', 'ações padrão', 'Substitui as ações; data-for="admin" (ou "user admin") mostra só para esse público'], ['.ac-result--page', 'classe', '—', 'Ocupa a tela toda e centraliza'], ['ac:action', 'evento', '—', 'detail { action, code }; sem preventDefault, retry recarrega e back volta no histórico'], ['ac:online', 'evento', '—', 'A conexão voltou; sem preventDefault, a página recarrega'], ['Orthos.results', 'objeto', '—', 'Textos de cada caso e Orthos.results.labels, para traduzir ou ajustar']],
+      a11y: ['Título em <h2> (ou data-level) diz o problema em linguagem simples; o código grande é decorativo e o título leva “(código 404)” para leitores de tela.', 'Erros entram como role="alert"; sucesso como role="status".', 'Sempre há uma saída; “Voltar para a página anterior” só aparece quando há histórico.', 'Copiar o código do erro avisa “Código copiado” numa região viva.'] },
 
     { id: 'logo-loader', grupo: 'Feedback', nome: 'Carregamento com logo', novo: '2026-10-27',
       desc: 'O logo se desenha, aparece preenchido com um brilho passando e o traço some, em ciclos de 3,2 s. Carregue o seu logo (SVG é traçado; PNG, JPG e WebP são ajustados a um quadrado padrão), recarregue a animação ou veja na tela inteira.',
@@ -4998,7 +5235,21 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
     { target: '#tour-inexistente', title: 'Este passo é pulado', text: 'O alvo não existe na tela.' },
     { target: '#tour-produto', title: 'Crie um produto', text: 'Comece por aqui: nome, preço e checkout em poucos minutos.', position: 'top' }
   ], { doneLabel: 'Entendi' })); };
-  H.result = root => { const s = root.querySelector('#res-codes'); s && s.addEventListener('ac:change', e => { const r = root.querySelector('#res-demo'); if (!r || r.dataset.code === e.detail) return; const n = r.cloneNode(false); n.dataset.code = e.detail; [...n.attributes].filter(a => a.name.startsWith('data-ac-init')).forEach(a => n.removeAttribute(a.name)); n.innerHTML = ''; r.replaceWith(n); window.Orthos.init(n.parentElement); }); };
+  H.result = root => {
+    // redesenha com o código e o público escolhidos; 500 e erro na tela ganham um código para o suporte, 503 a previsão de volta
+    const redraw = (k, v) => {
+      const r = root.querySelector('#res-demo'); if (!r || r.dataset[k] === v) return;
+      const n = r.cloneNode(false); n.dataset[k] = v; [...n.attributes].filter(a => /^data-(ac-init|error-id|retry-at)/.test(a.name)).forEach(a => n.removeAttribute(a.name));
+      if (/^(500|error)$/.test(n.dataset.code)) n.dataset.errorId = 'A7F3-21C9';
+      if (n.dataset.code === '503') n.dataset.retryAt = new Date(Date.now() + 45 * 6e4).toTimeString().slice(0, 5);
+      n.innerHTML = ''; r.replaceWith(n); window.Orthos.init(n.parentElement);
+    };
+    [['#res-codes', 'code'], ['#res-who', 'audience']].forEach(([s, k]) => { const c = root.querySelector(s); c && c.addEventListener('ac:change', e => redraw(k, e.detail)); });
+    // na vitrine, as ações só avisam o que fariam numa página de verdade
+    const faz = { retry: 'recarrega a página', back: 'volta para a página anterior', home: 'abre o data-home', login: 'abre o data-login', support: 'abre o data-support', next: 'segue para o próximo passo' };
+    root.addEventListener('ac:action', e => { if (!faz[e.detail.action]) return; e.preventDefault(); window.Orthos.toast({ title: `ac:action · ${e.detail.action}`, desc: `Numa página de verdade, ${faz[e.detail.action]}.` }); });
+    root.addEventListener('ac:online', e => { e.preventDefault(); window.Orthos.toast({ type: 'success', title: 'A conexão voltou', desc: 'Numa página de verdade, ela recarrega sozinha.' }); });
+  };
   H.toast = (prev => root => { prev && prev(root); root.addEventListener('click', e => { if (e.target.closest('[data-demo-toast="promise"]')) window.Orthos.toast.promise(new Promise((ok, no) => setTimeout(() => Math.random() > .25 ? ok(3) : no(), 1800)), { loading: 'Publicando 3 posts…', success: n => `${n} posts publicados`, error: 'Não foi possível publicar', errorDesc: 'Tente de novo em instantes.' }); }); })(H.toast);
 })();
 
@@ -5044,11 +5295,11 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       desc: 'Valor só de leitura, cortado com reticências, com o botão de copiar colado. Copia o valor inteiro de data-copy (a chave sem máscara), não o texto da tela. Se a área de transferência falhar, o valor aparece selecionado com a dica do atalho.',
       ref: { nome: 'zero-7 · clipboard-text (porte do Kumo)', url: '' },
       html: `<div style="display:grid;gap:18px;width:min(420px,100%)">
-  <div class="ac-field"><span class="ac-label">Link de convite</span><div class="ac-copyfield ac-copyfield--lg" data-ac="copyfield" data-label="Copiar link de convite"><span class="ac-copyfield__value">https://app.exemplo.com.br/convite/8f3k2q-equipe-aurora</span></div></div>
-  <div class="ac-field"><span class="ac-label">Chave da API</span><div class="ac-copyfield" data-ac="copyfield" data-label="Copiar chave da API" data-copy="chv_live_4f8a1c9e0b7d2a6f7Q2x"><span class="ac-copyfield__value">chv_live_••••••••••••7Q2x</span></div><p class="ac-hint">Copia a chave inteira, não a versão mascarada.</p></div>
-  <div class="ac-field"><span class="ac-label">Pix copia e cola</span><div class="ac-copyfield ac-copyfield--sm" data-ac="copyfield" data-label="Copiar código Pix"><span class="ac-copyfield__value">00020126580014br.gov.bcb.pix0136a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d5204000053039865406189.905802BR5912LOJA AURORA6009SAO PAULO62070503***6304B14F</span></div></div>
+  <div class="ac-field"><span class="ac-label">Link de convite</span><div class="ac-copyfield ac-copyfield--lg" data-ac="copyfield" data-label="Copiar link de convite" data-toast="Link de convite copiado"><span class="ac-copyfield__value">https://app.exemplo.com.br/convite/8f3k2q-equipe-aurora</span></div></div>
+  <div class="ac-field"><span class="ac-label">Chave da API</span><div class="ac-copyfield" data-ac="copyfield" data-label="Copiar chave da API" data-toast="Chave da API copiada" data-copy="chv_live_4f8a1c9e0b7d2a6f7Q2x"><span class="ac-copyfield__value">chv_live_••••••••••••7Q2x</span></div><p class="ac-hint">Copia a chave inteira, não a versão mascarada.</p></div>
+  <div class="ac-field"><span class="ac-label">Pix copia e cola</span><div class="ac-copyfield ac-copyfield--sm" data-ac="copyfield" data-label="Copiar código Pix" data-toast="Código Pix copiado"><span class="ac-copyfield__value">00020126580014br.gov.bcb.pix0136a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d5204000053039865406189.905802BR5912LOJA AURORA6009SAO PAULO62070503***6304B14F</span></div></div>
 </div>`,
-      api: [['data-ac="copyfield"', 'div', '—', 'Monta o botão e o aviso'], ['.ac-copyfield__value', 'span', 'texto do div', 'O que aparece (pode estar mascarado)'], ['data-copy', 'texto', 'o texto visível', 'O que vai para a área de transferência'], ['data-label', 'texto', 'Copiar', 'Nome do botão (“Copiar chave da API”)'], ['.ac-copyfield--sm / --lg', 'classe', 'base', 'Alturas 32, 40 e 48 px'], ['ac:copy', 'evento', '—', 'detail: { text }']],
+      api: [['data-ac="copyfield"', 'div', '—', 'Monta o botão e o aviso'], ['data-toast', 'texto | "false"', 'Copiado para a área de transferência', 'Mensagem do aviso que aparece no topo ao copiar; "false" desliga'], ['.ac-copyfield__value', 'span', 'texto do div', 'O que aparece (pode estar mascarado)'], ['data-copy', 'texto', 'o texto visível', 'O que vai para a área de transferência'], ['data-label', 'texto', 'Copiar', 'Nome do botão (“Copiar chave da API”)'], ['.ac-copyfield--sm / --lg', 'classe', 'base', 'Alturas 32, 40 e 48 px'], ['ac:copy', 'evento', '—', 'detail: { text }']],
       a11y: ['Depois de copiar, o botão passa a se chamar “Copiado” por 1,5 s e uma região educada anuncia.', 'Os ícones trocam de lugar por escala e desfoque; com movimento reduzido, a troca é seca.', 'Se copiar falhar, o texto fica selecionado e a dica diz o atalho (Ctrl+C ou ⌘C).'] },
 
     { id: 'choice-cards', grupo: 'Formulários', nome: 'Escolha em cartões', novo: '2026-10-28',
@@ -5868,7 +6119,7 @@ window.GUIA = {
   daterange: { usar: ['Filtros de relatório e períodos de painel.'], evitar: ['Uma data só (use date picker).'], dicas: ['Atalhos para os períodos mais usados.', 'Mostre o intervalo escolhido por extenso.'] },
   contextmenu: { usar: ['Atalhos para usuários avançados em itens e áreas.'], evitar: ['Como único acesso a uma ação: repita no menu “…”.'], dicas: ['Menubar só em aplicativos com cara de editor.', 'Shift+F10 abre o menu pelo teclado.'] },
   popover: { usar: ['Popover: ajustes rápidos e formulários de 1 a 3 campos.', 'Hover card: prévia de perfil ou link.'], evitar: ['Conteúdo longo (use sheet ou página).', 'Ação essencial dentro do hover card.'], dicas: ['Popover fecha com Esc e clique fora, devolvendo o foco.', 'Atraso de ~500 ms no hover card evita aberturas acidentais.'] },
-  result: { usar: ['Páginas de erro (401, 403, 404, 500, 503), sem internet e conclusão.'], evitar: ['Erro de um campo ou de um bloco (use alerta na página).'], dicas: ['Diga o que houve em linguagem simples, o que fazer e dê uma saída.', 'Erros do servidor: diga que não foi culpa da pessoa e se algo foi perdido.'] },
+  result: { usar: ['Páginas de erro (401, 403, 404, 500, 503), sem internet, erro inesperado na tela e conclusão.', 'Uma página só para o site todo: troque só o data-code (e o data-audience pela sessão).'], evitar: ['Erro de um campo ou de um bloco (use alerta na página).', 'Mostrar o painel da equipe para quem não é da equipe: use data-audience e data-for="admin".', '“Falar com o suporte” sem um canal de verdade: sem data-support, o 403 só oferece voltar.'], dicas: ['Diga o que houve, por quê e o que fazer, sem culpar a pessoa: “Algo falhou do nosso lado”.', 'Um botão principal e, no máximo, um link embaixo.', '500 e erro na tela: passe o data-error-id; o horário já aparece para a pessoa relatar.', '503: dê a previsão de volta (data-retry-at) e diga que nada se perdeu.', '401: “Entrar de novo” deve levar de volta para onde a pessoa estava (ponha o retorno no data-login).'] },
   charts: { usar: ['Área: evolução no tempo, com comparação. Barras horizontais: ranking. Meta: progresso até um alvo. Empilhada: composição.'], evitar: ['Pizza com muitas fatias.', 'Duas escalas no mesmo gráfico.'], dicas: ['Uma série por cor, sem legenda quando o título já diz.', 'Sempre “Ver tabela” com os mesmos números.'] },
   gallery: { usar: ['Portfólio, fotos de produto, anexos de imagem, telas de um projeto.'], evitar: ['Imagens decorativas que não precisam ser ampliadas.', 'Mosaico quando a ordem das imagens importa (a leitura desce coluna a coluna).'], dicas: ['Miniatura leve no src e a versão grande no href.', 'Escreva o alt dizendo o que a imagem mostra; a legenda pode dar o contexto.', 'Mantenha a mesma proporção na grade; deixe o mosaico para fotos de alturas diferentes.'] },
   'carousel-images': { usar: ['Fotos de um produto, imóvel ou evento, uma de cada vez, com a escolha rápida pelas miniaturas.'], evitar: ['Informação importante só no segundo slide em diante.', 'Mais de ~10 fotos (use a galeria).'], dicas: ['Ligue data-lightbox para quem quer ver os detalhes.', 'Legendas curtas sobre a foto; o texto longo vai fora do carrossel.'] },
@@ -6154,11 +6405,17 @@ window.PADROES = `
   }
 
   /* ---------- busca (command palette) ---------- */
+  // categorias com a mesma cara do menu: ícone de GRUPO_ICO e cor de --g-* (site.css); "Ações" ganha um raio, em cinza
+  const ACOES_ICO = '<path d="M13 2.5L4.5 13.5H11L10.5 21.5L19.5 10.5H13L13 2.5Z"/>';
+  const cmdGroups = () => Object.assign(Object.fromEntries(groups.map(g => [g, { icon: GRUPO_ICO[g], color: `var(--g-${slug(g)})` }])), { 'Ações': { icon: ACOES_ICO, color: 'var(--ac-text-2)' } });
   function openSiteCommand() {
     A.command({
       placeholder: 'Buscar componentes e ações…',
+      groups: cmdGroups(),
+      limit: Infinity, // sem busca, a lista mostra tudo, como o menu (o padrão de 60 cortava Movimento, Modelos e Ações)
       items: [
-        ...D.map(d => ({ label: d.nome, group: d.grupo, hint: '', keywords: d.desc + ' ' + d.ref.nome, run: () => { location.hash = '#/' + d.id; } })),
+        // na ordem do menu (grupo a grupo), para cada categoria aparecer uma vez só
+        ...groups.flatMap(g => D.filter(d => d.grupo === g)).map(d => ({ label: d.nome, group: d.grupo, hint: isNew(d) ? 'novo' : '', keywords: d.desc + ' ' + d.ref.nome, run: () => { location.hash = '#/' + d.id; } })),
         { label: 'Alternar tema claro/escuro', group: 'Ações', keywords: 'dark light escuro claro', run: () => $('#theme').click() },
         { label: 'Ir para a introdução', group: 'Ações', run: () => { location.hash = '#/'; } }
       ]
@@ -6184,11 +6441,20 @@ window.PADROES = `
     const d = D.find(x => x.id === id);
     renderNav(d && d.id);
     if (!d) cleanup();
-    if (d) { renderDoc(d); document.title = `${d.nome} — Orthos UI`; }
-    else if (id === 'padroes') { renderNav('padroes'); main.innerHTML = `<div class="home prose">${window.PADROES || ''}</div>`; document.title = 'Padrões — Orthos UI'; }
+    // marca primeiro na aba do navegador: com muitas abas abertas, "Orthos UI" continua visível
+    if (d) { renderDoc(d); document.title = `Orthos UI — ${d.nome}`; }
+    else if (id === 'padroes') { renderNav('padroes'); main.innerHTML = `<div class="home prose">${window.PADROES || ''}</div>`; document.title = 'Orthos UI — Padrões'; }
     else { renderHome(); document.title = 'Orthos UI — biblioteca de componentes'; }
     closeSide(); scrollTo({ top: 0 }); main.focus({ preventScroll: true });
   }
+  // links de exemplo das demos (href="#" ou "#id") não podem trocar o hash: o roteador entenderia "sem página" e abriria a
+  // introdução. Âncora para um id da própria página só leva o foco até ele.
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]'); if (!a || a.getAttribute('href').startsWith('#/') || a.classList.contains('skip')) return;
+    e.preventDefault();
+    const t = a.getAttribute('href').length > 1 && document.getElementById(a.getAttribute('href').slice(1));
+    if (t) { if (!t.hasAttribute('tabindex')) t.tabIndex = -1; t.focus(); }
+  });
   // sem View Transition na navegação: a foto da página e o fade deixavam a troca pelo menu com cara de travada
   addEventListener('hashchange', route);
   route();

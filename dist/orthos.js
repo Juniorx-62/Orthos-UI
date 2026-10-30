@@ -120,10 +120,12 @@
      A região de avisos existe desde o carregamento (aria-live polite), para o leitor de tela anunciar até o primeiro
      aviso. Alt+T leva o foco aos avisos; a pilha recolhida abre no hover/foco; arrastar para o lado dispensa.
      Padrões observados no Sonner (sonner.emilkowal.ski, 27/10/2026), implementação própria. */
-  function toaster() {
-    let host = $('.ac-toaster');
+  // dois cantos: o padrão (embaixo, à direita) e o topo centralizado, para confirmações ligadas ao que está no alto da tela
+  function toaster(pos) {
+    const top = pos === 'top';
+    let host = $(top ? '.ac-toaster--top' : '.ac-toaster:not(.ac-toaster--top)');
     if (!host) {
-      host = document.createElement('section'); host.className = 'ac ac-toaster'; host.tabIndex = -1;
+      host = document.createElement('section'); host.className = top ? 'ac ac-toaster ac-toaster--top' : 'ac ac-toaster'; host.tabIndex = -1;
       host.setAttribute('aria-label', 'Notificações (Alt+T)'); host.setAttribute('aria-live', 'polite'); host.setAttribute('aria-relevant', 'additions text');
       document.body.appendChild(host);
     }
@@ -132,11 +134,11 @@
   const restack = host => { const ts = $$('.ac-toast:not(.is-leaving)', host); ts.forEach((t, i) => t.style.setProperty('--k', ts.length - 1 - i)); };
   let toastReturn = null;
   document.addEventListener('keydown', e => {
-    if (e.altKey && !e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 't') { const h = $('.ac-toaster'); const last = h && $$('.ac-toast', h).pop(); if (last) { e.preventDefault(); if (!h.contains(document.activeElement)) toastReturn = document.activeElement; last.focus(); } }
+    if (e.altKey && !e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 't') { const last = $$('.ac-toaster .ac-toast').pop(), h = last && last.closest('.ac-toaster'); if (last) { e.preventDefault(); if (!h.contains(document.activeElement)) toastReturn = document.activeElement; last.focus(); } }
   });
   function toast(o) {
     if (typeof o === 'string') o = { title: o };
-    const host = toaster();
+    const host = toaster(o.position);
     const t = document.createElement('div');
     t.tabIndex = 0;
     const paint = (o) => {
@@ -144,7 +146,9 @@
       t.className = `ac-toast ac-toast--${type}`;
       if (type === 'danger') t.setAttribute('role', 'alert'); else t.removeAttribute('role');
       t.setAttribute('aria-busy', type === 'loading');
-      const lead = type === 'loading' ? '<span class="ac-spinner" aria-hidden="true"></span>' : icon(type === 'success' ? 'check' : type === 'danger' ? 'alert' : 'info');
+      // swatch: amostra de cor no lugar do ícone (só aceita uma cor CSS válida)
+      const sw = o.swatch && CSS.supports('color', o.swatch) ? `<span class="ac-toast__swatch" style="background:${esc(o.swatch)}" aria-hidden="true"></span>` : '';
+      const lead = type === 'loading' ? '<span class="ac-spinner" aria-hidden="true"></span>' : sw || icon(type === 'success' ? 'check' : type === 'danger' ? 'alert' : 'info');
       t.innerHTML = `${lead}<div class="ac-toast__title">${esc(o.title)}</div>${o.desc ? `<div class="ac-toast__desc">${esc(o.desc)}</div>` : ''}${o.action ? `<button class="ac-btn ac-btn--secondary ac-btn--sm ac-toast__action" type="button">${esc(o.action.label)}</button>` : ''}`;
       if (o.action) t.querySelector('.ac-toast__action').onclick = () => { o.action.onClick && o.action.onClick(); kill(); };
     };
@@ -471,18 +475,29 @@
     let dlg = $('#ac-command');
     if (!dlg) {
       dlg = document.createElement('dialog'); dlg.id = 'ac-command'; dlg.className = 'ac ac-dialog ac-command'; dlg.setAttribute('aria-label', 'Paleta de comandos');
-      dlg.innerHTML = `<div class="ac-command__input">${icon('search')}<input type="text" placeholder="${esc(o.placeholder || 'Buscar comandos…')}" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="ac-command-list"></div><ul class="ac-listbox" id="ac-command-list" role="listbox" style="max-height:340px"></ul><div class="ac-command__foot"><span><kbd class="ac-kbd">↑</kbd><kbd class="ac-kbd">↓</kbd> navegar</span><span><kbd class="ac-kbd">↵</kbd> abrir</span><span><kbd class="ac-kbd">esc</kbd> fechar</span></div>`;
+      dlg.innerHTML = `<div class="ac-command__input">${icon('search')}<input type="text" placeholder="${esc(o.placeholder || 'Buscar comandos…')}" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="ac-command-list"></div><ul class="ac-listbox" id="ac-command-list" role="listbox"></ul><div class="ac-command__foot"><span><kbd class="ac-kbd">↑</kbd><kbd class="ac-kbd">↓</kbd> navegar</span><span><kbd class="ac-kbd">↵</kbd> abrir</span><span><kbd class="ac-kbd">esc</kbd> fechar</span></div>`;
       document.body.appendChild(dlg);
     }
     const input = $('input', dlg), lb = $('ul', dlg); let act = 0, flat = [];
     const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    // groups: { 'Nome': { icon, color } } dá ícone e cor ao título de cada grupo. icon é um nome de Orthos.icon ou o
+    // miolo de um <svg> 24×24 (<path …/>); color é qualquer cor CSS, inclusive var(--x), e fica em --ac-group.
+    const G = o.groups || {}, max = o.limit || 60;
+    const gIcon = v => !v ? '' : /^\s*</.test(v) ? `<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true">${v}</svg>` : icon(v);
+    const head = g => { const c = G[g] || {}; return `<li class="ac-listbox__group ac-command__group" role="presentation"${c.color ? ` style="--ac-group:${esc(c.color)}"` : ''}>${gIcon(c.icon)}<span>${esc(g)}</span></li>`; };
     const render = () => {
-      const q = norm(input.value); flat = o.items.filter(i => norm(i.label + ' ' + (i.group || '') + ' ' + (i.keywords || '')).includes(q)).slice(0, 60);
+      const q = norm(input.value); flat = o.items.filter(i => norm(i.label + ' ' + (i.group || '') + ' ' + (i.keywords || '')).includes(q)).slice(0, max);
       act = Math.min(act, Math.max(0, flat.length - 1)); let g = null, h = '';
-      flat.forEach((it, i) => { if (it.group !== g) { g = it.group; h += `<li class="ac-listbox__group" role="presentation">${esc(g || '')}</li>`; } h += `<li class="ac-option" role="option" id="ac-cmd-${i}" data-i="${i}" aria-selected="${i === act}">${esc(it.label)}${it.hint ? `<small>${esc(it.hint)}</small>` : ''}</li>`; });
+      flat.forEach((it, i) => { if (it.group !== g) { g = it.group; if (g) h += head(g); } h += `<li class="ac-option" role="option" id="ac-cmd-${i}" data-i="${i}" aria-selected="${i === act}">${esc(it.label)}${it.hint ? `<small>${esc(it.hint)}</small>` : ''}</li>`; });
       lb.innerHTML = h || '<li class="ac-listbox__empty">Nenhum resultado.</li>';
       input.setAttribute('aria-activedescendant', flat.length ? 'ac-cmd-' + act : '');
-      reveal($('#ac-cmd-' + act, lb));
+      // nas pontas a lista vai até o começo/fim (com o 1º título e sem o último item colado no rodapé); no 1º item de um
+      // grupo, o título aparece junto, para a categoria não ficar escondida
+      const li = $('#ac-cmd-' + act, lb), prev = li && li.previousElementSibling;
+      if (!li) return;
+      if (act === 0) lb.scrollTop = 0;
+      else if (act === flat.length - 1) lb.scrollTop = lb.scrollHeight;
+      else { if (prev && prev.classList.contains('ac-command__group')) reveal(prev); reveal(li); }
     };
     const run = i => { const it = flat[i]; if (!it) return; close(dlg); it.run && setTimeout(it.run, 120); };
     input.oninput = () => { act = 0; render(); };
@@ -492,7 +507,8 @@
     const toque = matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches;
     // (o showModal foca o primeiro campo sozinho; somente leitura nesse instante não chama o teclado)
     if (toque) { dlg.tabIndex = -1; input.readOnly = true; } else dlg.removeAttribute('tabindex');
-    input.value = ''; render(); open(dlg);
+    input.value = ''; input.placeholder = o.placeholder || 'Buscar comandos…'; render(); open(dlg);
+    lb.scrollTop = 0; // a lista é a mesma entre aberturas: sem isso reabriria rolada onde a pessoa parou
     if (toque) { dlg.focus(); input.readOnly = false; } else input.focus();
   }
 
@@ -842,6 +858,46 @@
   /* Toggle: botão liga/desliga (negrito, favoritar). */
   C.toggle = b => { if (!b.hasAttribute('aria-pressed')) b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', () => { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); b.dispatchEvent(new CustomEvent('ac:change', { detail: on, bubbles: true })); }); };
 
+  /* Paginação: data-pages (total) e data-page (atual). Mostra a primeira, a última e as vizinhas da atual, com "…" no meio;
+     o clique troca a página, o foco fica no mesmo controle depois de redesenhar e sai o evento ac:change com o número. */
+  C.pagination = nav => {
+    nav.classList.add('ac-pager'); if (!nav.hasAttribute('aria-label')) nav.setAttribute('aria-label', 'Paginação');
+    const total = () => Math.max(1, +nav.dataset.pages || $$('button', nav).map(b => +b.textContent).filter(Boolean).pop() || 1);
+    let page = Math.min(total(), Math.max(1, +nav.dataset.page || +($('[aria-current="page"]', nav) || {}).textContent || 1));
+    const list = () => { const n = total(), s = +nav.dataset.siblings || 1, out = []; for (let i = 1; i <= n; i++) if (i === 1 || i === n || Math.abs(i - page) <= s) out.push(i); else if (out[out.length - 1] !== '…') out.push('…'); return out; };
+    const render = focus => {
+      const n = total();
+      nav.innerHTML = `<button type="button" data-go="${page - 1}" ${page === 1 ? 'disabled' : ''} aria-label="Página anterior">${icon('left')}</button>`
+        + list().map(i => i === '…' ? '<span aria-hidden="true">…</span>' : `<button type="button" data-go="${i}" aria-label="Página ${i}"${i === page ? ' aria-current="page"' : ''}>${i}</button>`).join('')
+        + `<button type="button" data-go="${page + 1}" ${page === n ? 'disabled' : ''} aria-label="Próxima página">${icon('right')}</button>`;
+      if (focus) { const b = $(`[aria-label="${focus}"]`, nav); (b && !b.disabled ? b : $('[aria-current="page"]', nav)).focus(); }
+    };
+    nav.addEventListener('click', e => {
+      const b = e.target.closest('[data-go]'); if (!b || b.disabled) return;
+      const to = Math.min(total(), Math.max(1, +b.dataset.go)); if (to === page) return;
+      const keep = nav.contains(document.activeElement) ? b.getAttribute('aria-label') : null;
+      page = to; nav.dataset.page = page; render(keep);
+      nav.dispatchEvent(new CustomEvent('ac:change', { detail: page, bubbles: true }));
+    });
+    render();
+    nav._pagination = { go: p => { page = Math.min(total(), Math.max(1, p)); nav.dataset.page = page; render(); } };
+  };
+
+  /* Grupo de escolha única (alinhamento, visualização): marcar um desmarca os outros e sempre fica um marcado.
+     Semântica de rádio do WAI-ARIA (radiogroup + radio + aria-checked), como no exemplo de toolbar da APG.
+     Fora de uma toolbar, as setas andam e já marcam; dentro dela, as setas são da toolbar e Espaço/Enter marcam. */
+  C['toggle-group'] = g => {
+    if (!g.hasAttribute('role')) g.setAttribute('role', 'radiogroup');
+    const its = () => $$('.ac-toggle:not([disabled])', g);
+    const pick = (b, emit) => { its().forEach(x => { x.setAttribute('aria-checked', x === b); if (!g.closest('[data-ac~="toolbar"]')) x.tabIndex = x === b ? 0 : -1; }); if (emit) g.dispatchEvent(new CustomEvent('ac:change', { detail: b.value || b.getAttribute('aria-label'), bubbles: true })); };
+    its().forEach(b => { b.setAttribute('role', 'radio'); b.removeAttribute('aria-pressed'); b.addEventListener('click', () => { if (b.getAttribute('aria-checked') !== 'true') pick(b, true); }); });
+    pick(its().find(b => b.getAttribute('aria-checked') === 'true') || its()[0], false);
+    if (!g.closest('[data-ac~="toolbar"]')) g.addEventListener('keydown', e => {
+      const it = its(), i = it.indexOf(document.activeElement), n = { ArrowRight: i + 1, ArrowDown: i + 1, ArrowLeft: i - 1, ArrowUp: i - 1 }[e.key];
+      if (i < 0 || n === undefined) return; e.preventDefault(); const b = it[(n + it.length) % it.length]; pick(b, true); b.focus();
+    });
+  };
+
   /* Toolbar: um só ponto de Tab; as setas andam entre os controles (roving tabindex). */
   C.toolbar = bar => {
     bar.setAttribute('role', 'toolbar');
@@ -1035,27 +1091,96 @@
     tr.addEventListener('click', () => { const on = !el.classList.contains('is-open'); el.classList.toggle('is-open', on); tr.setAttribute('aria-expanded', on); });
   };
 
-  /* Página de resultado e erro.
-     data-code: 401, 403, 404, 500, 503, offline, success. O conteúdo de dentro, se houver, substitui as ações padrão. */
+  /* Páginas de erro e resultado, no desenho das páginas de erro do 4squad: a ilustração do caso (o ícone num quadrado
+     sobre uma mancha, com um selo no canto), o código grande, título, texto, o botão principal e um link embaixo.
+     data-code: 401, 403, 404, 500, 503, offline, error (erro inesperado na tela) e success.
+     Quem está vendo (data-audience: guest, user ou admin) muda o "voltar": para o início, para o app ou para o painel.
+     Ações próprias (o conteúdo de dentro, que substitui as padrão) com data-for="admin" (ou "user admin"…) só aparecem
+     para esse público: o painel nunca aparece para quem não é da equipe. Endereços: data-home ("/" sem ele), data-login
+     (401) e data-support (com ele, o 403 oferece "Falar com o suporte"). 500 e error mostram o horário; data-error-id
+     mostra o código para o suporte, com botão de copiar; data-retry-at ("15:30" ou data ISO) dá a previsão de volta do
+     503. Cada ação dispara ac:action ({ action, code }, cancelável): sem preventDefault, "Tentar de novo" recarrega a
+     página e "Voltar para a página anterior" volta no histórico. Sem internet, a página recarrega sozinha quando a
+     conexão volta (ac:online, cancelável).
+     Cada caso: [ícone, título, texto, ação principal, ação secundária, selo, tom, tipos das ações]. */
   const RESULTS = {
-    404: ['search', 'Página não encontrada', 'O endereço pode ter mudado ou sido digitado errado. Confira o link ou volte ao início.', 'Voltar ao início', 'Buscar no site'],
-    403: ['lock', 'Você não tem acesso a esta página', 'Sua conta não tem permissão para ver este conteúdo. Peça acesso a um administrador.', 'Pedir acesso', 'Voltar ao início'],
-    401: ['lock', 'Sua sessão terminou', 'Por segurança, saímos da sua conta depois de um tempo sem uso. Entre de novo para continuar de onde parou.', 'Entrar de novo', ''],
-    500: ['alert', 'Algo deu errado do nosso lado', 'Não foi culpa sua. Já fomos avisados. Tente de novo em alguns instantes; nada do que você salvou foi perdido.', 'Tentar de novo', 'Ver status do serviço'],
-    503: ['gear', 'Estamos em manutenção', 'Voltamos em poucos minutos. Seus dados estão seguros.', 'Atualizar a página', 'Ver status do serviço'],
-    offline: ['wifi', 'Você está sem internet', 'Verifique o Wi-Fi ou os dados móveis. Quando a conexão voltar, a página se atualiza sozinha.', 'Tentar de novo', ''],
-    success: ['check', 'Tudo certo', 'A ação foi concluída com sucesso.', 'Continuar', '']
+    404: ['search', 'Página não encontrada', 'A página que você procura pode ter sido removida, mudado de endereço ou não existir mais.', 'Voltar para o início', 'Voltar para a página anterior', 'help', 'neutral', 'home back'],
+    403: ['lock', 'Acesso negado', 'Esta área é de outro tipo de acesso. Se você acha que é um engano, fale com o suporte.', 'Voltar para o início', '', 'block', 'danger', 'home'],
+    401: ['user', 'Sessão encerrada', 'Por segurança, a sua sessão fechou. Entre de novo para continuar de onde parou.', 'Entrar de novo', '', 'bang', 'warning', 'login'],
+    500: ['server', 'Erro no servidor', 'Algo falhou do nosso lado. Tente de novo; se continuar, avise o suporte com as informações abaixo.', 'Tentar de novo', 'Voltar para o início', 'x', 'danger', 'retry home'],
+    503: ['gear', 'Em manutenção', 'Estamos atualizando o sistema e voltamos em breve. Nada do que você fez se perdeu.', 'Tentar de novo', '', 'clock', 'warning', 'retry'],
+    offline: ['signal', 'Sem conexão', 'Não foi possível falar com o servidor. Confira a internet; a página volta sozinha quando a conexão voltar.', 'Tentar de novo', '', 'x', 'danger', 'retry'],
+    error: ['browser', 'Algo deu errado', 'Aconteceu um erro inesperado. Tente de novo em alguns instantes.', 'Tentar de novo', 'Voltar para o início', 'bang', 'warning', 'retry home'],
+    success: ['check', 'Tudo certo', 'A ação foi concluída. Você já pode seguir.', 'Continuar', '', '', 'success', 'next'],
+    // textos que não são de um caso só
+    labels: { home: 'Voltar para o início', user: 'Voltar para o app', admin: 'Voltar para o painel', back: 'Voltar para a página anterior', retry: 'Tentar de novo', login: 'Entrar de novo', support: 'Falar com o suporte', next: 'Continuar', time: 'Horário', id: 'Código do erro', copy: 'Copiar o código do erro', copied: 'Código copiado', returnAt: 'Previsão de volta', today: 'hoje', at: 'às', code: 'código' }
   };
   ICONS.lock = '<path d="M12 14.5V17.5M13 14.5C13 15.0523 12.5523 15.5 12 15.5C11.4477 15.5 11 15.0523 11 14.5C11 13.9477 11.4477 13.5 12 13.5C12.5523 13.5 13 13.9477 13 14.5Z"/><path d="M16.5 9V6.5C16.5 4.01472 14.4853 2 12 2C9.51471 2 7.49999 4.01472 7.49999 6.5V9"/><path d="M4.2678 18.8447C4.49268 20.515 5.87612 21.8235 7.55965 21.9009C8.97627 21.966 10.4153 22 12 22C13.5847 22 15.0237 21.966 16.4403 21.9009C18.1239 21.8235 19.5073 20.515 19.7322 18.8447C19.8789 17.7547 20 16.6376 20 15.5C20 14.3624 19.8789 13.2453 19.7322 12.1553C19.5073 10.485 18.1239 9.17649 16.4403 9.09909C15.0237 9.03397 13.5847 9 12 9C10.4153 9 8.97627 9.03397 7.55965 9.09909C5.87612 9.17649 4.49268 10.485 4.2678 12.1553C4.12104 13.2453 3.99999 14.3624 3.99999 15.5C3.99999 16.6376 4.12104 17.7547 4.2678 18.8447Z"/>';
   ICONS.gear = '<path d="M21.3175 7.14139L20.8239 6.28479C20.4506 5.63696 20.264 5.31305 19.9464 5.18388C19.6288 5.05472 19.2696 5.15664 18.5513 5.36048L17.3311 5.70418C16.8725 5.80994 16.3913 5.74994 15.9726 5.53479L15.6357 5.34042C15.2766 5.11043 15.0004 4.77133 14.8475 4.37274L14.5136 3.37536C14.294 2.71534 14.1842 2.38533 13.9228 2.19657C13.6615 2.00781 13.3143 2.00781 12.6199 2.00781H11.5051C10.8108 2.00781 10.4636 2.00781 10.2022 2.19657C9.94085 2.38533 9.83106 2.71534 9.61149 3.37536L9.27753 4.37274C9.12465 4.77133 8.84845 5.11043 8.48937 5.34042L8.15249 5.53479C7.73374 5.74994 7.25259 5.80994 6.79398 5.70418L5.57375 5.36048C4.85541 5.15664 4.49625 5.05472 4.17867 5.18388C3.86109 5.31305 3.67445 5.63696 3.30115 6.28479L2.80757 7.14139C2.45766 7.74864 2.2827 8.05227 2.31666 8.37549C2.35061 8.69871 2.58483 8.95918 3.05326 9.48012L4.0843 10.6328C4.3363 10.9518 4.51521 11.5078 4.51521 12.0077C4.51521 12.5078 4.33636 13.0636 4.08433 13.3827L3.05326 14.5354C2.58483 15.0564 2.35062 15.3168 2.31666 15.6401C2.2827 15.9633 2.45766 16.2669 2.80757 16.8741L3.30114 17.7307C3.67443 18.3785 3.86109 18.7025 4.17867 18.8316C4.49625 18.9608 4.85542 18.8589 5.57377 18.655L6.79394 18.3113C7.25263 18.2055 7.73387 18.2656 8.15267 18.4808L8.4895 18.6752C8.84851 18.9052 9.12464 19.2442 9.2775 19.6428L9.61149 20.6403C9.83106 21.3003 9.94085 21.6303 10.2022 21.8191C10.4636 22.0078 10.8108 22.0078 11.5051 22.0078H12.6199C13.3143 22.0078 13.6615 22.0078 13.9228 21.8191C14.1842 21.6303 14.294 21.3003 14.5136 20.6403L14.8476 19.6428C15.0004 19.2442 15.2765 18.9052 15.6356 18.6752L15.9724 18.4808C16.3912 18.2656 16.8724 18.2055 17.3311 18.3113L18.5513 18.655C19.2696 18.8589 19.6288 18.9608 19.9464 18.8316C20.264 18.7025 20.4506 18.3785 20.8239 17.7307L21.3175 16.8741C21.6674 16.2669 21.8423 15.9633 21.8084 15.6401C21.7744 15.3168 21.5402 15.0564 21.0718 14.5354L20.0407 13.3827C19.7887 13.0636 19.6098 12.5078 19.6098 12.0077C19.6098 11.5078 19.7888 10.9518 20.0407 10.6328L21.0718 9.48012C21.5402 8.95918 21.7744 8.69871 21.8084 8.37549C21.8423 8.05227 21.6674 7.74864 21.3175 7.14139Z"/><path d="M15.5195 12C15.5195 13.933 13.9525 15.5 12.0195 15.5C10.0865 15.5 8.51953 13.933 8.51953 12C8.51953 10.067 10.0865 8.5 12.0195 8.5C13.9525 8.5 15.5195 10.067 15.5195 12Z"/>';
   ICONS.wifi = '<path d="M14.5002 15L9.50016 20M14.5002 20L9.50016 15"/><path d="M18.5 13C14.7324 9 9.5 9 5.5 13"/><path d="M2 8C8.31579 2.66669 15.6842 2.66668 22 7.99989"/>';
+  Object.assign(ICONS, {
+    user: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="9.5" r="3"/><path d="M7 18C8.3 16.2 10 15.3 12 15.3C14 15.3 15.7 16.2 17 18"/>',
+    server: '<rect x="3" y="3" width="18" height="7.5" rx="2.5"/><rect x="3" y="13.5" width="18" height="7.5" rx="2.5"/><path d="M7 6.75H7.01M7 17.25H7.01M11 6.75H17M11 17.25H17"/>',
+    browser: '<rect x="2.5" y="3.5" width="19" height="17" rx="3.5"/><path d="M2.5 8.5H21.5"/><path d="M6 6H6.01M9 6H9.01M9.5 12.5H9.51M14.5 12.5H14.51"/><path d="M9.5 17C10.9 15.6 13.1 15.6 14.5 17"/>',
+    refresh: '<path d="M20 12A8 8 0 1 1 17.66 6.34L20 8.5"/><path d="M20 4V8.5H15.5"/>',
+    'arrow-left': '<path d="M4 12H20"/><path d="M9 17C9 17 4 13.32 4 12C4 10.68 9 7 9 7"/>',
+    'arrow-right': '<path d="M20 12H4"/><path d="M15 17C15 17 20 13.32 20 12C20 10.68 15 7 15 7"/>',
+    headset: '<path d="M4 15V12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12V15"/><path d="M4 14.5C4 13.4 4.9 12.5 6 12.5H7.5V18.5H6C4.9 18.5 4 17.6 4 16.5V14.5Z"/><path d="M20 14.5C20 13.4 19.1 12.5 18 12.5H16.5V18.5H18C19.1 18.5 20 17.6 20 16.5V14.5Z"/><path d="M16.5 18.5C16.5 20 15 21 12.5 21"/>',
+    signal: '<path d="M2 8.5C8.32 3.17 15.68 3.17 22 8.5"/><path d="M5.5 12.5C9.5 8.83 14.5 8.83 18.5 12.5"/><path d="M9 16.25C10.8 14.75 13.2 14.75 15 16.25"/><path d="M12 19.75H12.01"/>',
+    help: '<path d="M8.5 8.75C8.5 6.68 10.07 5 12 5C13.93 5 15.5 6.68 15.5 8.75C15.5 10.3 14.6 11.6 13.3 12.2C12.5 12.55 12 13.3 12 14.15V14.75"/><path d="M12 19H12.01"/>',
+    block: '<circle cx="12" cy="12" r="8"/><path d="M6.4 6.4L17.6 17.6"/>',
+    bang: '<path d="M12 5V14"/><path d="M12 19H12.01"/>'
+  });
   C.result = el => {
-    const code = el.dataset.code || '404', r = RESULTS[code] || RESULTS[404];
-    const custom = el.innerHTML.trim();
-    el.classList.add('ac-result'); el.dataset.tone = code === 'success' ? 'success' : /^5|offline/.test(code) ? 'danger' : 'neutral';
-    el.innerHTML = `<span class="ac-result__icon" aria-hidden="true">${icon(r[0])}</span>${/^\d+$/.test(code) ? `<p class="ac-result__code">Erro ${esc(code)}</p>` : ''}<h2 class="ac-result__title">${esc(el.dataset.title || r[1])}</h2><p class="ac-result__text">${esc(el.dataset.text || r[2])}</p>
-      <div class="ac-result__actions">${custom || `<button class="ac-btn" type="button" data-result-action="primary">${esc(r[3])}</button>${r[4] ? `<button class="ac-btn ac-btn--ghost" type="button" data-result-action="secondary">${esc(r[4])}</button>` : ''}`}</div>`;
-    if (code === 'offline') addEventListener('online', () => el.dispatchEvent(new CustomEvent('ac:online', { bubbles: true })), { once: true });
+    const d = el.dataset, L = RESULTS.labels, code = d.code || '404', r = Array.isArray(RESULTS[code]) ? RESULTS[code] : RESULTS[404];
+    const who = /^(user|admin)$/.test(d.audience) ? d.audience : 'guest', num = /^\d+$/.test(code), lv = /^[1-6]$/.test(d.level) ? d.level : 2;
+    // ações próprias: os nós de dentro são mantidos (componentes neles seguem vivos); data-for filtra pelo público
+    const own = document.createDocumentFragment(); while (el.firstChild) own.appendChild(el.firstChild);
+    $$('[data-for]', own).forEach(n => { if (!n.dataset.for.split(/\s+/).includes(who)) n.remove(); });
+    const hasOwn = [...own.childNodes].some(n => n.nodeType === 1 || n.textContent.trim());
+    el.classList.add('ac-result'); d.tone = r[6] || (code === 'success' ? 'success' : /^5|offline/.test(code) ? 'danger' : 'neutral');
+    if (!el.hasAttribute('role') || d.resultRole) { const role = code === 'success' ? 'status' : code === '404' ? '' : 'alert'; if (role) el.setAttribute('role', role); else el.removeAttribute('role'); d.resultRole = '1'; }
+    // ações padrão: o tipo diz o que fazem; com data-support, o 403 troca o "voltar" por "Falar com o suporte"
+    const swap = code === '403' && !!d.support, kinds = swap ? ['support', 'home'] : (r[7] || 'primary secondary').split(/\s+/).slice(0, 2);
+    const label = (k, i) => (k === 'home' && (d.homeLabel || (who !== 'guest' && L[who]))) || (swap ? L[k] : r[3 + i]) || L[k] || '';
+    const href = { home: d.home || '/', login: d.login || d.home || '/', support: d.support };
+    const act = (k, i) => {
+      const t = label(k, i); if (!t || (k === 'back' && history.length < 2)) return '';
+      const at = `class="${i ? 'ac-result__link' : 'ac-btn ac-btn--lg'}" data-result-action="${i ? 'secondary' : 'primary'}" data-action="${esc(k)}"`;
+      const ico = !i && { home: 'arrow-left', retry: 'refresh', support: 'headset' }[k];
+      const body = (ico ? icon(ico) : '') + esc(t) + (!i && k === 'login' ? icon('arrow-right') : '');
+      return href[k] ? `<a ${at} href="${esc(href[k])}"${k === 'support' && /^https?:/i.test(href[k]) ? ' target="_blank" rel="noopener noreferrer"' : ''}>${body}</a>` : `<button type="button" ${at}>${body}</button>`;
+    };
+    // o que ajuda a relatar ou esperar: horário (500 e error), código do erro e previsão de volta (503)
+    const meta = [], stamp = (t, s) => `<time datetime="${t.toISOString()}">${esc(s)}</time>`;
+    if (code === '500' || code === 'error') { const n = new Date(); meta.push(`<span>${esc(L.time)}: ${stamp(n, n.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }))}</span>`); }
+    if (d.errorId) meta.push(`<span class="ac-result__id">${esc(L.id)}: <code>${esc(d.errorId)}</code><button type="button" class="ac-result__copy" data-action="copy" aria-label="${esc(L.copy)}">${icon('copy')}${icon('check')}</button></span>`);
+    if (code === '503' && d.retryAt) {
+      const m = /^(\d{1,2}):(\d{2})$/.exec(d.retryAt), t = m ? new Date() : new Date(d.retryAt); if (m) t.setHours(+m[1], +m[2], 0, 0);
+      const day = isNaN(t) ? '' : t.toDateString() === new Date().toDateString() ? L.today : t.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      meta.push(`<span>${esc(L.returnAt)}: ${isNaN(t) ? esc(d.retryAt) : stamp(t, `${day} ${L.at} ${t.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`)}</span>`);
+    }
+    el.innerHTML = `<span class="ac-result__art" aria-hidden="true"><span class="ac-result__icon">${icon(r[0])}</span>${r[5] ? `<span class="ac-result__badge">${icon(r[5])}</span>` : ''}</span>`
+      + (num ? `<p class="ac-result__code" aria-hidden="true">${esc(code)}</p>` : '')
+      + `<h${lv} class="ac-result__title">${esc(d.title || r[1])}${num ? `<span class="ac-sr"> (${esc(L.code)} ${esc(code)})</span>` : ''}</h${lv}><p class="ac-result__text">${esc(d.text || r[2])}</p>`
+      + (meta.length ? `<p class="ac-result__meta">${meta.join('')}</p>` : '') + '<span class="ac-sr" aria-live="polite"></span>'
+      + `<div class="ac-result__actions">${hasOwn ? '' : kinds.map(act).join('')}</div>`;
+    if (hasOwn) $('.ac-result__actions', el).appendChild(own);
+    el.addEventListener('click', async e => {
+      const b = e.target.closest('[data-action], [data-result-action]'); if (!b || !el.contains(b)) return;
+      const action = b.dataset.action || b.dataset.resultAction;
+      if (!el.dispatchEvent(new CustomEvent('ac:action', { detail: { action, code }, bubbles: true, cancelable: true }))) { e.preventDefault(); return; }
+      if (action === 'retry') location.reload();
+      else if (action === 'back') history.back();
+      else if (action === 'copy') {
+        const live = $(':scope > [aria-live]', el);
+        if (!await copyText(d.errorId, el)) { getSelection().selectAllChildren(b.previousElementSibling); return; }
+        b.dataset.state = 'copied'; b.setAttribute('aria-label', L.copied); live.textContent = L.copied; clearTimeout(b.t);
+        b.t = setTimeout(() => { delete b.dataset.state; b.setAttribute('aria-label', L.copy); live.textContent = ''; }, 1600);
+      }
+    });
+    // sem internet: volta sozinha quando a conexão voltar
+    if (code === 'offline') { const back = () => { removeEventListener('online', back); if (el.isConnected && el.dispatchEvent(new CustomEvent('ac:online', { bubbles: true, cancelable: true }))) location.reload(); }; addEventListener('online', back); }
   };
 
 
@@ -1825,7 +1950,7 @@
 
   /* ---------- Peças estudadas na Kobra (29/10/2026): vídeo, halftone e ícones que se transformam ---------- */
   // Hugeicons (stroke rounded)
-  Object.assign(ICONS, { back10: '<path d="M12 5L10.8961 3.45459C10.4851 2.87911 10.2795 2.59137 10.4093 2.32411C10.5391 2.05684 10.8689 2.04153 11.5286 2.01092C11.6848 2.00367 11.842 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 8.72836 3.57111 5.82368 6 3.99927"/><path d="M7.99219 11.004C8.52019 10.584 9.00019 9.89143 9.30019 10.02C9.60019 10.1486 9.50419 10.572 9.50419 11.232C9.50419 11.892 9.50419 14.6847 9.50419 16.008"/><path d="M16.0022 12.6C16.0022 11.22 16.0682 10.848 15.8042 10.404C15.5402 9.96001 14.8802 9.99841 14.2202 9.99841C13.5602 9.99841 13.0802 9.96001 12.7622 10.32C12.3722 10.74 12.5402 11.52 12.4922 12.6C12.6002 14.04 12.3062 15.18 12.7562 15.66C13.0802 16.056 13.6553 15.996 14.3402 16.008C15.0201 15.9997 15.4322 16.032 15.7682 15.648C16.1402 15.312 15.9602 13.98 16.0022 12.6Z"/>', fwd10: '<path d="M12 5L13.1039 3.45459C13.5149 2.87911 13.7205 2.59137 13.5907 2.32411C13.4609 2.05684 13.1311 2.04153 12.4714 2.01092C12.3152 2.00367 12.158 2 12 2C6.4772 2 2 6.47715 2 12C2 17.5228 6.4772 22 12 22C17.5229 22 22 17.5228 22 12C22 8.72836 20.4289 5.82368 18 3.99927"/><path d="M7.99219 11.004C8.52019 10.584 9.00019 9.89143 9.30019 10.02C9.60019 10.1486 9.50419 10.572 9.50419 11.232C9.50419 11.892 9.50419 14.6847 9.50419 16.008"/><path d="M16.0022 12.6C16.0022 11.22 16.0682 10.848 15.8042 10.404C15.5402 9.96001 14.8802 9.99841 14.2202 9.99841C13.5602 9.99841 13.0802 9.96001 12.7622 10.32C12.3722 10.74 12.5402 11.52 12.4922 12.6C12.6002 14.04 12.3062 15.18 12.7562 15.66C13.0802 16.056 13.6553 15.996 14.3402 16.008C15.0201 15.9997 15.4322 16.032 15.7682 15.648C16.1402 15.312 15.9602 13.98 16.0022 12.6Z"/>', vol: '<path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z"/><path d="M17 9C17.6254 9.81968 18 10.8634 18 12C18 13.1366 17.6254 14.1803 17 15"/><path d="M20 7C21.2508 8.36613 22 10.1057 22 12C22 13.8943 21.2508 15.6339 20 17"/>', mute: '<path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z"/><path d="M18 10L22 14M18 14L22 10"/>', full: '<path d="M19.9264 22.2516V20.691C19.9264 20.288 20.0525 19.8966 20.2639 19.5531C21.7583 17.1245 22.2279 14.5196 21.9002 13.505C20.857 11.3418 17.3758 10.4907 15.76 10.2878L16.7966 5.12292C16.9705 4.30387 16.3513 3.47938 15.4135 3.28136C14.4758 3.08334 13.5746 3.58679 13.4007 4.40583L11.3462 14.0815L8.77462 12.4424C8.77462 12.4424 7.47969 11.406 6.44041 12.4424C5.40114 13.4788 6.44041 14.7701 6.44041 14.7701L10.3488 19.7776C10.6003 20.0997 10.7468 20.4908 10.7688 20.8984L10.8401 22.2177"/><path d="M7.32936 1.85194C7.32936 1.85194 9.54861 1.58797 9.867 1.90156C10.1124 2.14335 9.867 4.36134 9.867 4.36134M9.867 1.90156L6.89808 4.84002M4.6477 9.59694C4.6477 9.59694 2.42845 9.86092 2.11005 9.54732C1.86463 9.30553 2.11005 7.08754 2.11005 7.08754M2.11005 9.54732L5.07898 6.60886"/>', unfull: '<path d="M19.9264 22.2502V20.6912C19.9264 20.2886 20.0525 19.8976 20.2639 19.5545C21.7583 17.1282 22.2279 14.5259 21.9002 13.5123C20.857 11.3512 17.3758 10.5009 15.76 10.2983L16.7966 5.13851C16.9705 4.32028 16.3513 3.4966 15.4135 3.29877C14.4758 3.10095 13.5746 3.6039 13.4007 4.42213L11.3462 14.0882L8.77462 12.4508C8.77462 12.4508 7.47969 11.4154 6.44041 12.4508C5.40114 13.4861 6.44041 14.7762 6.44041 14.7762L10.3488 19.7787C10.6003 20.1005 10.7468 20.4912 10.7688 20.8984L10.8401 22.2164"/><path d="M6.95693 2.2382C6.95693 2.2382 6.7053 4.50936 6.95693 4.75695M6.95693 4.75695C7.28338 5.07806 9.55878 4.80775 9.55878 4.80775M6.95693 4.75695L10.001 1.74805M5.04502 9.24998C5.04502 9.24998 5.29665 6.97882 5.04502 6.73124M5.04502 6.73124C4.71857 6.41012 2.44317 6.68043 2.44317 6.68043M5.04502 6.73124L2.00098 9.74014"/>', pip: '<path d="M11.5 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C21.947 6.29018 21.9976 8.05974 21.9999 11.5"/><path d="M20.5 14H15.5C14.6716 14 14 14.6716 14 15.5V18.5C14 19.3284 14.6716 20 15.5 20H20.5C21.3284 20 22 19.3284 22 18.5V15.5C22 14.6716 21.3284 14 20.5 14Z"/><path d="M11 9.5V12C11.0475 12.5744 10.6034 13.0238 10 13H7.5M6 8L10 12"/>', cc: '<path d="M2 12C2 8.02033 2 6.03049 3.0528 4.70201C3.22119 4.48953 3.40678 4.29302 3.60746 4.11473C4.86213 3 6.74142 3 10.5 3H13.5C17.2586 3 19.1379 3 20.3925 4.11473C20.5932 4.29302 20.7788 4.48953 20.9472 4.70201C22 6.03049 22 8.02033 22 12C22 15.9797 22 17.9695 20.9472 19.298C20.7788 19.5105 20.5932 19.707 20.3925 19.8853C19.1379 21 17.2586 21 13.5 21H10.5C6.74142 21 4.86213 21 3.60746 19.8853C3.40678 19.707 3.22119 19.5105 3.0528 19.298C2 17.9695 2 15.9797 2 12Z"/><path d="M10.5 9H10C9.06812 9 8.60218 9 8.23463 9.15224C7.74458 9.35523 7.35523 9.74458 7.15224 10.2346C7 10.6022 7 11.0681 7 12C7 12.9319 7 13.3978 7.15224 13.7654C7.35523 14.2554 7.74458 14.6448 8.23463 14.8478C8.60218 15 9.06812 15 10 15H10.5M17 9H16.5C15.5681 9 15.1022 9 14.7346 9.15224C14.2446 9.35523 13.8552 9.74458 13.6522 10.2346C13.5 10.6022 13.5 11.0681 13.5 12C13.5 12.9319 13.5 13.3978 13.6522 13.7654C13.8552 14.2554 14.2446 14.6448 14.7346 14.8478C15.1022 15 15.5681 15 16.5 15H17"/>', youtube: '<path d="M12 20.5C13.8097 20.5 15.5451 20.3212 17.1534 19.9934C19.1623 19.5839 20.1668 19.3791 21.0834 18.2006C22 17.0221 22 15.6693 22 12.9635V11.0365C22 8.33073 22 6.97787 21.0834 5.79937C20.1668 4.62088 19.1623 4.41613 17.1534 4.00662C15.5451 3.67877 13.8097 3.5 12 3.5C10.1903 3.5 8.45489 3.67877 6.84656 4.00662C4.83766 4.41613 3.83321 4.62088 2.9166 5.79937C2 6.97787 2 8.33073 2 11.0365V12.9635C2 15.6693 2 17.0221 2.9166 18.2006C3.83321 19.3791 4.83766 19.5839 6.84656 19.9934C8.45489 20.3212 10.1903 20.5 12 20.5Z"/><path d="M15.9621 12.3129C15.8137 12.9187 15.0241 13.3538 13.4449 14.2241C11.7272 15.1705 10.8684 15.6438 10.1728 15.4615C9.9372 15.3997 9.7202 15.2911 9.53799 15.1438C9 14.7089 9 13.8059 9 12C9 10.1941 9 9.29112 9.53799 8.85618C9.7202 8.70886 9.9372 8.60029 10.1728 8.53854C10.8684 8.35621 11.7272 8.82945 13.4449 9.77593C15.0241 10.6462 15.8137 11.0813 15.9621 11.6871C16.0126 11.8933 16.0126 12.1067 15.9621 12.3129Z"/>' });
+  Object.assign(ICONS, { back10: '<path d="M12 5L10.8961 3.45459C10.4851 2.87911 10.2795 2.59137 10.4093 2.32411C10.5391 2.05684 10.8689 2.04153 11.5286 2.01092C11.6848 2.00367 11.842 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 8.72836 3.57111 5.82368 6 3.99927"/><path d="M7.99219 11.004C8.52019 10.584 9.00019 9.89143 9.30019 10.02C9.60019 10.1486 9.50419 10.572 9.50419 11.232C9.50419 11.892 9.50419 14.6847 9.50419 16.008"/><path d="M16.0022 12.6C16.0022 11.22 16.0682 10.848 15.8042 10.404C15.5402 9.96001 14.8802 9.99841 14.2202 9.99841C13.5602 9.99841 13.0802 9.96001 12.7622 10.32C12.3722 10.74 12.5402 11.52 12.4922 12.6C12.6002 14.04 12.3062 15.18 12.7562 15.66C13.0802 16.056 13.6553 15.996 14.3402 16.008C15.0201 15.9997 15.4322 16.032 15.7682 15.648C16.1402 15.312 15.9602 13.98 16.0022 12.6Z"/>', fwd10: '<path d="M12 5L13.1039 3.45459C13.5149 2.87911 13.7205 2.59137 13.5907 2.32411C13.4609 2.05684 13.1311 2.04153 12.4714 2.01092C12.3152 2.00367 12.158 2 12 2C6.4772 2 2 6.47715 2 12C2 17.5228 6.4772 22 12 22C17.5229 22 22 17.5228 22 12C22 8.72836 20.4289 5.82368 18 3.99927"/><path d="M7.99219 11.004C8.52019 10.584 9.00019 9.89143 9.30019 10.02C9.60019 10.1486 9.50419 10.572 9.50419 11.232C9.50419 11.892 9.50419 14.6847 9.50419 16.008"/><path d="M16.0022 12.6C16.0022 11.22 16.0682 10.848 15.8042 10.404C15.5402 9.96001 14.8802 9.99841 14.2202 9.99841C13.5602 9.99841 13.0802 9.96001 12.7622 10.32C12.3722 10.74 12.5402 11.52 12.4922 12.6C12.6002 14.04 12.3062 15.18 12.7562 15.66C13.0802 16.056 13.6553 15.996 14.3402 16.008C15.0201 15.9997 15.4322 16.032 15.7682 15.648C16.1402 15.312 15.9602 13.98 16.0022 12.6Z"/>', vol: '<path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z"/><path d="M17 9C17.6254 9.81968 18 10.8634 18 12C18 13.1366 17.6254 14.1803 17 15"/><path d="M20 7C21.2508 8.36613 22 10.1057 22 12C22 13.8943 21.2508 15.6339 20 17"/>', mute: '<path d="M14 14.8135V9.18646C14 6.04126 14 4.46866 13.0747 4.0773C12.1494 3.68593 11.0603 4.79793 8.88232 7.02192C7.75439 8.17365 7.11085 8.42869 5.50604 8.42869C4.10257 8.42869 3.40084 8.42869 2.89675 8.77262C1.85035 9.48655 2.00852 10.882 2.00852 12C2.00852 13.118 1.85035 14.5134 2.89675 15.2274C3.40084 15.5713 4.10257 15.5713 5.50604 15.5713C7.11085 15.5713 7.75439 15.8264 8.88232 16.9781C11.0603 19.2021 12.1494 20.3141 13.0747 19.9227C14 19.5313 14 17.9587 14 14.8135Z"/><path d="M18 10L22 14M18 14L22 10"/>', full: '<path d="M8 3H6C4.34315 3 3 4.34315 3 6V8"/><path d="M16 3H18C19.6569 3 21 4.34315 21 6V8"/><path d="M8 21H6C4.34315 21 3 19.6569 3 18V16"/><path d="M16 21H18C19.6569 21 21 19.6569 21 18V16"/>', unfull: '<path d="M3 8H5C6.65685 8 8 6.65685 8 5V3"/><path d="M21 8H19C17.3431 8 16 6.65685 16 5V3"/><path d="M3 16H5C6.65685 16 8 17.3431 8 19V21"/><path d="M21 16H19C17.3431 16 16 17.3431 16 19V21"/>', pip: '<path d="M11.5 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C21.947 6.29018 21.9976 8.05974 21.9999 11.5"/><path d="M20.5 14H15.5C14.6716 14 14 14.6716 14 15.5V18.5C14 19.3284 14.6716 20 15.5 20H20.5C21.3284 20 22 19.3284 22 18.5V15.5C22 14.6716 21.3284 14 20.5 14Z"/><path d="M11 9.5V12C11.0475 12.5744 10.6034 13.0238 10 13H7.5M6 8L10 12"/>', cc: '<path d="M2 12C2 8.02033 2 6.03049 3.0528 4.70201C3.22119 4.48953 3.40678 4.29302 3.60746 4.11473C4.86213 3 6.74142 3 10.5 3H13.5C17.2586 3 19.1379 3 20.3925 4.11473C20.5932 4.29302 20.7788 4.48953 20.9472 4.70201C22 6.03049 22 8.02033 22 12C22 15.9797 22 17.9695 20.9472 19.298C20.7788 19.5105 20.5932 19.707 20.3925 19.8853C19.1379 21 17.2586 21 13.5 21H10.5C6.74142 21 4.86213 21 3.60746 19.8853C3.40678 19.707 3.22119 19.5105 3.0528 19.298C2 17.9695 2 15.9797 2 12Z"/><path d="M10.5 9H10C9.06812 9 8.60218 9 8.23463 9.15224C7.74458 9.35523 7.35523 9.74458 7.15224 10.2346C7 10.6022 7 11.0681 7 12C7 12.9319 7 13.3978 7.15224 13.7654C7.35523 14.2554 7.74458 14.6448 8.23463 14.8478C8.60218 15 9.06812 15 10 15H10.5M17 9H16.5C15.5681 9 15.1022 9 14.7346 9.15224C14.2446 9.35523 13.8552 9.74458 13.6522 10.2346C13.5 10.6022 13.5 11.0681 13.5 12C13.5 12.9319 13.5 13.3978 13.6522 13.7654C13.8552 14.2554 14.2446 14.6448 14.7346 14.8478C15.1022 15 15.5681 15 16.5 15H17"/>', youtube: '<path d="M12 20.5C13.8097 20.5 15.5451 20.3212 17.1534 19.9934C19.1623 19.5839 20.1668 19.3791 21.0834 18.2006C22 17.0221 22 15.6693 22 12.9635V11.0365C22 8.33073 22 6.97787 21.0834 5.79937C20.1668 4.62088 19.1623 4.41613 17.1534 4.00662C15.5451 3.67877 13.8097 3.5 12 3.5C10.1903 3.5 8.45489 3.67877 6.84656 4.00662C4.83766 4.41613 3.83321 4.62088 2.9166 5.79937C2 6.97787 2 8.33073 2 11.0365V12.9635C2 15.6693 2 17.0221 2.9166 18.2006C3.83321 19.3791 4.83766 19.5839 6.84656 19.9934C8.45489 20.3212 10.1903 20.5 12 20.5Z"/><path d="M15.9621 12.3129C15.8137 12.9187 15.0241 13.3538 13.4449 14.2241C11.7272 15.1705 10.8684 15.6438 10.1728 15.4615C9.9372 15.3997 9.7202 15.2911 9.53799 15.1438C9 14.7089 9 13.8059 9 12C9 10.1941 9 9.29112 9.53799 8.85618C9.7202 8.70886 9.9372 8.60029 10.1728 8.53854C10.8684 8.35621 11.7272 8.82945 13.4449 9.77593C15.0241 10.6462 15.8137 11.0813 15.9621 11.6871C16.0126 11.8933 16.0126 12.1067 15.9621 12.3129Z"/>' });
   const clock = s => { s = Math.max(0, Math.floor(s || 0)); const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, ss = String(s % 60).padStart(2, '0'); return h ? `${h}:${String(m).padStart(2, '0')}:${ss}` : `${m}:${ss}`; };
 
   /* Player de vídeo: controles próprios sobre um <video> nativo, em "vidro" (data-glass="liquid" ou "blur").
@@ -2064,6 +2189,15 @@
     document.addEventListener('selectionchange', onSel);
     doc.addEventListener('keydown', e => { if (e.key === 'F10' && e.altKey && mode === 'bar') { e.preventDefault(); $('button', pop).focus(); } }); // Alt+F10 leva à barra
     el.addEventListener('focusout', e => { if (mode === 'card' || el.contains(e.relatedTarget)) return; setTimeout(() => { if (!el.contains(document.activeElement) && mode !== 'card') close(false); }, 0); });
+    // clicar fora do texto (no fundo, no título, em outro campo) fecha a barra, a pergunta e o cartão; sem isso, um clique
+    // num lugar que não recebe foco não tirava a seleção e "Perguntar à IA" ficava preso na tela
+    const outside = e => {
+      if (!el.isConnected) { document.removeEventListener('pointerdown', outside, true); return; }
+      if (pop.hidden || pop.contains(e.target) || doc.contains(e.target)) return;
+      const s = getSelection(); if (s.rangeCount && doc.contains(s.anchorNode)) s.removeAllRanges();
+      close(false);
+    };
+    document.addEventListener('pointerdown', outside, true);
   };
 
   /* Conversa em sequência: lista de mensagens (os balões da Conversa) que entram uma a uma quando aparecem na tela,
@@ -2314,7 +2448,11 @@
       if (!el.contains(document.activeElement)) btn.focus({ preventScroll: true });
       clearTimeout(t);
       if (ok) {
-        el.dataset.state = 'copied'; btn.setAttribute('aria-label', 'Copiado'); tip('Copiado'); live.textContent = 'Copiado'; hint.hidden = true;
+        // aviso no topo (data-toast="texto" troca a mensagem; data-toast="false" desliga). Com ele, a região viva do campo
+        // fica calada para o leitor de tela não ouvir "Copiado" duas vezes.
+        const tt = el.dataset.toast, withToast = tt !== 'false';
+        if (withToast) toast({ type: 'success', title: tt && tt !== 'true' ? tt : 'Copiado para a área de transferência', position: 'top', duration: 2200 });
+        el.dataset.state = 'copied'; btn.setAttribute('aria-label', 'Copiado'); tip('Copiado'); live.textContent = withToast ? '' : 'Copiado'; hint.hidden = true;
         t = setTimeout(() => { delete el.dataset.state; btn.setAttribute('aria-label', label); tip('Copiar'); live.textContent = ''; }, 1500);
         el.dispatchEvent(new CustomEvent('ac:copy', { detail: { text }, bubbles: true }));
       } else {

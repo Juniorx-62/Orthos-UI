@@ -174,7 +174,28 @@
   await t('tags: Enter cria, duplicada é recusada', async () => { mount('people'); const el = $('[data-ac="tags"]', palco), i = $('input', el); i.value = 'Nova'; key(i, 'Enter'); i.value = 'nova'; key(i, 'Enter'); ok($$('.ac-chip', el).length === 3, 'contagem ' + $$('.ac-chip', el).length); });
   await t('intervalo: atalho “Últimos 7 dias”', async () => { mount('daterange'); const b = $('[data-ac="daterange"]', palco); let got; b.addEventListener('ac:change', e => got = e.detail); b.click(); await w(20); $$('body > .ac-range [data-p]')[2].click(); await w(20); ok(got && Math.round((got.ate - got.de) / 864e5) === 6, 'intervalo errado'); ok(/ a /.test(b.textContent), 'rótulo ' + b.textContent); });
   await t('intervalo: dois cliques escolhem início e fim', async () => { mount('daterange'); const b = $('[data-ac="daterange"]', palco); let got; b.addEventListener('ac:change', e => got = e.detail); b.click(); await w(20); let days = $$('body > .ac-range .ac-cal__day'); days[3].click(); await w(20); days = $$('body > .ac-range .ac-cal__day'); days[9].click(); await w(250); ok(got && Math.round((got.ate - got.de) / 864e5) === 6, 'intervalo ' + JSON.stringify(got)); });
-  await t('resultado: troca de código (403)', async () => { mount('result'); $$('#res-codes button', palco)[1].click(); await w(30); ok($('#res-demo .ac-result__title', palco).textContent.includes('acesso'), 'não trocou'); });
+  await t('resultado: troca de código (403)', async () => { mount('result'); $$('#res-codes button', palco)[1].click(); await w(30); const r = $('#res-demo', palco); ok($('.ac-result__title', r).textContent.toLowerCase().includes('acesso'), 'não trocou'); ok($('[data-result-action="primary"]', r).dataset.action === 'support' && $('[data-action="home"]', r), 'com data-support, 403 oferece suporte e voltar'); ok(r.getAttribute('role') === 'alert', 'role'); });
+  await t('resultado: público muda o “voltar” e data-for filtra ações', async () => {
+    palco.innerHTML = '<div data-ac="result" data-code="404" data-audience="admin" data-home="/painel" id="ra"></div><div data-ac="result" data-code="403" data-audience="user" id="rb"><a class="ac-btn" href="#" data-for="admin">Abrir o painel</a><a class="ac-btn" href="#" data-for="user admin">Abrir o app</a></div><div data-ac="result" data-code="404" id="rc"></div>'; Orthos.init(palco);
+    const a = $('#ra [data-result-action="primary"]', palco); ok(a.textContent.trim() === 'Voltar para o painel' && a.getAttribute('href') === '/painel', 'admin: ' + a.textContent);
+    ok($('#rc [data-result-action="primary"]', palco).textContent.trim() === 'Voltar para o início' && !$('#rc', palco).hasAttribute('role'), 'visitante / 404 sem role');
+    const own = $$('#rb .ac-result__actions a', palco).map(x => x.textContent); ok(own.length === 1 && own[0] === 'Abrir o app', 'data-for: ' + own.join('|'));
+    ok($('#ra .ac-result__code', palco).getAttribute('aria-hidden') === 'true' && $('#ra .ac-result__title', palco).textContent.includes('(código 404)'), 'código decorativo, lido no título');
+  });
+  await t('resultado: 500 mostra horário e código do erro; ação cancelável', async () => {
+    palco.innerHTML = '<div data-ac="result" data-code="500" data-error-id="X1-99"></div>'; Orthos.init(palco); const r = $('[data-ac="result"]', palco);
+    ok(/Horário: .*\d{2}:\d{2}/.test($('.ac-result__meta', r).textContent) && $('.ac-result__meta code', r).textContent === 'X1-99', 'meta: ' + $('.ac-result__meta', r).textContent);
+    let got; const stop = e => { got = e.detail; e.preventDefault(); }; palco.addEventListener('ac:action', stop);
+    $('[data-action="retry"]', r).click(); ok(got && got.action === 'retry' && got.code === '500', 'ac:action retry');
+    palco.removeEventListener('ac:action', stop); const cp = $('.ac-result__copy', r); cp.click(); await w(80);
+    ok(cp.dataset.state === 'copied' || getSelection().toString().includes('X1-99'), 'copiar');
+  });
+  await t('resultado: 503 com previsão; sem internet avisa a volta', async () => {
+    palco.innerHTML = '<div data-ac="result" data-code="503" data-retry-at="15:30"></div><div data-ac="result" data-code="offline"></div>'; Orthos.init(palco);
+    ok($('[data-code="503"] .ac-result__meta', palco).textContent.includes('15:30'), 'previsão');
+    ok(!$('[data-code="offline"] .ac-result__code', palco) && $$('[data-code="offline"] .ac-result__actions > *', palco).length === 1, 'offline: sem número, uma ação');
+    let back = 0; const stop = e => { back++; e.preventDefault(); }; palco.addEventListener('ac:online', stop); window.dispatchEvent(new Event('online')); palco.removeEventListener('ac:online', stop); ok(back === 1, 'ac:online');
+  });
   await t('gráfico de área: setas leem pontos e “Ver tabela”', async () => { mount('charts'); const p = $('.ac-area__plot', palco); p.focus(); key(p, 'Home'); ok($('.ac-area__tip', palco).textContent.includes('14/10'), 'dica'); const b = $('.ac-area__foot button', palco); b.click(); ok(b.getAttribute('aria-expanded') === 'true' && $$('.ac-area tbody tr', palco).length === 14, 'tabela'); });
   await t('cartão recolhível: aria-expanded', () => { mount('collapsible'); const b = $('[data-ac-trigger]', palco); b.click(); ok(b.getAttribute('aria-expanded') === 'true', 'não abriu'); });
   await t('menu antigo: Home/End após troca para menuKeys', async () => { mount('menu'); const b = $('[data-ac="menu"]', palco); key(b, 'ArrowDown'); await w(20); key(document.activeElement, 'End'); ok(document.activeElement.textContent.includes('Excluir'), 'End'); key(document, 'Escape'); });
@@ -259,7 +280,12 @@
     mount('copyfield'); const el = $$('[data-ac="copyfield"]', palco)[1], b = $('.ac-copyfield__btn', el); let copied = null;
     navigator.clipboard.writeText = async x => { copied = x; };
     try { b.click(); await w(30); } finally { delete navigator.clipboard.writeText; }
-    ok(copied === 'chv_live_4f8a1c9e0b7d2a6f7Q2x', 'copiou ' + copied); ok(el.dataset.state === 'copied' && b.getAttribute('aria-label') === 'Copiado' && $('[aria-live]', el).textContent === 'Copiado', 'sem aviso');
+    ok(copied === 'chv_live_4f8a1c9e0b7d2a6f7Q2x', 'copiou ' + copied); ok(el.dataset.state === 'copied' && b.getAttribute('aria-label') === 'Copiado', 'sem estado');
+    // aviso no topo com a mensagem do data-toast; a região do campo fica calada para não anunciar duas vezes
+    ok($$('.ac-toaster--top .ac-toast').some(x => x.textContent.includes('Chave da API copiada')), 'sem aviso no topo'); ok($('[aria-live]', el).textContent === '', 'anunciou duas vezes');
+    el.dataset.toast = 'false'; navigator.clipboard.writeText = async x => { copied = x; };
+    try { b.click(); await w(30); } finally { delete navigator.clipboard.writeText; }
+    ok($('[aria-live]', el).textContent === 'Copiado', 'sem aviso interno com data-toast="false"'); delete el.dataset.toast;
     navigator.clipboard.writeText = async () => { throw new Error('negado'); }; document.execCommand = () => false;
     try { b.click(); await w(30); } finally { delete navigator.clipboard.writeText; delete document.execCommand; }
     ok(el.dataset.state === 'manual' && String(getSelection()) === 'chv_live_4f8a1c9e0b7d2a6f7Q2x', 'seleção: ' + getSelection()); ok(!el.nextElementSibling.hidden && /Ctrl|⌘/.test(el.nextElementSibling.textContent), 'sem dica');
@@ -516,6 +542,29 @@
   await t('tabela: o foco fica no checkbox depois de redesenhar', async () => { mount('table'); const c = $('tbody input[type=checkbox]', palco); c.focus(); c.click(); await w(20); ok(document.activeElement && document.activeElement.dataset.id === c.dataset.id, 'foco perdido'); });
   await t('pop dentro de diálogo aberto fica no diálogo', async () => { palco.innerHTML = '<dialog class="ac ac-dialog" id="t-dlg"><div class="ac-dialog__in"><select class="ac-select" data-ac="select" aria-label="Cidade"><option>Recife</option><option>Natal</option></select></div></dialog>'; Orthos.init(palco); scrollTo(0, 0); await w(60); const d = $('#t-dlg'); Orthos.open(d); await w(400); /* espera a animação de entrada: com transform, o diálogo vira contêiner do pop fixo */ const b = $('.ac-select__trigger', d); key(b, 'ArrowDown'); await w(20); const pop = $('.ac-pop:not([hidden])', d); ok(pop, 'pop fora do diálogo'); key(document, 'Escape'); d.close(); });
   await t('tema claro escolhido usa color-scheme "only light"', () => { const r = document.documentElement, old = r.dataset.theme; r.dataset.theme = 'light'; const cs = getComputedStyle(r).colorScheme; old ? r.dataset.theme = old : delete r.dataset.theme; ok(/only/.test(cs) && /light/.test(cs), cs); });
+  // ajustes de 30/10/2026
+  await t('paginação: o clique troca a página e emite ac:change', async () => {
+    mount('breadcrumb'); const nav = $('[data-ac="pagination"]', palco); let got = 0; nav.addEventListener('ac:change', e => { got = e.detail; });
+    $('[aria-label="Página 2"]', nav).click(); await w(10);
+    ok(got === 2 && $('[aria-current="page"]', nav).textContent === '2', 'página ' + got); ok(!$('[aria-label="Página anterior"]', nav).disabled, 'anterior desabilitada');
+    $('[aria-label="Próxima página"]', nav).click(); await w(10); ok(got === 3 && $('#pg-out', palco).textContent.includes('3 de 12'), 'próxima');
+  });
+  await t('toggle-group: só um alinhamento marcado', async () => {
+    mount('toggle'); const g = $('[data-ac="toggle-group"]', palco), b = $$('.ac-toggle', g);
+    b[1].click(); b[2].click(); b[2].click(); await w(10);
+    ok($$('[aria-checked="true"]', g).length === 1 && b[2].getAttribute('aria-checked') === 'true', 'marcados: ' + $$('[aria-checked="true"]', g).length); ok(g.getAttribute('role') === 'radiogroup' && b[0].getAttribute('role') === 'radio', 'papéis');
+  });
+  await t('toast no topo e com amostra de cor', async () => { const k = Orthos.toast({ title: 'Cor', swatch: '#6a4fd0', position: 'top' }); await w(20); const t1 = $$('.ac-toaster--top .ac-toast').pop(); ok(t1 && t1.textContent.includes('Cor') && $('.ac-toast__swatch', t1), 'sem aviso no topo'); k(); await w(300); });
+  await t('celular: stepper, vídeo e dinheiro não passam do contêiner', async () => {
+    mount('stepper'); const st = $('[data-ac="stepper"]', palco); st.style.width = '320px'; await w(30); const ol = $('.ac-steps', st); ok(ol.scrollWidth <= ol.clientWidth + 1 && st.scrollWidth <= 321, `stepper ${ol.scrollWidth}/${ol.clientWidth}`);
+    mount('video'); const v = $('.ac-video', palco); v.style.width = '330px'; await w(30); const ui = $('.ac-video__ui', v); ok(ui.scrollWidth <= v.clientWidth + 1, `vídeo ${ui.scrollWidth}/${v.clientWidth}`);
+    mount('money'); const sg = $('.ac-money__stage', palco), af = $('.ac-money__affix', palco); await w(20); const a = af.getBoundingClientRect(), s = sg.getBoundingClientRect(); ok(a.left >= s.left - 1 && a.right <= s.right + 1, 'R$ fora do campo');
+  });
+  await t('editor com IA: clicar fora fecha "Perguntar à IA"', async () => {
+    mount('ai-editor'); const doc = $('.ac-ai-editor__doc', palco), pop = $('.ac-ai-pop', palco) || document.querySelector('.ac-ai-pop'); doc.focus();
+    const r = document.createRange(); r.selectNodeContents($('p', doc)); getSelection().removeAllRanges(); getSelection().addRange(r); await w(80);
+    ok(pop && !pop.hidden, 'barra não abriu'); document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); await w(30); ok(pop.hidden, 'barra continuou aberta');
+  });
   await t('fontes: nenhum texto das demos abaixo de 12px', async () => {
     const ruins = [];
     for (const d of DEMOS) {
@@ -527,6 +576,40 @@
   });
   await t('fontes: escala --ac-fs-* definida e texto do iPhone sem inflar', () => { const cs = getComputedStyle(document.documentElement); ['xs', 'sm', 'base', 'md', 'lg', 'xl', '2xl', '3xl', 'touch'].forEach(k => ok(cs.getPropertyValue('--ac-fs-' + k).trim(), '--ac-fs-' + k)); ok(parseFloat(cs.getPropertyValue('--ac-fs-touch')) >= 16, 'touch < 16px'); });
   await t('selo "novo": toda demo nova traz a data em que entrou (AAAA-MM-DD)', () => { const ruins = DEMOS.filter(d => d.novo !== undefined && !(typeof d.novo === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.novo) && !isNaN(Date.parse(d.novo)))).map(d => d.id); ok(!ruins.length, 'sem data: ' + ruins.join(', ')); });
+  await t('command palette: título do grupo com ícone e cor; setas, Enter e Esc', async () => {
+    let ran = '';
+    Orthos.command({ placeholder: 'Teste', groups: { Um: { icon: '<path d="M4 12H20"/>', color: 'rgb(1, 2, 3)' }, Dois: { icon: 'search' } }, items: [{ label: 'Alfa', group: 'Um' }, { label: 'Beta', group: 'Um', hint: 'novo' }, { label: 'Gama', group: 'Dois', run: () => { ran = 'gama'; } }, { label: 'Solto' }] });
+    await w(30);
+    const d = $('#ac-command'), i = $('input', d), lb = $('[role="listbox"]', d), hs = $$('.ac-command__group', lb);
+    ok(d.open && i.placeholder === 'Teste', 'não abriu');
+    ok(hs.length === 2 && hs.every(h => h.getAttribute('role') === 'presentation' && $('svg.ac-icon[aria-hidden="true"] path', h)), 'títulos: ' + hs.length);
+    ok(getComputedStyle($('svg', hs[0])).color === 'rgb(1, 2, 3)', 'cor do grupo: ' + getComputedStyle($('svg', hs[0])).color);
+    ok($$('[role="option"]', lb).length === 4 && $('#ac-cmd-1 small', lb).textContent === 'novo', 'itens');
+    ok(i.getAttribute('aria-activedescendant') === 'ac-cmd-0', 'ativo inicial');
+    key(i, 'ArrowDown'); key(i, 'ArrowDown');
+    ok(i.getAttribute('aria-activedescendant') === 'ac-cmd-2' && $('#ac-cmd-2', lb).getAttribute('aria-selected') === 'true' && $$('[aria-selected="true"]', lb).length === 1, 'setas');
+    key(i, 'ArrowUp'); key(i, 'ArrowUp'); key(i, 'ArrowUp'); ok(i.getAttribute('aria-activedescendant') === 'ac-cmd-3', 'não voltou pelo fim');
+    i.value = 'gam'; i.dispatchEvent(new Event('input')); ok($$('[role="option"]', lb).length === 1 && $$('.ac-command__group', lb).length === 1, 'busca');
+    key(i, 'Enter'); await w(550); ok(!d.open && ran === 'gama', 'Enter: ' + ran);
+    Orthos.command({ items: [{ label: 'X' }] }); await w(30); d.dispatchEvent(new Event('cancel', { cancelable: true })); await w(450); ok(!d.open, 'Esc não fechou');
+  });
+  await t('command palette: só a lista rola; o ativo e o título do grupo ficam à vista', async () => {
+    const items = []; for (let g = 1; g <= 6; g++) for (let n = 1; n <= 12; n++) items.push({ label: `Item ${g}.${n}`, group: 'Grupo ' + g });
+    Orthos.command({ items }); await w(30);
+    const d = $('#ac-command'), i = $('input', d), lb = $('[role="listbox"]', d);
+    ok($$('[role="option"]', lb).length === 60, 'limite padrão: ' + $$('[role="option"]', lb).length);
+    Orthos.command({ items, limit: Infinity }); await w(400);
+    ok($$('[role="option"]', lb).length === 72, 'limit: ' + $$('[role="option"]', lb).length);
+    ok(lb.scrollHeight > lb.clientHeight + 50, 'a lista não rola');
+    ok(d.scrollHeight <= d.clientHeight + 1, 'o diálogo também rola (rolagem dupla)');
+    ok(d.getBoundingClientRect().bottom <= innerHeight, 'passou da borda da tela');
+    const vis = el => { const a = el.getBoundingClientRect(), b = lb.getBoundingClientRect(); return a.top >= b.top - 1 && a.bottom <= b.bottom + 1; };
+    key(i, 'ArrowUp'); ok(vis($('#ac-cmd-71', lb)) && Math.abs(lb.scrollTop + lb.clientHeight - lb.scrollHeight) <= 1, 'último fora de vista');
+    key(i, 'ArrowDown'); ok(lb.scrollTop === 0 && vis($('.ac-command__group', lb)), 'voltou ao topo sem o título');
+    for (let k = 0; k < 12; k++) key(i, 'ArrowDown');
+    const a = $('#ac-cmd-12', lb); ok(a.getAttribute('aria-selected') === 'true' && vis(a) && vis(a.previousElementSibling), 'título do 2º grupo escondido');
+    d.dispatchEvent(new Event('cancel', { cancelable: true })); await w(450);
+  });
   await t('API pública antiga preservada', () => { ['init', 'toast', 'command', 'open', 'close', 'skeleton', 'icon', 'place', 'confirm', 'alert'].forEach(k => ok(typeof Orthos[k] === 'function', k)); ok(window.Acervo === Orthos && window.Seleta === Orthos, 'aliases'); });
 
   palco.innerHTML = '';

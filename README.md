@@ -23,11 +23,12 @@ orthos-ui/
 │   ├── pesquisa-referencias.md ← pesquisa em 28 sites
 │   ├── mudancas-2026-10-27.md  ← atualização de 27/10
 │   ├── mudancas-2026-10-28.md  ← navegadores, correções, estrutura e componentes de referência
+│   ├── mudancas-2026-10-30.md  ← ajustes pedidos depois do teste no celular
 │   └── prototipos/color-picker.html ← protótipo que deu origem ao Color palette 3D
 ├── brand/              ← logo e símbolo (SVG)
 ├── assets/fotos/       ← fotos das demos (Unsplash, licença conferida; créditos em CREDITOS.md)
 ├── assets/video/       ← vídeo da demo do player (Pexels, licença conferida; créditos em CREDITOS.md)
-├── biblioteca-ui/      ← app separado: biblioteca de referências UI/UX (298 referências e capturas de telas)
+├── biblioteca-ui/      ← app separado: biblioteca de referências UI/UX (255 referências + 50 telas do 4squad)
 ├── index.html          ← site de documentação
 ├── build.py            ← gera dist/ (python build.py --check avisa se dist/ ficou para trás)
 ├── .vercelignore       ← o que não vai para o site publicado
@@ -37,7 +38,7 @@ orthos-ui/
     └── orthos.js
 ```
 
-A pasta `work/` (extração do `mvp-validacao.html` e rascunhos) é local: está no `.gitignore` e fora do deploy.
+A pasta `work/` (extração do `mvp-validacao.html` e rascunhos) foi apagada em 29/10/2026; está no histórico do git (`git checkout 7401fa1 -- work`).
 
 ## Ver o site
 
@@ -54,11 +55,14 @@ Atalho de busca: `Ctrl K`.
 ```
 
 - Tema: `data-theme="light"` ou `"dark"` no `<html>`; sem o atributo, segue o sistema. O CSS declara `color-scheme`, e o tema claro escolhido usa `only light`: o escurecimento automático do Chrome ("Auto Dark Mode") não inverte as cores. No site também há `<meta name="darkreader-lock">` para a extensão Dark Reader.
-- Componentes declarativos: `data-ac="tabs | accordion | segmented | menu | otp | combo | datepicker | dropzone | slider | counter | validate | table | sidebar | stepper | text-effect | number | scramble | magnetic | spotlight | spark | bars | palette | copy | select | popover | hovercard | contextmenu | menubar | toggle | toolbar | number-field | people | tags | daterange | area | collapsible | result | dirty | money | phone | carousel | password | copyfield | banners | chat | stack | orbit | wait | sync | gallery | coverflow | hero | tilt | reveal | scroll-progress | card-number | flip | marquee3d | sphere | ring3d | flip-words | video | halftone | morph-icon | ai-editor | conversation"`.
+- Componentes declarativos: `data-ac="tabs | accordion | segmented | menu | otp | combo | datepicker | dropzone | slider | counter | validate | table | sidebar | stepper | text-effect | number | scramble | magnetic | spotlight | spark | bars | palette | copy | select | popover | hovercard | contextmenu | menubar | toggle | toolbar | number-field | people | tags | daterange | area | collapsible | result | dirty | money | phone | carousel | password | copyfield | banners | chat | stack | orbit | wait | sync | gallery | coverflow | hero | tilt | reveal | scroll-progress | card-number | flip | marquee3d | sphere | ring3d | flip-words | video | halftone | morph-icon | ai-editor | conversation | pagination | toggle-group"`.
 - Conteúdo inserido depois do carregamento: `Orthos.init(elemento)`.
 - APIs: `Orthos.toast()` (com `.update()`), `Orthos.toast.promise(promessa, mensagens)`, `Orthos.command()`, `Orthos.skeleton(el, on, { animation, cascade, delay })`, `Orthos.open(dialog)`, `Orthos.close(dialog)`, `Orthos.results` (textos das páginas de erro), `Orthos.logo.load(el, arquivo)`, `Orthos.logo.replay(el)`, `Orthos.loading({ logo, text })` (tela de carregamento), `Orthos.tour(passos)`, `Orthos.dirty.baseline(form)`, `Orthos.lightbox(itens, início)`, `Orthos.transition(fn)` (View Transitions), `Orthos.confirm(opções)` e `Orthos.alert(mensagem)` (devolvem Promise; com `onConfirm` assíncrono o botão fica carregando e o erro aparece dentro da janela).
 - Atalho global: `Alt+T` leva o foco aos avisos.
+- Avisos: `Orthos.toast({ title, desc, type, position: 'top', swatch: '#6a4fd0' })`; `position: 'top'` usa uma pilha centralizada no alto da tela e `swatch` mostra uma amostra de cor no lugar do ícone. O Campo copiável mostra um aviso no topo ao copiar (`data-toast="mensagem"`, ou `"false"` para desligar).
+- Busca: `Orthos.command({ items, groups: { 'Formulários': { icon, color } }, limit })` mostra o título de cada grupo com ícone e cor. Páginas de erro: `data-ac="result"` com `data-code` (404, 403, 401, 500, error, 503, offline, success), `data-audience` (visitante, usuário, equipe), `data-support`, `data-error-id`, `data-retry-at` e o evento cancelável `ac:action`.
 - Escala de texto: `--ac-fs-xs` 12px · `sm` 13 · `base` 14 · `md` 15 · `lg` 17 · `xl` 20 · `2xl` 22 · `3xl` 28 · `touch` 16 (campos em telas de toque, para o Safari do iPhone não dar zoom). 12px é o mínimo; a suíte de testes falha se alguma demo tiver texto menor. Dicas (`.ac-hint`), erros (`.ac-error`) e cabeçalhos de tabela usam 14px. O site de documentação usa `--site-read` (16px) no texto corrido e no menu, e `--site-small` (14px) nos rótulos.
+- Borda de campo: `--ac-border-input` (3:1 contra o fundo, WCAG 1.4.11) em input, textarea, select, checkbox, switch, number field, pessoas e tags, telefone, chat e campo copiável; as demais bordas continuam suaves (`--ac-border`, `--ac-border-strong`).
 - Tokens de forma e movimento: `--ac-btn-radius`, `--ac-dur-fast | base | slow | overlay`, `--ac-ease-standard`, `--ac-ease-out`.
 - Eventos: `ac:change`, `ac:select`, `ac:complete`, `ac:valid`.
 - Formulário com `data-ac="validate"`: com erro, o envio é barrado e o foco vai ao primeiro campo inválido. Válido, emite `ac:valid` (cancelável) e o formulário é enviado normalmente; para enviar por `fetch`, chame `e.preventDefault()` nesse evento.

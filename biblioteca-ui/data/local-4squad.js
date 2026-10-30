@@ -1218,328 +1218,6 @@ window.LIB_LOCAL4SQUAD={
    "add": "2026-10-26"
   }
  ],
- "vitrine": [
-  {
-   "id": "l4-vitrine-01",
-   "nome": "Cores",
-   "cat": "H",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-cores",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-02",
-   "nome": "Esquema de cores",
-   "cat": "H",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-esquema-de-cores",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-03",
-   "nome": "Letras",
-   "cat": "H",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-letras",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-04",
-   "nome": "Botões",
-   "cat": "A",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-boto-es",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-05",
-   "nome": "Campos",
-   "cat": "A",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-campos",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-06",
-   "nome": "Selos e avisos",
-   "cat": "E",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-selos-e-avisos",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-07",
-   "nome": "Pessoas e cores",
-   "cat": "A",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-pessoas-e-cores",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-08",
-   "nome": "Números (valores de exemplo)",
-   "cat": "D",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-nu-meros-valores-de-exemplo-",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-09",
-   "nome": "Período e gráficos (valores de exemplo)",
-   "cat": "D",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-peri-odo-e-gra-ficos-valores-de-exemplo-",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-10",
-   "nome": "Estados do dado",
-   "cat": "E",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-estados-do-dado",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-11",
-   "nome": "Cartões do mesmo tamanho",
-   "cat": "D",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-carto-es-do-mesmo-tamanho",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-12",
-   "nome": "Carregamento",
-   "cat": "E",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-carregamento",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-13",
-   "nome": "Faixa de aviso no topo",
-   "cat": "E",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-faixa-de-aviso-no-topo",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-14",
-   "nome": "Mensagens",
-   "cat": "E",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-mensagens",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-15",
-   "nome": "Páginas de erro",
-   "cat": "E",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-pa-ginas-de-erro",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-16",
-   "nome": "Cartões e abas",
-   "cat": "B",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-carto-es-e-abas",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-17",
-   "nome": "Passo a passo em acordeão (conexões)",
-   "cat": "C",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-passo-a-passo-em-acordea-o-conexo-es-",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-18",
-   "nome": "Janela e confirmação",
-   "cat": "E",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-janela-e-confirmac-a-o",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-19",
-   "nome": "Menu lateral",
-   "cat": "B",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-menu-lateral",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  },
-  {
-   "id": "l4-vitrine-20",
-   "nome": "Esqueletos com a forma real",
-   "cat": "E",
-   "tipo": "implementavel",
-   "local": true,
-   "origem": "4squad",
-   "desc": "Seção da vitrine ao vivo da biblioteca original (componentes reais do 4squad renderizados). Abre o arquivo original preservado.",
-   "legado": "legacy/biblioteca-4squad-original.html#c-s-esqueletos-com-a-forma-real",
-   "tags": [
-    "vitrine",
-    "4squad"
-   ],
-   "problemas": [],
-   "add": "2026-10-26"
-  }
- ],
  "pecas": [
   {
    "id": "l4-peca-001",
@@ -1550,8 +1228,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Aparelhos.tsx",
    "tipoPeca": "componente",
-   "desc": "O celular (iPhone). `escuro`: a barra de status e o fundo da tela no escuro (story, Reels). `safari`: mostra a barra do Safari com o endereço (prévia de página da web). `largura`: a largura na tela, em px (o aparelho encolhe se o espaço for menor); `alturaMax`: encolhe também para caber na altura (numa janela, por exemplo).",
-   "naVitrine": false
+   "desc": "O celular (iPhone). `escuro`: a barra de status e o fundo da tela no escuro (story, Reels). `safari`: mostra a barra do Safari com o endereço (prévia de página da web). `largura`: a largura na tela, em px (o aparelho encolhe se o espaço for menor); `alturaMax`: encolhe também para caber na altura (numa janela, por exemplo)."
   },
   {
    "id": "l4-peca-002",
@@ -1562,8 +1239,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Aparelhos.tsx",
    "tipoPeca": "componente",
-   "desc": "A janela do navegador (computador): as três bolinhas, os ícones e o endereço; o conteúdo vem embaixo.",
-   "naVitrine": false
+   "desc": "A janela do navegador (computador): as três bolinhas, os ícones e o endereço; o conteúdo vem embaixo."
   },
   {
    "id": "l4-peca-003",
@@ -1574,8 +1250,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Aparelhos.tsx",
    "tipoPeca": "componente",
-   "desc": "A mesa pontilhada da prévia (.b-palco): o aparelho no meio e, no canto de cima, a escolha Celular/Computador. `aparelho` e `aoTrocar` controlam a escolha; sem `aoTrocar`, a escolha não aparece.",
-   "naVitrine": false
+   "desc": "A mesa pontilhada da prévia (.b-palco): o aparelho no meio e, no canto de cima, a escolha Celular/Computador. `aparelho` e `aoTrocar` controlam a escolha; sem `aoTrocar`, a escolha não aparece."
   },
   {
    "id": "l4-peca-004",
@@ -1586,8 +1261,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Apps.tsx",
    "tipoPeca": "componente",
-   "desc": "Cartão de integração (CartaoApp; estilos em base.css, .b-app). Ícone num quadrado com borda, o nome grande com o selo de estado ao lado e uma descrição curta. O cartão inteiro é o botão que abre a configuração (janela) ou o link da página dela. Vários lado a lado: grade .b-grade, todos do mesmo tamanho. Uso: ferramentas de IA do criador, integrações da equipe (Plataforma, no console).",
-   "naVitrine": false
+   "desc": "Cartão de integração (CartaoApp; estilos em base.css, .b-app). Ícone num quadrado com borda, o nome grande com o selo de estado ao lado e uma descrição curta. O cartão inteiro é o botão que abre a configuração (janela) ou o link da página dela. Vários lado a lado: grade .b-grade, todos do mesmo tamanho. Uso: ferramentas de IA do criador, integrações da equipe (Plataforma, no console)."
   },
   {
    "id": "l4-peca-005",
@@ -1598,8 +1272,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/AvisosRapidos.tsx",
    "tipoPeca": "componente",
-   "desc": "Aviso rápido (toast) da base (ex.: \"Esquema aplicado\", depois do CarrosselEsquemas). Confirma uma ação que deu certo sem ocupar a tela; some sozinho em 3 s e é lido pelo leitor de tela. Erro que pede ação não é aviso rápido: use <Aviso tom=\"erro\"> perto do que falhou.",
-   "naVitrine": true
+   "desc": "Aviso rápido (toast) da base (ex.: \"Esquema aplicado\", depois do CarrosselEsquemas). Confirma uma ação que deu certo sem ocupar a tela; some sozinho em 3 s e é lido pelo leitor de tela. Erro que pede ação não é aviso rápido: use <Aviso tom=\"erro\"> perto do que falhou."
   },
   {
    "id": "l4-peca-006",
@@ -1610,8 +1283,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/AvisosRapidos.tsx",
    "tipoPeca": "hook",
-   "desc": "`const avisar = useAvisoRapido(); avisar(\"Esquema aplicado\")`",
-   "naVitrine": true
+   "desc": "`const avisar = useAvisoRapido(); avisar(\"Esquema aplicado\")`"
   },
   {
    "id": "l4-peca-007",
@@ -1622,8 +1294,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Botao.tsx",
    "tipoPeca": "funcao",
-   "desc": "Botões da base. Estilos em base.css (.b-botao). Regra do projeto: botão nunca apagado. Não passe `disabled` para \"travar\" uma ação: deixe o clique mostrar o que falta. O único estado travado é o `carregando` (enquanto salva, envia ou abre).",
-   "naVitrine": false
+   "desc": "Botões da base. Estilos em base.css (.b-botao). Regra do projeto: botão nunca apagado. Não passe `disabled` para \"travar\" uma ação: deixe o clique mostrar o que falta. O único estado travado é o `carregando` (enquanto salva, envia ou abre)."
   },
   {
    "id": "l4-peca-008",
@@ -1634,8 +1305,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Botao.tsx",
    "tipoPeca": "componente",
-   "desc": "Botões da base. Estilos em base.css (.b-botao). Regra do projeto: botão nunca apagado. Não passe `disabled` para \"travar\" uma ação: deixe o clique mostrar o que falta. O único estado travado é o `carregando` (enquanto salva, envia ou abre).",
-   "naVitrine": true
+   "desc": "Botões da base. Estilos em base.css (.b-botao). Regra do projeto: botão nunca apagado. Não passe `disabled` para \"travar\" uma ação: deixe o clique mostrar o que falta. O único estado travado é o `carregando` (enquanto salva, envia ou abre)."
   },
   {
    "id": "l4-peca-009",
@@ -1646,8 +1316,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Botao.tsx",
    "tipoPeca": "componente",
-   "desc": "Botão que gera algo pago com IA: mostra o custo estimado ao lado do texto, antes do clique (\"Gerar post · ~US$ 0,15\"). `custo` em dólar; sem valor (estimativa ainda carregando ou desconhecida), fica o botão comum. A dica ao passar o mouse diz de onde vem o valor.",
-   "naVitrine": false
+   "desc": "Botão que gera algo pago com IA: mostra o custo estimado ao lado do texto, antes do clique (\"Gerar post · ~US$ 0,15\"). `custo` em dólar; sem valor (estimativa ainda carregando ou desconhecida), fica o botão comum. A dica ao passar o mouse diz de onde vem o valor."
   },
   {
    "id": "l4-peca-010",
@@ -1658,8 +1327,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Botao.tsx",
    "tipoPeca": "componente",
-   "desc": "Mesmo visual, mas é um link (navega). Use quando o clique leva para outra tela.",
-   "naVitrine": true
+   "desc": "Mesmo visual, mas é um link (navega). Use quando o clique leva para outra tela."
   },
   {
    "id": "l4-peca-011",
@@ -1670,8 +1338,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Botao.tsx",
    "tipoPeca": "componente",
-   "desc": "Botões da base. Estilos em base.css (.b-botao). Regra do projeto: botão nunca apagado. Não passe `disabled` para \"travar\" uma ação: deixe o clique mostrar o que falta. O único estado travado é o `carregando` (enquanto salva, envia ou abre).",
-   "naVitrine": true
+   "desc": "Botões da base. Estilos em base.css (.b-botao). Regra do projeto: botão nunca apagado. Não passe `disabled` para \"travar\" uma ação: deixe o clique mostrar o que falta. O único estado travado é o `carregando` (enquanto salva, envia ou abre)."
   },
   {
    "id": "l4-peca-012",
@@ -1682,8 +1349,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Botao.tsx",
    "tipoPeca": "componente",
-   "desc": "Link com cara de botão de ícone (o \"Detalhes\" de uma linha de lista): com Ctrl ou Cmd abre em outra aba.",
-   "naVitrine": false
+   "desc": "Link com cara de botão de ícone (o \"Detalhes\" de uma linha de lista): com Ctrl ou Cmd abre em outra aba."
   },
   {
    "id": "l4-peca-013",
@@ -1694,8 +1360,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Campos.tsx",
    "tipoPeca": "componente",
-   "desc": "Campos da base. Estilos em base.css (.b-campo, .b-entrada). Todo campo tem rótulo de verdade (<label for>), a ajuda ou o erro ficam ligados ao campo (aria-describedby) e o erro aparece junto do campo, em português, no lugar da ajuda. Sem os avisos do navegador: o campo obrigatório leva aria-required, não o required nativo, e todo <form> leva noValidate. Quem confere é o código da tela, e o erro aparece aqui, no `erro` do campo.",
-   "naVitrine": true
+   "desc": "Campos da base. Estilos em base.css (.b-campo, .b-entrada). Todo campo tem rótulo de verdade (<label for>), a ajuda ou o erro ficam ligados ao campo (aria-describedby) e o erro aparece junto do campo, em português, no lugar da ajuda. Sem os avisos do navegador: o campo obrigatório leva aria-required, não o required nativo, e todo <form> leva noValidate. Quem confere é o código da tela, e o erro aparece aqui, no `erro` do campo."
   },
   {
    "id": "l4-peca-014",
@@ -1706,8 +1371,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Campos.tsx",
    "tipoPeca": "componente",
-   "desc": "Campos da base. Estilos em base.css (.b-campo, .b-entrada). Todo campo tem rótulo de verdade (<label for>), a ajuda ou o erro ficam ligados ao campo (aria-describedby) e o erro aparece junto do campo, em português, no lugar da ajuda. Sem os avisos do navegador: o campo obrigatório leva aria-required, não o required nativo, e todo <form> leva noValidate. Quem confere é o código da tela, e o erro aparece aqui, no `erro` do campo.",
-   "naVitrine": true
+   "desc": "Campos da base. Estilos em base.css (.b-campo, .b-entrada). Todo campo tem rótulo de verdade (<label for>), a ajuda ou o erro ficam ligados ao campo (aria-describedby) e o erro aparece junto do campo, em português, no lugar da ajuda. Sem os avisos do navegador: o campo obrigatório leva aria-required, não o required nativo, e todo <form> leva noValidate. Quem confere é o código da tela, e o erro aparece aqui, no `erro` do campo."
   },
   {
    "id": "l4-peca-015",
@@ -1718,8 +1382,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Campos.tsx",
    "tipoPeca": "componente",
-   "desc": "Campos da base. Estilos em base.css (.b-campo, .b-entrada). Todo campo tem rótulo de verdade (<label for>), a ajuda ou o erro ficam ligados ao campo (aria-describedby) e o erro aparece junto do campo, em português, no lugar da ajuda. Sem os avisos do navegador: o campo obrigatório leva aria-required, não o required nativo, e todo <form> leva noValidate. Quem confere é o código da tela, e o erro aparece aqui, no `erro` do campo.",
-   "naVitrine": true
+   "desc": "Campos da base. Estilos em base.css (.b-campo, .b-entrada). Todo campo tem rótulo de verdade (<label for>), a ajuda ou o erro ficam ligados ao campo (aria-describedby) e o erro aparece junto do campo, em português, no lugar da ajuda. Sem os avisos do navegador: o campo obrigatório leva aria-required, não o required nativo, e todo <form> leva noValidate. Quem confere é o código da tela, e o erro aparece aqui, no `erro` do campo."
   },
   {
    "id": "l4-peca-016",
@@ -1730,8 +1393,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Campos.tsx",
    "tipoPeca": "componente",
-   "desc": "Senha ou chave, com o olho para ver o que foi digitado. `segredo`: campo de chave de API ou senha de outra conta. O navegador não pode preencher com a senha de login (o Chrome ignora autocomplete=\"off\" em senha), então vai new-password + os atributos dos gerenciadores.",
-   "naVitrine": true
+   "desc": "Senha ou chave, com o olho para ver o que foi digitado. `segredo`: campo de chave de API ou senha de outra conta. O navegador não pode preencher com a senha de login (o Chrome ignora autocomplete=\"off\" em senha), então vai new-password + os atributos dos gerenciadores."
   },
   {
    "id": "l4-peca-017",
@@ -1742,8 +1404,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Campos.tsx",
    "tipoPeca": "componente",
-   "desc": "Só a caixa de marcar, desenhada e animada (base.css, .b-caixa). A caixa enche e o \"certo\" se desenha ao marcar. O input nativo continua lá, invisível, por cima da caixa: teclado, leitor de tela, formulário e `checked`/`onChange` funcionam como num checkbox comum. Precisa de um rótulo em volta (Marcador) ou de `aria-label`.",
-   "naVitrine": false
+   "desc": "Só a caixa de marcar, desenhada e animada (base.css, .b-caixa). A caixa enche e o \"certo\" se desenha ao marcar. O input nativo continua lá, invisível, por cima da caixa: teclado, leitor de tela, formulário e `checked`/`onChange` funcionam como num checkbox comum. Precisa de um rótulo em volta (Marcador) ou de `aria-label`."
   },
   {
    "id": "l4-peca-018",
@@ -1754,8 +1415,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Campos.tsx",
    "tipoPeca": "componente",
-   "desc": "Caixa de marcar com o texto clicável junto.",
-   "naVitrine": true
+   "desc": "Caixa de marcar com o texto clicável junto."
   },
   {
    "id": "l4-peca-019",
@@ -1766,8 +1426,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Campos.tsx",
    "tipoPeca": "componente",
-   "desc": "Escolha de uma opção em cartões: no lugar do rádio cru do navegador, cada opção é um cartão com título e uma linha de apoio (Formato do post, Quem aprova). O rádio de verdade continua por baixo: setas do teclado trocam a opção e o leitor de tela lê o grupo. `desligada` mostra a opção sem deixar escolher (ex.: \"Reel · Em breve\"); `colunas` fixa quantas por linha (sem isso, se ajusta à largura).",
-   "naVitrine": false
+   "desc": "Escolha de uma opção em cartões: no lugar do rádio cru do navegador, cada opção é um cartão com título e uma linha de apoio (Formato do post, Quem aprova). O rádio de verdade continua por baixo: setas do teclado trocam a opção e o leitor de tela lê o grupo. `desligada` mostra a opção sem deixar escolher (ex.: \"Reel · Em breve\"); `colunas` fixa quantas por linha (sem isso, se ajusta à largura)."
   },
   {
    "id": "l4-peca-020",
@@ -1778,8 +1437,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Carregando.tsx",
    "tipoPeca": "componente",
-   "desc": "Só o símbolo animado. `tamanho` em px. `herdarCor`: usa a cor do texto em volta (telas antigas, como o console).",
-   "naVitrine": true
+   "desc": "Só o símbolo animado. `tamanho` em px. `herdarCor`: usa a cor do texto em volta (telas antigas, como o console)."
   },
   {
    "id": "l4-peca-021",
@@ -1790,8 +1448,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Carregando.tsx",
    "tipoPeca": "componente",
-   "desc": "Os quatro pontos que giram e crescem (desenho do Uiverse, AbanoubMagdy1, MIT). Para a espera dentro de uma área; estilos em base.css (.b-pontos). `tamanho` em px.",
-   "naVitrine": true
+   "desc": "Os quatro pontos que giram e crescem (desenho do Uiverse, AbanoubMagdy1, MIT). Para a espera dentro de uma área; estilos em base.css (.b-pontos). `tamanho` em px."
   },
   {
    "id": "l4-peca-022",
@@ -1802,8 +1459,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Carregando.tsx",
    "tipoPeca": "componente",
-   "desc": "Espera longa que não trava a tela: gerar a arte do post, pesquisa. Um navegador desenhado, com os esqueletos da página pulsando e a luz correndo pelos traços até ele. Vai junto do aviso \"Leva de 1 a 2 minutos\" (quem usa põe o aviso); `rotulo` aparece na barra do navegador e é lido pelo leitor de tela. Estilos em base.css (.b-espera-longa); com movimento reduzido, fica parado.",
-   "naVitrine": true
+   "desc": "Espera longa que não trava a tela: gerar a arte do post, pesquisa. Um navegador desenhado, com os esqueletos da página pulsando e a luz correndo pelos traços até ele. Vai junto do aviso \"Leva de 1 a 2 minutos\" (quem usa põe o aviso); `rotulo` aparece na barra do navegador e é lido pelo leitor de tela. Estilos em base.css (.b-espera-longa); com movimento reduzido, fica parado."
   },
   {
    "id": "l4-peca-023",
@@ -1814,8 +1470,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Carregando.tsx",
    "tipoPeca": "componente",
-   "desc": "Carregamento no meio de uma área (tela abrindo). O texto é lido pelo leitor de tela e, se `visivel`, aparece embaixo. Usa os quatro pontos; `simbolo` troca pelo símbolo do 4squad, só para a espera que ocupa a tela inteira (abrir o app).",
-   "naVitrine": true
+   "desc": "Carregamento no meio de uma área (tela abrindo). O texto é lido pelo leitor de tela e, se `visivel`, aparece embaixo. Usa os quatro pontos; `simbolo` troca pelo símbolo do 4squad, só para a espera que ocupa a tela inteira (abrir o app)."
   },
   {
    "id": "l4-peca-024",
@@ -1826,8 +1481,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Carregando.tsx",
    "tipoPeca": "hook",
-   "desc": "Quando a espera aparece. Espera curta (menos de `atraso` ms) nem mostra o carregamento, para ele não piscar. Uma vez na tela, ele fica pelo menos `minimo` ms, o bastante para o símbolo se desenhar, em vez de sumir pela metade.",
-   "naVitrine": false
+   "desc": "Quando a espera aparece. Espera curta (menos de `atraso` ms) nem mostra o carregamento, para ele não piscar. Uma vez na tela, ele fica pelo menos `minimo` ms, o bastante para o símbolo se desenhar, em vez de sumir pela metade."
   },
   {
    "id": "l4-peca-025",
@@ -1838,8 +1492,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Carregando.tsx",
    "tipoPeca": "constante",
-   "desc": "Tamanho do símbolo nas esperas que travam a tela inteira (88 px).",
-   "naVitrine": true
+   "desc": "Tamanho do símbolo nas esperas que travam a tela inteira (88 px)."
   },
   {
    "id": "l4-peca-026",
@@ -1850,8 +1503,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Carregando.tsx",
    "tipoPeca": "componente",
-   "desc": "Carregamento por cima da tela inteira, com o fundo desfocado (base.css, .b-carregando-tela).",
-   "naVitrine": true
+   "desc": "Carregamento por cima da tela inteira, com o fundo desfocado (base.css, .b-carregando-tela)."
   },
   {
    "id": "l4-peca-027",
@@ -1862,8 +1514,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/CarrosselEsquemas.tsx",
    "tipoPeca": "componente",
-   "desc": "Carrossel de esquemas de cor: um carretel curvo e infinito, cada cartão é uma mini-prévia do painel pintada com o esquema (ESQUEMAS, em Preferencias.tsx). Gira pelas setas, pelo teclado (esquerda e direita), arrastando ou tocando no cartão; \"Usar este esquema\" aplica. Janela do Radix (foco preso, Esc fecha); a prévia leva o destaque do 4squad, que não muda com o esquema.",
-   "naVitrine": true
+   "desc": "Carrossel de esquemas de cor: um carretel curvo e infinito, cada cartão é uma mini-prévia do painel pintada com o esquema (ESQUEMAS, em Preferencias.tsx). Gira pelas setas, pelo teclado (esquerda e direita), arrastando ou tocando no cartão; \"Usar este esquema\" aplica. Janela do Radix (foco preso, Esc fecha); a prévia leva o destaque do 4squad, que não muda com o esquema."
   },
   {
    "id": "l4-peca-028",
@@ -1874,8 +1525,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Conversa.tsx",
    "tipoPeca": "componente",
-   "desc": "A lista de mensagens.",
-   "naVitrine": true
+   "desc": "A lista de mensagens."
   },
   {
    "id": "l4-peca-029",
@@ -1886,8 +1536,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Conversa.tsx",
    "tipoPeca": "componente",
-   "desc": "Um balão. `variante`: padrao = enviada (cor de destaque escura), recebida = cinza, suave = destaque clarinho.",
-   "naVitrine": true
+   "desc": "Um balão. `variante`: padrao = enviada (cor de destaque escura), recebida = cinza, suave = destaque clarinho."
   },
   {
    "id": "l4-peca-030",
@@ -1898,8 +1547,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Conversa.tsx",
    "tipoPeca": "componente",
-   "desc": "O texto (ou o link, ou o botão) dentro do balão. `como=\"a\"` ou `\"button\"` para o balão inteiro ser clicável.",
-   "naVitrine": true
+   "desc": "O texto (ou o link, ou o botão) dentro do balão. `como=\"a\"` ou `\"button\"` para o balão inteiro ser clicável."
   },
   {
    "id": "l4-peca-031",
@@ -1910,8 +1558,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Conversa.tsx",
    "tipoPeca": "componente",
-   "desc": "Selo de reações preso ao balão (em cima ou embaixo, no começo ou no fim).",
-   "naVitrine": true
+   "desc": "Selo de reações preso ao balão (em cima ou embaixo, no começo ou no fim)."
   },
   {
    "id": "l4-peca-032",
@@ -1922,8 +1569,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/datas.ts",
    "tipoPeca": "funcao",
-   "desc": "A hora curta de uma lista de conversas (o menu dos agentes do console): hoje, só a hora (\"19:34\"); ontem, \"Ontem\"; nesta semana, o dia (\"terça\"); antes disso, a data (\"24/10\").",
-   "naVitrine": false
+   "desc": "A hora curta de uma lista de conversas (o menu dos agentes do console): hoje, só a hora (\"19:34\"); ontem, \"Ontem\"; nesta semana, o dia (\"terça\"); antes disso, a data (\"24/10\")."
   },
   {
    "id": "l4-peca-033",
@@ -1934,8 +1580,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/datas.ts",
    "tipoPeca": "funcao",
-   "desc": "Data com hora para \"Gerado em\", \"Última coleta em\" e afins: \"24/10/2026 às 19:27\". O toLocaleString puro mostra os segundos (\"24/10/2026, 19:27:16\"), que não ajudam ninguém a ler quando algo aconteceu.",
-   "naVitrine": false
+   "desc": "Data com hora para \"Gerado em\", \"Última coleta em\" e afins: \"24/10/2026 às 19:27\". O toLocaleString puro mostra os segundos (\"24/10/2026, 19:27:16\"), que não ajudam ninguém a ler quando algo aconteceu."
   },
   {
    "id": "l4-peca-034",
@@ -1946,8 +1591,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Erro.tsx",
    "tipoPeca": "constante",
-   "desc": "Canal de suporte (WhatsApp, e-mail ou agenda). Vazio enquanto não for definido: sem ele, o 403 leva de volta ao início no lugar de \"Falar com o suporte\".",
-   "naVitrine": false
+   "desc": "Canal de suporte (WhatsApp, e-mail ou agenda). Vazio enquanto não for definido: sem ele, o 403 leva de volta ao início no lugar de \"Falar com o suporte\"."
   },
   {
    "id": "l4-peca-035",
@@ -1958,8 +1602,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Erro.tsx",
    "tipoPeca": "hook",
-   "desc": "Quem está vendo a página, pela sessão (o mesmo /api/auth/me do app e do console).",
-   "naVitrine": false
+   "desc": "Quem está vendo a página, pela sessão (o mesmo /api/auth/me do app e do console)."
   },
   {
    "id": "l4-peca-036",
@@ -1970,8 +1613,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Erro.tsx",
    "tipoPeca": "funcao",
-   "desc": "Converte um erro qualquer (da API, do roteador, da rede) no código da página.",
-   "naVitrine": false
+   "desc": "Converte um erro qualquer (da API, do roteador, da rede) no código da página."
   },
   {
    "id": "l4-peca-037",
@@ -1982,8 +1624,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Erro.tsx",
    "tipoPeca": "componente",
-   "desc": "",
-   "naVitrine": true
+   "desc": ""
   },
   {
    "id": "l4-peca-038",
@@ -1994,8 +1635,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Esqueletos.tsx",
    "tipoPeca": "componente",
-   "desc": "Invólucro dos ossos: a animação e a cascata valem para todos os .b-esqueleto de dentro. Anuncia \"carregando\".",
-   "naVitrine": true
+   "desc": "Invólucro dos ossos: a animação e a cascata valem para todos os .b-esqueleto de dentro. Anuncia \"carregando\"."
   },
   {
    "id": "l4-peca-039",
@@ -2006,8 +1646,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Esqueletos.tsx",
    "tipoPeca": "componente",
-   "desc": "A conversa: balões que alternam de lado, com larguras diferentes, e o avatar de quem escreve do outro lado.",
-   "naVitrine": true
+   "desc": "A conversa: balões que alternam de lado, com larguras diferentes, e o avatar de quem escreve do outro lado."
   },
   {
    "id": "l4-peca-040",
@@ -2018,8 +1657,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Esqueletos.tsx",
    "tipoPeca": "componente",
-   "desc": "A grade de fotos: cada quadro na proporção e, embaixo, a legenda (nome e marcação).",
-   "naVitrine": true
+   "desc": "A grade de fotos: cada quadro na proporção e, embaixo, a legenda (nome e marcação)."
   },
   {
    "id": "l4-peca-041",
@@ -2030,8 +1668,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Esqueletos.tsx",
    "tipoPeca": "componente",
-   "desc": "O cartão de post: a imagem na proporção do destino, o título, duas linhas de texto e a linha de quem fez.",
-   "naVitrine": true
+   "desc": "O cartão de post: a imagem na proporção do destino, o título, duas linhas de texto e a linha de quem fez."
   },
   {
    "id": "l4-peca-042",
@@ -2042,8 +1679,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Esqueletos.tsx",
    "tipoPeca": "componente",
-   "desc": "A tabela: cada linha com o avatar, o nome e a linha de baixo e, depois, as colunas (selos e texto curto), na mesma largura das colunas de verdade (`colunas`, como o grid-template-columns). Abaixo de 1024 px vira o bloco do celular.",
-   "naVitrine": true
+   "desc": "A tabela: cada linha com o avatar, o nome e a linha de baixo e, depois, as colunas (selos e texto curto), na mesma largura das colunas de verdade (`colunas`, como o grid-template-columns). Abaixo de 1024 px vira o bloco do celular."
   },
   {
    "id": "l4-peca-043",
@@ -2054,8 +1690,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Esqueletos.tsx",
    "tipoPeca": "componente",
-   "desc": "A lista simples (posts, fila): um selo, o título e a linha de detalhe; o botão à direita.",
-   "naVitrine": true
+   "desc": "A lista simples (posts, fila): um selo, o título e a linha de detalhe; o botão à direita."
   },
   {
    "id": "l4-peca-044",
@@ -2066,8 +1701,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Esqueletos.tsx",
    "tipoPeca": "componente",
-   "desc": "Os números (CartaoNumero): o rótulo, o valor grande e a legenda, em cartões lado a lado.",
-   "naVitrine": true
+   "desc": "Os números (CartaoNumero): o rótulo, o valor grande e a legenda, em cartões lado a lado."
   },
   {
    "id": "l4-peca-045",
@@ -2078,8 +1712,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Esqueletos.tsx",
    "tipoPeca": "componente",
-   "desc": "Troca o esqueleto pelo conteúdo com um fade. Enquanto `carregando`, mostra o `esqueleto`; quando acaba, o conteúdo entra com uma transição curta. Espera curta (menos de 150 ms) não pisca o esqueleto.",
-   "naVitrine": true
+   "desc": "Troca o esqueleto pelo conteúdo com um fade. Enquanto `carregando`, mostra o `esqueleto`; quando acaba, o conteúdo entra com uma transição curta. Espera curta (menos de 150 ms) não pisca o esqueleto."
   },
   {
    "id": "l4-peca-046",
@@ -2090,8 +1723,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Esqueletos.tsx",
    "tipoPeca": "componente",
-   "desc": "Espera dentro do cartão quando um dado de fora não respondeu, no lugar do aviso vermelho. Quem usa tenta de novo sozinho e diz isso no detalhe. Duas formas: - \"pontos\": as quatro bolinhas que giram e respiram (PontosCarregando), para buscar um dado; - \"sonar\": o ícone no meio com ondas saindo dele, para esperar outro sistema (sincronizar). Com movimento reduzido no aparelho, fica parada.",
-   "naVitrine": true
+   "desc": "Espera dentro do cartão quando um dado de fora não respondeu, no lugar do aviso vermelho. Quem usa tenta de novo sozinho e diz isso no detalhe. Duas formas: - \"pontos\": as quatro bolinhas que giram e respiram (PontosCarregando), para buscar um dado; - \"sonar\": o ícone no meio com ondas saindo dele, para esperar outro sistema (sincronizar). Com movimento reduzido no aparelho, fica parada."
   },
   {
    "id": "l4-peca-047",
@@ -2102,8 +1734,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Exibicao.tsx",
    "tipoPeca": "componente",
-   "desc": "Peças de exibição da base. Estilos em base.css. Cartão em duas camadas (faixa com título + painel; .b-cartao em base.css).",
-   "naVitrine": true
+   "desc": "Peças de exibição da base. Estilos em base.css. Cartão em duas camadas (faixa com título + painel; .b-cartao em base.css)."
   },
   {
    "id": "l4-peca-048",
@@ -2114,8 +1745,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Exibicao.tsx",
    "tipoPeca": "componente",
-   "desc": "Variação contra o período anterior. `bomQuandoSobe=false` para números em que subir é ruim (ex.: posts com falha).",
-   "naVitrine": false
+   "desc": "Variação contra o período anterior. `bomQuandoSobe=false` para números em que subir é ruim (ex.: posts com falha)."
   },
   {
    "id": "l4-peca-049",
@@ -2126,8 +1756,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Exibicao.tsx",
    "tipoPeca": "componente",
-   "desc": "Minigráfico de linha: só a forma da série, sem eixos. Decorativo; o número e a variação dizem o valor.",
-   "naVitrine": false
+   "desc": "Minigráfico de linha: só a forma da série, sem eixos. Decorativo; o número e a variação dizem o valor."
   },
   {
    "id": "l4-peca-050",
@@ -2138,8 +1767,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Exibicao.tsx",
    "tipoPeca": "componente",
-   "desc": "Número com contexto: rótulo por extenso, valor, variação e minigráfico. Regra do painel: sem número real, o cartão não aparece. Quem chama decide não renderizar.",
-   "naVitrine": true
+   "desc": "Número com contexto: rótulo por extenso, valor, variação e minigráfico. Regra do painel: sem número real, o cartão não aparece. Quem chama decide não renderizar."
   },
   {
    "id": "l4-peca-051",
@@ -2150,8 +1778,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Exibicao.tsx",
    "tipoPeca": "componente",
-   "desc": "Selo de estado. Os tons do post (aprovar, agendado...) são as cores fixas já aprovadas no app.",
-   "naVitrine": true
+   "desc": "Selo de estado. Os tons do post (aprovar, agendado...) são as cores fixas já aprovadas no app."
   },
   {
    "id": "l4-peca-052",
@@ -2162,8 +1789,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Exibicao.tsx",
    "tipoPeca": "componente",
-   "desc": "Aviso dentro da tela: o que aconteceu e, quando houver, a ação que resolve. Onde ele vai, para o aviso não quebrar a tela: - assunto da conta (Instagram, chaves, configuração): na faixa do topo, nunca repetido dentro da tela; - assunto de uma parte da tela: dentro do cartão dessa parte, na largura dele; - recado sobre a lista ou o filtro: `compacto`, uma linha na barra de ferramentas; - nunca solto numa coluna estreita, empurrando ou espremendo o resto.",
-   "naVitrine": true
+   "desc": "Aviso dentro da tela: o que aconteceu e, quando houver, a ação que resolve. Onde ele vai, para o aviso não quebrar a tela: - assunto da conta (Instagram, chaves, configuração): na faixa do topo, nunca repetido dentro da tela; - assunto de uma parte da tela: dentro do cartão dessa parte, na largura dele; - recado sobre a lista ou o filtro: `compacto`, uma linha na barra de ferramentas; - nunca solto numa coluna estreita, empurrando ou espremendo o resto."
   },
   {
    "id": "l4-peca-053",
@@ -2174,8 +1800,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Exibicao.tsx",
    "tipoPeca": "componente",
-   "desc": "Com `trilha`, o caminho aparece acima do título; o `voltar` vira uma trilha de dois passos (\"Minha conta > Minha marca\"), então as telas que usam `voltar` também mostram o caminho.",
-   "naVitrine": true
+   "desc": "Com `trilha`, o caminho aparece acima do título; o `voltar` vira uma trilha de dois passos (\"Minha conta > Minha marca\"), então as telas que usam `voltar` também mostram o caminho."
   },
   {
    "id": "l4-peca-054",
@@ -2186,8 +1811,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Exibicao.tsx",
    "tipoPeca": "componente",
-   "desc": "Estado vazio: diz o que vai aparecer ali e como fazer aparecer.",
-   "naVitrine": true
+   "desc": "Estado vazio: diz o que vai aparecer ali e como fazer aparecer."
   },
   {
    "id": "l4-peca-055",
@@ -2198,8 +1822,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Exibicao.tsx",
    "tipoPeca": "componente",
-   "desc": "Bloco cinza animado enquanto carrega (respeita \"reduzir movimento\").",
-   "naVitrine": true
+   "desc": "Bloco cinza animado enquanto carrega (respeita \"reduzir movimento\")."
   },
   {
    "id": "l4-peca-056",
@@ -2210,8 +1833,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Extras.tsx",
    "tipoPeca": "funcao",
-   "desc": "Iniciais para o avatar sem foto (as duas primeiras letras das duas primeiras palavras).",
-   "naVitrine": false
+   "desc": "Iniciais para o avatar sem foto (as duas primeiras letras das duas primeiras palavras)."
   },
   {
    "id": "l4-peca-057",
@@ -2222,8 +1844,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Extras.tsx",
    "tipoPeca": "funcao",
-   "desc": "Peças avulsas da base (avatar, pilha, escolha de cor, linha de esqueleto, peças da conversa). Estilos em base.css.",
-   "naVitrine": false
+   "desc": "Peças avulsas da base (avatar, pilha, escolha de cor, linha de esqueleto, peças da conversa). Estilos em base.css."
   },
   {
    "id": "l4-peca-058",
@@ -2234,8 +1855,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Extras.tsx",
    "tipoPeca": "componente",
-   "desc": "`cor`: a cor própria da pessoa (a de cada agente), com as iniciais escuras por cima Todo rosto de pessoa (equipe, criador, agente) é redondo e passa por aqui; o Monograma quadrado ficou só para as marcas das empresas.",
-   "naVitrine": true
+   "desc": "`cor`: a cor própria da pessoa (a de cada agente), com as iniciais escuras por cima Todo rosto de pessoa (equipe, criador, agente) é redondo e passa por aqui; o Monograma quadrado ficou só para as marcas das empresas."
   },
   {
    "id": "l4-peca-059",
@@ -2246,8 +1866,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Extras.tsx",
    "tipoPeca": "componente",
-   "desc": "No Início do console, o clique num agente da pilha abre o agente, e o rosto dá uma leve levantada com o mouse em cima: com `aoClicar` nas pessoas (e `aoMais` no \"+N\"), cada rosto vira um botão que sobe um pouco no hover e no foco, com o nome na dica. Sem isso, a pilha continua uma imagem só.",
-   "naVitrine": true
+   "desc": "No Início do console, o clique num agente da pilha abre o agente, e o rosto dá uma leve levantada com o mouse em cima: com `aoClicar` nas pessoas (e `aoMais` no \"+N\"), cada rosto vira um botão que sobe um pouco no hover e no foco, com o nome na dica. Sem isso, a pilha continua uma imagem só."
   },
   {
    "id": "l4-peca-060",
@@ -2258,8 +1877,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Extras.tsx",
    "tipoPeca": "componente",
-   "desc": "Escolha de cor em bolinhas, com o anel em volta da escolhida. É um grupo de rádios de verdade: setas do teclado trocam, o leitor de tela lê o nome de cada cor.",
-   "naVitrine": true
+   "desc": "Escolha de cor em bolinhas, com o anel em volta da escolhida. É um grupo de rádios de verdade: setas do teclado trocam, o leitor de tela lê o nome de cada cor."
   },
   {
    "id": "l4-peca-061",
@@ -2270,8 +1888,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Extras.tsx",
    "tipoPeca": "componente",
-   "desc": "Linha de esqueleto com avatar: para listas de pessoas e conversas carregando.",
-   "naVitrine": true
+   "desc": "Linha de esqueleto com avatar: para listas de pessoas e conversas carregando."
   },
   {
    "id": "l4-peca-062",
@@ -2282,8 +1899,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Extras.tsx",
    "tipoPeca": "componente",
-   "desc": "Ações pequenas embaixo de uma mensagem (copiar, refazer...), numa fileira de ícones.",
-   "naVitrine": false
+   "desc": "Ações pequenas embaixo de uma mensagem (copiar, refazer...), numa fileira de ícones."
   },
   {
    "id": "l4-peca-063",
@@ -2294,8 +1910,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Extras.tsx",
    "tipoPeca": "componente",
-   "desc": "Botão redondo \"Ir para o fim\" que aparece quando a conversa não está no fim. Recebe a área que rola; some sozinho quando a pessoa já está embaixo.",
-   "naVitrine": false
+   "desc": "Botão redondo \"Ir para o fim\" que aparece quando a conversa não está no fim. Recebe a área que rola; some sozinho quando a pessoa já está embaixo."
   },
   {
    "id": "l4-peca-064",
@@ -2306,8 +1921,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Faixas.tsx",
    "tipoPeca": "componente",
-   "desc": "Faixa de aviso no topo da tela (FaixasTopo; estilos em base.css, .b-faixa). Para aviso que vale para a conta inteira e pede uma ação, e não para um detalhe da tela: termos novos, Instagram desconectado, chave de IA recusada, plano vencendo, \"você está vendo o app como outro criador\", ambiente de desenvolvimento. O que é da tela (um post que falhou, um campo) continua no Aviso, dentro da página. Uma faixa por vez, na ordem da lista (a primeira é a mais importante). Com mais de uma, aparecem as setas e elas trocam a cada 10 s, parando com o mouse ou o foco em cima (e não andando com movimento reduzido).",
-   "naVitrine": true
+   "desc": "Faixa de aviso no topo da tela (FaixasTopo; estilos em base.css, .b-faixa). Para aviso que vale para a conta inteira e pede uma ação, e não para um detalhe da tela: termos novos, Instagram desconectado, chave de IA recusada, plano vencendo, \"você está vendo o app como outro criador\", ambiente de desenvolvimento. O que é da tela (um post que falhou, um campo) continua no Aviso, dentro da página. Uma faixa por vez, na ordem da lista (a primeira é a mais importante). Com mais de uma, aparecem as setas e elas trocam a cada 10 s, parando com o mouse ou o foco em cima (e não andando com movimento reduzido)."
   },
   {
    "id": "l4-peca-065",
@@ -2318,8 +1932,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Graficos.tsx",
    "tipoPeca": "funcao",
-   "desc": "12400 vira \"12,4 mil\"; 1086 vira \"1.086\".",
-   "naVitrine": false
+   "desc": "12400 vira \"12,4 mil\"; 1086 vira \"1.086\"."
   },
   {
    "id": "l4-peca-066",
@@ -2330,8 +1943,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Graficos.tsx",
    "tipoPeca": "componente",
-   "desc": "Linha com área de uma série no tempo (ex.: alcance por dia). `comparacao` desenha o período anterior em cinza.",
-   "naVitrine": true
+   "desc": "Linha com área de uma série no tempo (ex.: alcance por dia). `comparacao` desenha o período anterior em cinza."
   },
   {
    "id": "l4-peca-067",
@@ -2342,8 +1954,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Graficos.tsx",
    "tipoPeca": "componente",
-   "desc": "Colunas no tempo ou por categoria (ex.: novos seguidores por dia, custo por dia).",
-   "naVitrine": true
+   "desc": "Colunas no tempo ou por categoria (ex.: novos seguidores por dia, custo por dia)."
   },
   {
    "id": "l4-peca-068",
@@ -2354,8 +1965,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Graficos.tsx",
    "tipoPeca": "componente",
-   "desc": "24 colunas de uma média por hora (ex.: seguidores online), com o pico marcado.",
-   "naVitrine": true
+   "desc": "24 colunas de uma média por hora (ex.: seguidores online), com o pico marcado."
   },
   {
    "id": "l4-peca-069",
@@ -2366,8 +1976,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Graficos.tsx",
    "tipoPeca": "funcao",
-   "desc": "A hora com a maior média (null quando não há nenhuma).",
-   "naVitrine": false
+   "desc": "A hora com a maior média (null quando não há nenhuma)."
   },
   {
    "id": "l4-peca-070",
@@ -2378,8 +1987,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Graficos.tsx",
    "tipoPeca": "componente",
-   "desc": "Parte do todo numa barra só (ex.: posts por etapa). Cada parte leva a cor do papel; o texto vai dentro quando cabe.",
-   "naVitrine": true
+   "desc": "Parte do todo numa barra só (ex.: posts por etapa). Cada parte leva a cor do papel; o texto vai dentro quando cabe."
   },
   {
    "id": "l4-peca-071",
@@ -2390,8 +1998,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Graficos.tsx",
    "tipoPeca": "componente",
-   "desc": "Quantidades com rótulo, numa cor só, com o valor na ponta (ex.: base de criadores, custo por grupo).",
-   "naVitrine": true
+   "desc": "Quantidades com rótulo, numa cor só, com o valor na ponta (ex.: base de criadores, custo por grupo)."
   },
   {
    "id": "l4-peca-072",
@@ -2402,8 +2009,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Graficos.tsx",
    "tipoPeca": "componente",
-   "desc": "Feito contra o combinado (ex.: 1 de 4 posts da semana).",
-   "naVitrine": true
+   "desc": "Feito contra o combinado (ex.: 1 de 4 posts da semana)."
   },
   {
    "id": "l4-peca-073",
@@ -2414,8 +2020,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Graficos.tsx",
    "tipoPeca": "componente",
-   "desc": "Sem dados para desenhar: a onda apagada, a frase e, se couber, a ação. Uma vez por área, nunca em cada cartão.",
-   "naVitrine": true
+   "desc": "Sem dados para desenhar: a onda apagada, a frase e, se couber, a ação. Uma vez por área, nunca em cada cartão."
   },
   {
    "id": "l4-peca-074",
@@ -2426,8 +2031,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Graficos.tsx",
    "tipoPeca": "componente",
-   "desc": "Legenda para duas séries ou mais (uma série só não leva legenda).",
-   "naVitrine": true
+   "desc": "Legenda para duas séries ou mais (uma série só não leva legenda)."
   },
   {
    "id": "l4-peca-075",
@@ -2438,8 +2042,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Graficos.tsx",
    "tipoPeca": "componente",
-   "desc": "Cartão de gráfico: o título com o período, o gráfico e o \"Ver tabela\", que troca o gráfico pelos mesmos números em tabela (o jeito de ler o valor sem depender da dica nem da cor).",
-   "naVitrine": true
+   "desc": "Cartão de gráfico: o título com o período, o gráfico e o \"Ver tabela\", que troca o gráfico pelos mesmos números em tabela (o jeito de ler o valor sem depender da dica nem da cor)."
   },
   {
    "id": "l4-peca-076",
@@ -2450,8 +2053,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Icone.tsx",
    "tipoPeca": "componente",
-   "desc": "Ícones do 4squad: Hugeicons, conjunto gratuito (@hugeicons/core-free-icons, MIT), no lugar de emojis e do Lucide. Busque o nome em https://hugeicons.com e importe de \"@hugeicons/core-free-icons\". Sem `rotulo`, o ícone é decorativo (o leitor de tela pula); com `rotulo`, ele é lido como imagem. Regra: nada de emoji na tela; todo símbolo visual é um destes ícones.",
-   "naVitrine": true
+   "desc": "Ícones do 4squad: Hugeicons, conjunto gratuito (@hugeicons/core-free-icons, MIT), no lugar de emojis e do Lucide. Busque o nome em https://hugeicons.com e importe de \"@hugeicons/core-free-icons\". Sem `rotulo`, o ícone é decorativo (o leitor de tela pula); com `rotulo`, ele é lido como imagem. Regra: nada de emoji na tela; todo símbolo visual é um destes ícones."
   },
   {
    "id": "l4-peca-077",
@@ -2462,8 +2064,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Janela.tsx",
    "tipoPeca": "componente",
-   "desc": "Janela (modal) e confirmação da base. Estilos em base.css (.b-janela). Regra: janela por cima para tarefa curta com começo e fim (criar algo, confirmar ação destrutiva ou com custo). Conteúdo longo ou que precisa de link vai para página própria. Esc, clique fora e o X fecham; o foco fica preso na janela enquanto ela está aberta (Radix Dialog) e volta para quem abriu quando ela fecha. A janela é desenhada no fim do <body>: para vestir a cor do estilo do criador, passe `dentroDe` (o elemento .sq).",
-   "naVitrine": true
+   "desc": "Janela (modal) e confirmação da base. Estilos em base.css (.b-janela). Regra: janela por cima para tarefa curta com começo e fim (criar algo, confirmar ação destrutiva ou com custo). Conteúdo longo ou que precisa de link vai para página própria. Esc, clique fora e o X fecham; o foco fica preso na janela enquanto ela está aberta (Radix Dialog) e volta para quem abriu quando ela fecha. A janela é desenhada no fim do <body>: para vestir a cor do estilo do criador, passe `dentroDe` (o elemento .sq)."
   },
   {
    "id": "l4-peca-078",
@@ -2474,8 +2075,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Janela.tsx",
    "tipoPeca": "componente",
-   "desc": "`rotuloCancelar` para quando \"Cancelar\" confunde (ex.: \"Sair sem salvar?\" → \"Continuar editando\")",
-   "naVitrine": true
+   "desc": "`rotuloCancelar` para quando \"Cancelar\" confunde (ex.: \"Sair sem salvar?\" → \"Continuar editando\")"
   },
   {
    "id": "l4-peca-079",
@@ -2486,8 +2086,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Janela.tsx",
    "tipoPeca": "componente",
-   "desc": "Atenção: a janela \"Atenção!\" com o X e o OK, no lugar de um aviso na tela. Para o erro que vem DEPOIS de um clique (entrar, salvar, enviar): a mensagem abre por cima da tela, com o fundo desfocado, e o OK devolve a pessoa ao que estava fazendo. O que falta preencher continua no próprio campo (o `erro` dos campos) e o erro de carregar uma tela continua no lugar dela (com o \"Tentar de novo\"). Use `alertar(\"mensagem\")` de qualquer lugar: o AlertaGlobal (montado uma vez na raiz, routes/__root.tsx) mostra.",
-   "naVitrine": false
+   "desc": "Atenção: a janela \"Atenção!\" com o X e o OK, no lugar de um aviso na tela. Para o erro que vem DEPOIS de um clique (entrar, salvar, enviar): a mensagem abre por cima da tela, com o fundo desfocado, e o OK devolve a pessoa ao que estava fazendo. O que falta preencher continua no próprio campo (o `erro` dos campos) e o erro de carregar uma tela continua no lugar dela (com o \"Tentar de novo\"). Use `alertar(\"mensagem\")` de qualquer lugar: o AlertaGlobal (montado uma vez na raiz, routes/__root.tsx) mostra."
   },
   {
    "id": "l4-peca-080",
@@ -2498,8 +2097,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Janela.tsx",
    "tipoPeca": "funcao",
-   "desc": "Abre a janela \"Atenção!\" com a mensagem (de qualquer tela; precisa do AlertaGlobal montado na raiz).",
-   "naVitrine": false
+   "desc": "Abre a janela \"Atenção!\" com a mensagem (de qualquer tela; precisa do AlertaGlobal montado na raiz)."
   },
   {
    "id": "l4-peca-081",
@@ -2510,8 +2108,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Janela.tsx",
    "tipoPeca": "componente",
-   "desc": "A janela \"Atenção!\" da página inteira: montada uma vez, em routes/__root.tsx.",
-   "naVitrine": false
+   "desc": "A janela \"Atenção!\" da página inteira: montada uma vez, em routes/__root.tsx."
   },
   {
    "id": "l4-peca-082",
@@ -2522,8 +2119,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Marca.tsx",
    "tipoPeca": "componente",
-   "desc": "Marca do 4squad para qualquer tela: o logo em todos os lugares, no lugar de \"AI-SQUAD\", \"Time Comercial IA\" e do quadrado \"AS\". Os vetores são os do app do criador (squad/comum.tsx: o símbolo \"Pilha\" com o 4 vazado e o nome em Sora), os mesmos dos arquivos da marca. `escuro` = sobre fundo escuro.",
-   "naVitrine": true
+   "desc": "Marca do 4squad para qualquer tela: o logo em todos os lugares, no lugar de \"AI-SQUAD\", \"Time Comercial IA\" e do quadrado \"AS\". Os vetores são os do app do criador (squad/comum.tsx: o símbolo \"Pilha\" com o 4 vazado e o nome em Sora), os mesmos dos arquivos da marca. `escuro` = sobre fundo escuro."
   },
   {
    "id": "l4-peca-083",
@@ -2534,8 +2130,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegacao.tsx",
    "tipoPeca": "componente",
-   "desc": "Abas com semântica de abas (role=\"tablist\"/\"tab\"): setas esquerda/direita, Home e End trocam de aba pelo teclado. O conteúdo de cada aba deve ficar num elemento com role=\"tabpanel\" e aria-labelledby = `${prefixo}-${k}`.",
-   "naVitrine": true
+   "desc": "Abas com semântica de abas (role=\"tablist\"/\"tab\"): setas esquerda/direita, Home e End trocam de aba pelo teclado. O conteúdo de cada aba deve ficar num elemento com role=\"tabpanel\" e aria-labelledby = `${prefixo}-${k}`."
   },
   {
    "id": "l4-peca-084",
@@ -2546,8 +2141,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegacao.tsx",
    "tipoPeca": "hook",
-   "desc": "Estado do menu (aberto ou recolhido) guardado neste navegador (localStorage). `chave`: o console guarda o dele (\"sq-console-menu\") à parte do app do criador (\"sq-menu\").",
-   "naVitrine": true
+   "desc": "Estado do menu (aberto ou recolhido) guardado neste navegador (localStorage). `chave`: o console guarda o dele (\"sq-console-menu\") à parte do app do criador (\"sq-menu\")."
   },
   {
    "id": "l4-peca-085",
@@ -2558,8 +2152,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegacao.tsx",
    "tipoPeca": "componente",
-   "desc": "Sem `marca`, o menu não tem a linha da marca nem o botão de recolher (os dois ficam na BarraTopo, components/base/Topo.tsx) e começa logo abaixo da barra.",
-   "naVitrine": true
+   "desc": "Sem `marca`, o menu não tem a linha da marca nem o botão de recolher (os dois ficam na BarraTopo, components/base/Topo.tsx) e começa logo abaixo da barra."
   },
   {
    "id": "l4-peca-086",
@@ -2570,8 +2163,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegacao.tsx",
    "tipoPeca": "componente",
-   "desc": "O menu escondido do celular: abre da esquerda por cima da página escurecida, com a marca e o X no alto, a troca de empresa ou de conta (`conta`), os mesmos itens do MenuLateral com os grupos (a lista rola por dentro) e o pé fixo: a linha \"Tema\" com o sol e a lua, os links do pé (`extras`) e \"Sair\" em vermelho. Radix Dialog (o mesmo da Janela): prende o foco, fecha com Esc, com o toque fora e com o X, e devolve o foco ao botão de menu. Escolher um item fecha. Se a tela passar para o computador com a gaveta aberta, ela fecha.",
-   "naVitrine": false
+   "desc": "O menu escondido do celular: abre da esquerda por cima da página escurecida, com a marca e o X no alto, a troca de empresa ou de conta (`conta`), os mesmos itens do MenuLateral com os grupos (a lista rola por dentro) e o pé fixo: a linha \"Tema\" com o sol e a lua, os links do pé (`extras`) e \"Sair\" em vermelho. Radix Dialog (o mesmo da Janela): prende o foco, fecha com Esc, com o toque fora e com o X, e devolve o foco ao botão de menu. Escolher um item fecha. Se a tela passar para o computador com a gaveta aberta, ela fecha."
   },
   {
    "id": "l4-peca-087",
@@ -2582,8 +2174,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegacao.tsx",
    "tipoPeca": "componente",
-   "desc": "`icone` opcional por opção (pílula com o ícone só na ativa), que aparece só quando ela está escolhida (estilo em navegar.css)",
-   "naVitrine": true
+   "desc": "`icone` opcional por opção (pílula com o ícone só na ativa), que aparece só quando ela está escolhida (estilo em navegar.css)"
   },
   {
    "id": "l4-peca-088",
@@ -2594,8 +2185,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegacao.tsx",
    "tipoPeca": "componente",
-   "desc": "O primeiro foco da página: pula a faixa, o topo e o menu e leva ao conteúdo (<main id=\"conteudo\" tabIndex={-1}>). Escondido até receber o foco do teclado. O clique só move o foco, sem mudar o endereço: o app do criador usa o # como rota (lerRota em routes/app.tsx) e \"#conteudo\" viraria uma tela.",
-   "naVitrine": false
+   "desc": "O primeiro foco da página: pula a faixa, o topo e o menu e leva ao conteúdo (<main id=\"conteudo\" tabIndex={-1}>). Escondido até receber o foco do teclado. O clique só move o foco, sem mudar o endereço: o app do criador usa o # como rota (lerRota em routes/app.tsx) e \"#conteudo\" viraria uma tela."
   },
   {
    "id": "l4-peca-089",
@@ -2606,8 +2196,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegar.tsx",
    "tipoPeca": "componente",
-   "desc": "Trilha de navegação (\"Minha conta > Minha marca\"). O último passo é a tela aberta. Com mais de `max` passos, os do meio viram \"…\" (o clique mostra todos).",
-   "naVitrine": false
+   "desc": "Trilha de navegação (\"Minha conta > Minha marca\"). O último passo é a tela aberta. Com mais de `max` passos, os do meio viram \"…\" (o clique mostra todos)."
   },
   {
    "id": "l4-peca-090",
@@ -2618,8 +2207,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegar.tsx",
    "tipoPeca": "componente",
-   "desc": "Cartão que abre e fecha, com o botão de abrir e fechar no canto. Fechado mostra o título e um resumo; aberto, as linhas. Para listas longas, em que tudo aberto vira uma rolagem sem fim.",
-   "naVitrine": false
+   "desc": "Cartão que abre e fecha, com o botão de abrir e fechar no canto. Fechado mostra o título e um resumo; aberto, as linhas. Para listas longas, em que tudo aberto vira uma rolagem sem fim."
   },
   {
    "id": "l4-peca-091",
@@ -2630,8 +2218,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegar.tsx",
    "tipoPeca": "componente",
-   "desc": "Uma linha de dado dentro do cartão que abre e fecha (rótulo e valor, como \"Status · Enviado\").",
-   "naVitrine": false
+   "desc": "Uma linha de dado dentro do cartão que abre e fecha (rótulo e valor, como \"Status · Enviado\")."
   },
   {
    "id": "l4-peca-092",
@@ -2642,8 +2229,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegar.tsx",
    "tipoPeca": "componente",
-   "desc": "`dentroDe`: no app do criador, passe o elemento .sq para o painel vestir a cor do estilo (como na Janela) `aoLado`: para painel alto (o editor de cor da Minha marca). Abre ao lado do botão quando cabe, onde tem a altura toda da tela; embaixo ou em cima ele ficava espremido entre o botão e a borda, rolando por dentro.",
-   "naVitrine": false
+   "desc": "`dentroDe`: no app do criador, passe o elemento .sq para o painel vestir a cor do estilo (como na Janela) `aoLado`: para painel alto (o editor de cor da Minha marca). Abre ao lado do botão quando cabe, onde tem a altura toda da tela; embaixo ou em cima ele ficava espremido entre o botão e a borda, rolando por dentro."
   },
   {
    "id": "l4-peca-093",
@@ -2654,8 +2240,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegar.tsx",
    "tipoPeca": "componente",
-   "desc": "Paginação (Anterior 1 2 3 … Próxima). Mostra a primeira, a última e as vizinhas da atual; o resto vira \"…\". Com uma página só, não aparece.",
-   "naVitrine": false
+   "desc": "Paginação (Anterior 1 2 3 … Próxima). Mostra a primeira, a última e as vizinhas da atual; o resto vira \"…\". Com uma página só, não aparece."
   },
   {
    "id": "l4-peca-094",
@@ -2666,8 +2251,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegar.tsx",
    "tipoPeca": "componente",
-   "desc": "O \"…\" da linha de uma lista (ex.: menu Usuários), com as ações que não cabem como botão. Setas, Enter e Esc funcionam pelo teclado. Ação com `false` ou `null` não aparece; sem nenhuma, o botão some. `perigo` pinta a ação de vermelho (ela deve passar pela confirmação).",
-   "naVitrine": false
+   "desc": "O \"…\" da linha de uma lista (ex.: menu Usuários), com as ações que não cabem como botão. Setas, Enter e Esc funcionam pelo teclado. Ação com `false` ou `null` não aparece; sem nenhuma, o botão some. `perigo` pinta a ação de vermelho (ela deve passar pela confirmação)."
   },
   {
    "id": "l4-peca-095",
@@ -2678,8 +2262,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Navegar.tsx",
    "tipoPeca": "componente",
-   "desc": "Filtro de lista (ex.: o \"Status\" da lista de Usuários, um filtro só no lugar de vários campos): um botão com ícone, o nome do filtro e a seta; com algo escolhido (fora o padrão), a escolha aparece no próprio botão, depois de um divisor. O clique abre a lista das opções, cada uma com a quantidade.",
-   "naVitrine": false
+   "desc": "Filtro de lista (ex.: o \"Status\" da lista de Usuários, um filtro só no lugar de vários campos): um botão com ícone, o nome do filtro e a seta; com algo escolhido (fora o padrão), a escolha aparece no próprio botão, depois de um divisor. O clique abre a lista das opções, cada uma com a quantidade."
   },
   {
    "id": "l4-peca-096",
@@ -2690,8 +2273,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/PassoAPasso.tsx",
    "tipoPeca": "componente",
-   "desc": "Passo a passo em acordeão. Cada item é uma linha que abre e fecha: número, título, uma linha de apoio e a seta. Aberto, mostra os passos, o vídeo, a nota, o link e \"Marcar como concluído\" embaixo, à esquerda. Concluído, o número vira um certo e o item fecha; quem usa decide se abre o próximo (aoMarcar).",
-   "naVitrine": true
+   "desc": "Passo a passo em acordeão. Cada item é uma linha que abre e fecha: número, título, uma linha de apoio e a seta. Aberto, mostra os passos, o vídeo, a nota, o link e \"Marcar como concluído\" embaixo, à esquerda. Concluído, o número vira um certo e o item fecha; quem usa decide se abre o próximo (aoMarcar)."
   },
   {
    "id": "l4-peca-097",
@@ -2702,8 +2284,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/PassoAPasso.tsx",
    "tipoPeca": "componente",
-   "desc": "Contador \"2 de 3 prontos\" para o topo do cartão que contém o passo a passo. O \"prontos\" vai escrito: ao lado de \"Passo 2 de 8\", um \"1 de 8\" solto parecia dizer outro passo.",
-   "naVitrine": true
+   "desc": "Contador \"2 de 3 prontos\" para o topo do cartão que contém o passo a passo. O \"prontos\" vai escrito: ao lado de \"Passo 2 de 8\", um \"1 de 8\" solto parecia dizer outro passo."
   },
   {
    "id": "l4-peca-098",
@@ -2714,8 +2295,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Periodo.tsx",
    "tipoPeca": "funcao",
-   "desc": "Período dos painéis: as abas de atalho (7 e 30 dias) e, na mesma faixa, o botão do calendário, que abre os atalhos por nome (Hoje, Últimos 15 dias, Esse mês...) e dois meses lado a lado para escolher início e fim (no celular, um mês só, o da data escolhida, com as duas setas). As datas andam como texto AAAA-MM-DD no horário local (sem fuso), o mesmo formato que as rotas de painel recebem em ?de=&ate=.",
-   "naVitrine": false
+   "desc": "Período dos painéis: as abas de atalho (7 e 30 dias) e, na mesma faixa, o botão do calendário, que abre os atalhos por nome (Hoje, Últimos 15 dias, Esse mês...) e dois meses lado a lado para escolher início e fim (no celular, um mês só, o da data escolhida, com as duas setas). As datas andam como texto AAAA-MM-DD no horário local (sem fuso), o mesmo formato que as rotas de painel recebem em ?de=&ate=."
   },
   {
    "id": "l4-peca-099",
@@ -2726,8 +2306,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Periodo.tsx",
    "tipoPeca": "funcao",
-   "desc": "Período dos painéis: as abas de atalho (7 e 30 dias) e, na mesma faixa, o botão do calendário, que abre os atalhos por nome (Hoje, Últimos 15 dias, Esse mês...) e dois meses lado a lado para escolher início e fim (no celular, um mês só, o da data escolhida, com as duas setas). As datas andam como texto AAAA-MM-DD no horário local (sem fuso), o mesmo formato que as rotas de painel recebem em ?de=&ate=.",
-   "naVitrine": false
+   "desc": "Período dos painéis: as abas de atalho (7 e 30 dias) e, na mesma faixa, o botão do calendário, que abre os atalhos por nome (Hoje, Últimos 15 dias, Esse mês...) e dois meses lado a lado para escolher início e fim (no celular, um mês só, o da data escolhida, com as duas setas). As datas andam como texto AAAA-MM-DD no horário local (sem fuso), o mesmo formato que as rotas de painel recebem em ?de=&ate=."
   },
   {
    "id": "l4-peca-100",
@@ -2738,8 +2317,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Periodo.tsx",
    "tipoPeca": "funcao",
-   "desc": "\"20/10 a 09/11\" (com o ano quando não é o ano corrente).",
-   "naVitrine": false
+   "desc": "\"20/10 a 09/11\" (com o ano quando não é o ano corrente)."
   },
   {
    "id": "l4-peca-101",
@@ -2750,8 +2328,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Periodo.tsx",
    "tipoPeca": "funcao",
-   "desc": "O intervalo de datas de um valor de período (7 dias = hoje e os 6 anteriores).",
-   "naVitrine": false
+   "desc": "O intervalo de datas de um valor de período (7 dias = hoje e os 6 anteriores)."
   },
   {
    "id": "l4-peca-102",
@@ -2762,8 +2339,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Periodo.tsx",
    "tipoPeca": "componente",
-   "desc": "Período do painel: abas de atalho e o calendário na mesma faixa. Com um intervalo escolhido, o botão do calendário fica marcado e mostra as datas. `maxDias` limita o tamanho do intervalo (a Meta entrega no máximo 30 dias por pedido; o histórico guardado vai até 92).",
-   "naVitrine": true
+   "desc": "Período do painel: abas de atalho e o calendário na mesma faixa. Com um intervalo escolhido, o botão do calendário fica marcado e mostra as datas. `maxDias` limita o tamanho do intervalo (a Meta entrega no máximo 30 dias por pedido; o histórico guardado vai até 92)."
   },
   {
    "id": "l4-peca-103",
@@ -2774,8 +2350,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Periodo.tsx",
    "tipoPeca": "componente",
-   "desc": "O calendário de dois meses com os atalhos ao lado. Primeiro clique marca o início; o segundo, o fim.",
-   "naVitrine": false
+   "desc": "O calendário de dois meses com os atalhos ao lado. Primeiro clique marca o início; o segundo, o fim."
   },
   {
    "id": "l4-peca-104",
@@ -2786,8 +2361,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Preferencias.tsx",
    "tipoPeca": "constante",
-   "desc": "Os mesmos valores do base.css ([data-esquema]); aqui servem para pintar a mini-prévia de cada cartão do carrossel.",
-   "naVitrine": true
+   "desc": "Os mesmos valores do base.css ([data-esquema]); aqui servem para pintar a mini-prévia de cada cartão do carrossel."
   },
   {
    "id": "l4-peca-105",
@@ -2798,8 +2372,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Preferencias.tsx",
    "tipoPeca": "funcao",
-   "desc": "Põe tema e esquema no <html>: assim valem também para janelas e avisos, que são desenhados no fim do <body>.",
-   "naVitrine": false
+   "desc": "Põe tema e esquema no <html>: assim valem também para janelas e avisos, que são desenhados no fim do <body>."
   },
   {
    "id": "l4-peca-106",
@@ -2810,8 +2383,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Preferencias.tsx",
    "tipoPeca": "hook",
-   "desc": "`aplicar`: falso enquanto a tela é a de entrar (ou o convite), que é só no tema claro, para o tema escolhido no app não ser aplicado por cima dela.",
-   "naVitrine": true
+   "desc": "`aplicar`: falso enquanto a tela é a de entrar (ou o convite), que é só no tema claro, para o tema escolhido no app não ser aplicado por cima dela."
   },
   {
    "id": "l4-peca-107",
@@ -2822,8 +2394,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Preferencias.tsx",
    "tipoPeca": "componente",
-   "desc": "Troca de tema com sol e lua, num botão só (no lugar dos botões \"Claro\" e \"Escuro\"). Mostra o ícone do tema para onde vai (lua no claro, sol no escuro); na troca, um some encolhendo e desfocando enquanto o outro aparece no mesmo lugar. `sobreEscuro`: em cima do menu ou de outra área escura.",
-   "naVitrine": true
+   "desc": "Troca de tema com sol e lua, num botão só (no lugar dos botões \"Claro\" e \"Escuro\"). Mostra o ícone do tema para onde vai (lua no claro, sol no escuro); na troca, um some encolhendo e desfocando enquanto o outro aparece no mesmo lugar. `sobreEscuro`: em cima do menu ou de outra área escura."
   },
   {
    "id": "l4-peca-108",
@@ -2834,8 +2405,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Proporcao.tsx",
    "tipoPeca": "constante",
-   "desc": "O formato que cada destino pede (a mesma regra do back ao montar a arte ou o vídeo).",
-   "naVitrine": false
+   "desc": "O formato que cada destino pede (a mesma regra do back ao montar a arte ou o vídeo)."
   },
   {
    "id": "l4-peca-109",
@@ -2846,8 +2416,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Proporcao.tsx",
    "tipoPeca": "componente",
-   "desc": "Ícone com a forma da proporção (um retângulo arredondado dentro de um quadrado).",
-   "naVitrine": false
+   "desc": "Ícone com a forma da proporção (um retângulo arredondado dentro de um quadrado)."
   },
   {
    "id": "l4-peca-110",
@@ -2858,8 +2427,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Proporcao.tsx",
    "tipoPeca": "componente",
-   "desc": "O formato que o destino pede, para mostrar junto da prévia ou da opção: ícone, a proporção e, se houver, o destino (\"9:16 · Reels e stories\"). É informação, não escolha.",
-   "naVitrine": false
+   "desc": "O formato que o destino pede, para mostrar junto da prévia ou da opção: ícone, a proporção e, se houver, o destino (\"9:16 · Reels e stories\"). É informação, não escolha."
   },
   {
    "id": "l4-peca-111",
@@ -2870,8 +2438,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Proporcao.tsx",
    "tipoPeca": "componente",
-   "desc": "Quadro da prévia que muda de forma, com transição, quando a proporção muda (a foto vai de vertical a horizontal). A altura máxima segura o quadro na tela; a largura acompanha a proporção, sem passar da coluna.",
-   "naVitrine": false
+   "desc": "Quadro da prévia que muda de forma, com transição, quando a proporção muda (a foto vai de vertical a horizontal). A altura máxima segura o quadro na tela; a largura acompanha a proporção, sem passar da coluna."
   },
   {
    "id": "l4-peca-112",
@@ -2882,8 +2449,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/RecorteFoto.tsx",
    "tipoPeca": "funcao",
-   "desc": "O que o arquivo escolhido tem de errado (tipo ou tamanho), ou \"\" se pode abrir.",
-   "naVitrine": false
+   "desc": "O que o arquivo escolhido tem de errado (tipo ou tamanho), ou \"\" se pode abrir."
   },
   {
    "id": "l4-peca-113",
@@ -2894,8 +2460,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/RecorteFoto.tsx",
    "tipoPeca": "componente",
-   "desc": "Janela de recorte. Abre quando recebe um arquivo; `aoAplicar` recebe a foto pronta (512 x 512) e, se der erro, a mensagem aparece dentro da janela. `aoTrocarArquivo` deixa escolher outra imagem sem fechar.",
-   "naVitrine": false
+   "desc": "Janela de recorte. Abre quando recebe um arquivo; `aoAplicar` recebe a foto pronta (512 x 512) e, se der erro, a mensagem aparece dentro da janela. `aoTrocarArquivo` deixa escolher outra imagem sem fechar."
   },
   {
    "id": "l4-peca-114",
@@ -2906,8 +2471,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/RecorteFoto.tsx",
    "tipoPeca": "componente",
-   "desc": "A foto da pessoa com o que dá para fazer com ela: escolher, arrastar uma imagem até aqui, recortar e tirar. `compacta`: só o avatar com a câmera (o cabeçalho de Minha conta do app).",
-   "naVitrine": false
+   "desc": "A foto da pessoa com o que dá para fazer com ela: escolher, arrastar uma imagem até aqui, recortar e tirar. `compacta`: só o avatar com a câmera (o cabeçalho de Minha conta do app)."
   },
   {
    "id": "l4-peca-115",
@@ -2918,8 +2482,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/SeletorArquivos.tsx",
    "tipoPeca": "componente",
-   "desc": "`multiplo`: escolhe vários, na ordem dos toques (o número aparece no quadrado); sem ele, um só. `aoEnviar` recebe os arquivos soltos ou escolhidos e devolve os itens novos, que entram já escolhidos na biblioteca. `aoApagar` mostra o \"Apagar de vez\" nos detalhes, sempre com confirmação. `aceitar` vai para o input.",
-   "naVitrine": false
+   "desc": "`multiplo`: escolhe vários, na ordem dos toques (o número aparece no quadrado); sem ele, um só. `aoEnviar` recebe os arquivos soltos ou escolhidos e devolve os itens novos, que entram já escolhidos na biblioteca. `aoApagar` mostra o \"Apagar de vez\" nos detalhes, sempre com confirmação. `aceitar` vai para o input."
   },
   {
    "id": "l4-peca-116",
@@ -2930,8 +2493,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/SeletorPessoas.tsx",
    "tipoPeca": "componente",
-   "desc": "Seletor de pessoas (várias): quem já foi escolhido aparece no campo como etiqueta com o rosto e o X para tirar; o campo abre a lista com busca (nome, e-mail ou o que vier em `detalhe`), cada pessoa com o rosto, o nome e o detalhe numa linha só. É o multiple com busca da 4selet-v2 (select2), no desenho da base. Teclado: setas andam na lista, Enter marca ou desmarca, Esc fecha. A lista fica aberta enquanto a pessoa escolhe várias. Estilos em base.css (.b-pessoas).",
-   "naVitrine": false
+   "desc": "Seletor de pessoas (várias): quem já foi escolhido aparece no campo como etiqueta com o rosto e o X para tirar; o campo abre a lista com busca (nome, e-mail ou o que vier em `detalhe`), cada pessoa com o rosto, o nome e o detalhe numa linha só. É o multiple com busca da 4selet-v2 (select2), no desenho da base. Teclado: setas andam na lista, Enter marca ou desmarca, Esc fecha. A lista fica aberta enquanto a pessoa escolhe várias. Estilos em base.css (.b-pessoas)."
   },
   {
    "id": "l4-peca-117",
@@ -2942,8 +2504,7 @@ window.LIB_LOCAL4SQUAD={
    "origem": "4squad",
    "arquivo": "components/base/Topo.tsx",
    "tipoPeca": "componente",
-   "desc": "A barra do topo de ponta a ponta, acima do menu e do conteúdo. À esquerda, a marca na largura do menu lateral e o botão que recolhe o menu; à direita, as ações da tela, o sol e a lua, e a conta (avatar, nome e a seta) com o menu \"Meu perfil\" e \"Sair\" (a conta e o tema não ficam no pé do menu). No celular (abaixo de 900 px) a mesma barra mostra o botão do menu escondido no lugar do recolher, a marca e o avatar; o tema fica na gaveta. Usa as cores do menu (--b-menu-*), que acompanham o tema: clara no claro, escura no escuro.",
-   "naVitrine": false
+   "desc": "A barra do topo de ponta a ponta, acima do menu e do conteúdo. À esquerda, a marca na largura do menu lateral e o botão que recolhe o menu; à direita, as ações da tela, o sol e a lua, e a conta (avatar, nome e a seta) com o menu \"Meu perfil\" e \"Sair\" (a conta e o tema não ficam no pé do menu). No celular (abaixo de 900 px) a mesma barra mostra o botão do menu escondido no lugar do recolher, a marca e o avatar; o tema fica na gaveta. Usa as cores do menu (--b-menu-*), que acompanham o tema: clara no claro, escura no escuro."
   }
  ]
 };
