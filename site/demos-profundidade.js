@@ -27,8 +27,8 @@
     </div>
   </article>
 </div>`,
-      api: [['data-ac="tilt"', 'elemento', '—', 'Inclina seguindo o mouse e mostra o brilho'], ['data-max', 'graus', '10', 'Inclinação máxima'], ['data-depth', 'px (filho)', '—', 'Distância da camada (translateZ): quanto maior, mais ela “flutua”'], ['--rx / --ry / --gx / --gy', 'CSS', '—', 'Inclinação e posição do brilho, atualizadas pelo JS']],
-      a11y: ['É só visual: o conteúdo e os botões funcionam igual sem o efeito.', 'Desligado em telas de toque (hover: none) e com movimento reduzido.', 'Inclinação pequena (até 10°) para não causar desconforto.'] },
+      api: [['data-ac="tilt"', 'elemento', '—', 'Inclina seguindo o mouse e mostra o brilho'], ['data-max', 'graus', '10', 'Inclinação máxima'], ['data-depth', 'px (filho)', '—', 'Distância da camada (translateZ, via --z): quanto maior, mais ela “flutua”'], ['--rx / --ry / --gx / --gy', 'CSS', '0deg / 0deg / 50% / 50%', 'Inclinação e posição do brilho, atualizadas pelo JS'], ['.is-moving', 'classe', '—', 'Posta enquanto o mouse está em cima: acende o brilho e encurta a transição']],
+      a11y: ['É só visual: o conteúdo e os botões funcionam igual sem o efeito.', 'Só reage ao mouse: desligado em telas de toque (hover: none) e com movimento reduzido.', 'Inclinação pequena (10° por padrão, ajustável em data-max) para não causar desconforto.'] },
 
     { id: 'flip-card', grupo: 'Movimento', nome: 'Cartão que vira', novo: '2026-10-29',
       desc: 'Frente e verso no mesmo lugar: o cartão gira 180° em 3D pelo botão do canto ou com um clique fora de links e campos. A face de costas fica inert, então o Tab e o leitor de tela só veem o lado que está à mostra.',
@@ -43,7 +43,7 @@
     <article class="ac-card" style="border-radius:20px"><div class="ac-card__body" style="display:grid;place-content:center;gap:10px;min-height:373px;padding:28px;text-align:center"><span class="ac-badge ac-badge--success" style="justify-self:center">Resposta</span><p style="margin:0;font:700 var(--ac-fs-2xl)/1.2 var(--ac-font)">Lei de Hick</p><p class="ac-card__desc" style="margin:0">O tempo para decidir cresce com o número de opções.</p></div></article>
   </div>
 </div>`,
-      api: [['data-ac="flip"', 'div', '—', 'O 1º filho é a frente e o 2º o verso'], ['data-label-back / data-label-front', 'texto', 'Ver o verso / Ver a frente', 'Rótulo do botão em cada lado'], ['.is-flipped', 'classe', '—', 'Estado virado (o botão tem aria-pressed)']],
+      api: [['data-ac="flip"', 'div', '—', 'O 1º filho é a frente e o 2º o verso; clicar fora de links, botões, campos e rótulos também vira'], ['data-label-back / data-label-front', 'texto', 'Ver o verso / Ver a frente', 'Rótulo do botão em cada lado'], ['.is-flipped', 'classe', '—', 'Estado virado (o botão tem aria-pressed)']],
       a11y: ['Botão com aria-pressed e rótulo que diz para onde vai.', 'A face de costas fica inert: nada escondido recebe foco.', 'Com movimento reduzido, a troca é instantânea.'] },
 
     { id: 'marquee3d', grupo: 'Movimento', nome: 'Faixa rolante 3D', aka: 'Marquee 3D', novo: '2026-10-29',
@@ -53,7 +53,7 @@
       html: `<div data-ac="marquee3d" aria-label="Destinos em movimento" style="width:min(1080px,100%);margin:0 auto">
   ${['yosemite', 'lago-barcos', 'montanha-neblina', 'floresta-aerea', 'colinas-verdes', 'atitlan', 'montanhas-neve', 'campo-por-do-sol', 'floresta-luz', 'casa-lago', 'lago-montanha', 'montanha-raios', 'arvore-lago', 'canyon-estrelas', 'baloes', 'yosemite'].map(n => `<img src="${F}${n}-p.jpg" alt="" loading="lazy">`).join('')}
 </div>`,
-      api: [['data-ac="marquee3d"', 'div', '—', 'As imagens de dentro viram 4 colunas inclinadas'], ['--t', 'CSS', '40s', 'Duração de uma volta'], ['--h', 'CSS', '460px', 'Altura da área']],
+      api: [['data-ac="marquee3d"', 'div', '—', 'As imagens de dentro viram 4 colunas inclinadas'], ['aria-label', 'texto', 'Galeria em movimento', 'Nome da região'], ['--t', 'CSS', '40s', 'Duração de uma volta (as colunas pares levam 1,2× e vão ao contrário)'], ['--h', 'CSS', '460px', 'Altura da área'], ['data-paused', '"true" | "false"', '—', 'Posto pelo JS: pausado pelo botão, pelo foco ou fora da tela']],
       a11y: ['Botão de pausa sempre visível; também pausa no hover e com o foco dentro (WCAG 2.2.2).', 'Com movimento reduzido fica parado.', 'Imagens decorativas (alt vazio); use alt quando cada foto disser algo.'] },
 
     { id: 'retro-grid', grupo: 'Movimento', nome: 'Grade retrô em perspectiva', novo: '2026-10-29',
@@ -66,7 +66,7 @@
   <p class="ac-card__desc" style="margin:0;max-width:44ch">Os números atualizam a cada venda, sem recarregar a página.</p>
   <button class="ac-btn ac-btn--lg" type="button">Ver novidades</button>
 </section>`,
-      api: [['.ac-retro-grid', 'classe', '—', 'Grade animada atrás do conteúdo'], ['--line', 'CSS', 'texto a 18%', 'Cor das linhas'], ['--cell', 'CSS', '56px', 'Tamanho de cada quadrado']],
+      api: [['.ac-retro-grid', 'classe', '—', 'Grade animada atrás do conteúdo'], ['--line', 'CSS', 'texto a 18%', 'Cor das linhas'], ['--cell', 'CSS', '56px', 'Tamanho de cada quadrado'], ['--ac-accent', 'token', 'destaque', 'Cor do brilho no meio']],
       a11y: ['É só fundo: o conteúdo fica por cima, com o contraste do tema.', 'Com movimento reduzido a grade fica parada.'] },
 
     { id: 'sphere', grupo: 'Movimento', nome: 'Nuvem em esfera 3D', novo: '2026-10-29',
@@ -85,14 +85,14 @@
       html: `<div data-ac="ring3d" aria-label="Destinos" style="width:100%">
   ${['montanha-neblina', 'atitlan', 'casa-lago', 'canyon-estrelas', 'arvore-lago', 'baloes', 'floresta-luz', 'yosemite', 'montanhas-neve'].map(n => `<figure><img src="${F}${n}-v.jpg" alt="${ALT[n]}" loading="lazy"></figure>`).join('\n  ')}
 </div>`,
-      api: [['data-ac="ring3d"', 'div', '—', 'Cada filho com <img> vira uma face do anel (mínimo 3)'], ['--w', 'CSS', '200px', 'Largura de cada imagem (140px no celular)'], ['data-static', 'atributo', '—', 'Não gira sozinho']],
-      a11y: ['Só a imagem da frente é lida; “3 de 9” é anunciado ao trocar.', 'O palco recebe foco e gira com ← →; o giro automático para com o foco dentro.'] },
+      api: [['data-ac="ring3d"', 'div', '—', 'Cada filho com <img> vira uma face do anel (mínimo 3)'], ['--w', 'CSS', '200px', 'Largura de cada imagem (140px até 640 px de tela)'], ['data-static', 'atributo', '—', 'Não gira sozinho'], ['aria-label', 'texto', 'Carrossel 3D', 'Nome da região']],
+      a11y: ['Região com aria-roledescription “carrossel”; cada imagem é um grupo “3 de 9”.', 'Só a imagem da frente é lida (as outras ficam aria-hidden); “3 de 9” é anunciado ao trocar.', 'O palco recebe foco e gira com ← →; o giro automático para com o foco dentro.'] },
 
     { id: 'flip-words', grupo: 'Movimento', nome: 'Palavras que viram em 3D', novo: '2026-10-29',
       desc: 'A palavra em destaque troca de tempos em tempos e cada letra entra girando no eixo X, uma depois da outra. O leitor de tela ouve a frase com todas as palavras uma vez, sem ser interrompido a cada troca.',
       ref: { nome: 'Magic UI · Text 3D Flip', url: 'https://magicui.design/docs/components/text-3d-flip' },
       html: `<h2 style="margin:0;font:700 clamp(28px,4.4vw,48px)/1.15 var(--ac-font);letter-spacing:-.03em;text-align:center">Uma empresa que <span data-ac="flip-words" data-words="vende mais,organiza tudo,fecha o mês,cresce junto"></span></h2>`,
-      api: [['data-ac="flip-words"', 'span', '—', 'Troca as palavras com letras girando'], ['data-words', 'lista', '—', 'Palavras separadas por vírgula'], ['data-interval', 'ms', '2600', 'Tempo de cada palavra'], ['--accent', 'CSS', 'destaque', 'Cor das palavras']],
+      api: [['data-ac="flip-words"', 'span', '—', 'Troca as palavras com letras girando'], ['data-words', 'lista', 'o texto do span', 'Palavras separadas por vírgula'], ['data-interval', 'ms', '2600', 'Tempo de cada palavra (não troca fora da tela)'], ['--accent', 'CSS', 'destaque', 'Cor das palavras']],
       a11y: ['As palavras ficam num .ac-sr (lidas uma vez); a animação é aria-hidden.', 'Com movimento reduzido mostra só a primeira, parada.'] },
 
     { id: 'reveal', grupo: 'Movimento', nome: 'Revelar ao rolar', novo: '2026-10-28',
@@ -116,7 +116,7 @@
     <p class="ac-card__desc" style="margin:0 0 120px">Fim. A barra no topo mostra quanto falta.</p>
   </div>
 </div>`,
-      api: [['data-ac="reveal"', 'elemento', '—', 'Entra ao aparecer na rolagem'], ['data-reveal-children', 'contêiner', '—', 'Revela cada filho, um depois do outro'], ['data-reveal', 'texto', 'up', 'up, scale, left ou right'], ['data-ac="scroll-progress"', 'div', '—', 'Barra de leitura presa no topo do contêiner que rola'], ['.ac-reveal', 'classe', '—', 'O mesmo efeito só com CSS (onde há animation-timeline)'], ['overflow-x: hidden', 'contêiner', '—', 'Com left/right, evita a rolagem lateral enquanto o bloco entra']],
+      api: [['data-ac="reveal"', 'elemento', '—', 'Entra ao aparecer na rolagem'], ['data-reveal-children', 'contêiner', '—', 'Revela cada filho, um depois do outro'], ['data-reveal', 'texto', 'up', 'up, scale, left ou right; no contêiner com data-reveal-children, vale para todos os filhos'], ['data-ac="scroll-progress"', 'div', '—', 'Barra de leitura presa no topo do contêiner que rola'], ['.ac-reveal', 'classe', '—', 'O mesmo efeito só com CSS (onde há animation-timeline; sem ele e sem o JS, o bloco fica invisível)'], ['overflow-x: hidden', 'contêiner', '—', 'Com left/right, evita a rolagem lateral enquanto o bloco entra']],
       a11y: ['Nada depende do efeito: com movimento reduzido tudo aparece direto.', 'A barra de leitura é aria-hidden (é só indicação visual).', 'Prefira entradas curtas (até ~30 px): deslocamento grande cansa e distrai.'] },
 
     { id: 'aurora', grupo: 'Movimento', nome: 'Fundo com gradiente animado', novo: '2026-10-28',

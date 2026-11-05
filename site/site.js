@@ -139,27 +139,17 @@
     const list = (t, a, cls) => a && a.length ? `<h2>${t}</h2><ul class="a11y ${cls}">${a.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
     return list('Quando usar', g.usar, 'is-yes') + list('Quando evitar', g.evitar, 'is-no') + list('Boas práticas', g.dicas, 'is-tip');
   }
-  const cell = s => String(s).replace(/\|/g, '\\|');
-  function markdown(d) {
-    const g = G[d.id] || {}, li = a => (a || []).map(x => `- ${x}`).join('\n');
-    const code = d.html.replace(/<svg class="ac-icon"[\s\S]*?<\/svg>/g, '<svg class="ac-icon">…</svg>');
-    const fence = '```';
-    return [`# ${d.nome}`, '', ...(d.aka ? [`Em inglês: ${d.aka}`, ''] : []), d.desc, '', `Grupo: ${d.grupo}${d.ref.nome ? ` · Referência estudada: ${d.ref.url ? `[${d.ref.nome}](${d.ref.url})` : d.ref.nome}` : ''}`, '',
-      g.usar ? `## Quando usar\n\n${li(g.usar)}\n` : '', g.evitar ? `## Quando evitar\n\n${li(g.evitar)}\n` : '', g.dicas ? `## Boas práticas\n\n${li(g.dicas)}\n` : '',
-      '## Instalação', '', fence + 'html', '<link rel="stylesheet" href="orthos.css">', '<script src="orthos.js"></script>', fence, '',
-      '## API', '', '| Propriedade | Tipo | Padrão | Descrição |', '|---|---|---|---|', ...d.api.map(r => `| \`${cell(r[0])}\` | ${cell(r[1])} | ${cell(r[2])} | ${cell(r[3])} |`), '',
-      '## Acessibilidade', '', li(d.a11y), '', '## Exemplo', '', fence + 'html', code, fence, ''].join('\n');
-  }
-  function showMarkdown(d) {
+  // o markdown (documentação + CSS e JS recortados do componente) é montado por site/markdown.js
+  async function showMarkdown(d) {
     let dlg = $('#md-dlg');
     if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'md-dlg'; dlg.className = 'ac ac-dialog md-dlg'; dlg.setAttribute('aria-labelledby', 'md-t'); document.body.appendChild(dlg); }
-    const md = markdown(d);
+    let md;
+    try { md = await window.orthosMarkdown(d); } catch (_) { A.toast({ type: 'danger', title: 'Não foi possível montar o Markdown', desc: 'Abra o site por um servidor ou use dist/orthos-ui.html.' }); return; }
     dlg.innerHTML = `<div class="ac-dialog__in"><h2 class="ac-dialog__title" id="md-t">${esc(d.nome)}.md</h2><pre class="md-pre" tabindex="0">${esc(md)}</pre><div class="ac-dialog__actions"><button class="ac-btn ac-btn--ghost" type="button" data-ac-close>Fechar</button><button class="ac-btn ac-btn--secondary" type="button" id="md-dl">Baixar .md</button><button class="ac-btn" type="button" id="md-copy">Copiar</button></div></div>`;
     A.open(dlg);
     $('#md-copy').onclick = async () => { try { await navigator.clipboard.writeText(md); A.toast({ type: 'success', title: 'Markdown copiado' }); } catch (_) { A.toast({ type: 'danger', title: 'Não foi possível copiar' }); } };
     $('#md-dl').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([md], { type: 'text/markdown' })); a.download = d.id + '.md'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
   }
-  window.orthosMarkdown = markdown;
 
   /* ---------- página inicial ---------- */
   function renderHome() {

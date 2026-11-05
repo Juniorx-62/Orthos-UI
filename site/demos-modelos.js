@@ -37,7 +37,7 @@ ${inner}
 
   const NOVOS = [
     { id: 'tpl-dashboard', grupo: 'Modelos', nome: 'Painel de controle', aka: 'Dashboard', novo: '2026-10-28',
-      desc: 'App shell com menu lateral, topo com busca, quatro números com tendência, gráfico principal com painel de apoio ao lado (padrão “supporting pane” do Material 3) e a tabela das últimas movimentações. Abaixo de 720 px o menu sai e a tabela vira cartões.',
+      desc: 'App shell com menu lateral, topo com busca, quatro números com tendência, gráfico principal com painel de apoio ao lado (padrão “supporting pane” do Material 3) e a tabela das últimas movimentações. Reage à largura do próprio contêiner: até 900 px os números ficam em 2 colunas e o painel desce; até 720 px o menu e a busca saem; a tabela vira cartões quando o espaço dela fica abaixo de 640 px.',
       ref: { nome: 'NN/g · Dashboards e Material 3 · Layouts canônicos', url: 'https://m3.material.io/foundations/adaptive-design/canonical-layouts' },
       wide: true,
       html: device('full', `<div class="ac-shell"><div class="ac-shell__in">
@@ -81,7 +81,7 @@ ${inner}
     </table></div></div>
   </main>
 </div></div>`),
-      api: [['.ac-shell > .ac-shell__in', 'div', '—', 'O .ac-shell é medido (container query) e o __in é a grade menu + conteúdo'], ['.ac-shell__top / __kpis / __grid', 'div', '—', 'Topo, linha de números (4 → 2 → 1 colunas) e gráfico com painel de apoio (2/3 + 1/3)'], ['.ac-shell__brand-m', 'span', '—', 'Marca que aparece quando o menu lateral sai (abaixo de 720 px)']],
+      api: [['.ac-shell > .ac-shell__in', 'div', '—', 'O .ac-shell é medido (container query) e o __in é a grade menu (232 px) + conteúdo'], ['.ac-shell__side', 'classe no .ac-sidebar', '—', 'Menu lateral sem borda nem sombra; some até 720 px'], ['.ac-shell__main', 'main', '—', 'Coluna do conteúdo'], ['.ac-shell__top / __title / __actions / __search', 'div / h2 / div / input', '—', 'Topo com título e ações; a busca (220 px) encolhe até 900 px e some até 720 px'], ['.ac-shell__kpis / __grid', 'div', '—', 'Números (4 → 2 colunas até 900 px → 1 até 300 px) e gráfico com painel de apoio (2/3 + 1/3, empilha até 900 px)'], ['.ac-shell__brand-m', 'span', '—', 'Marca que aparece quando o menu lateral sai (até 720 px)']],
       a11y: ['Um <h2> por tela e regiões com nome (menu “Principal”).', 'Números sempre com o texto da tendência, não só a cor.', 'Gráficos com rótulo e a tabela com <caption> para leitor de tela.'] },
 
     { id: 'tpl-login', grupo: 'Modelos', nome: 'Tela de entrada', aka: 'Login', novo: '2026-10-28',
@@ -110,7 +110,7 @@ ${inner}
     </form>
   </div>
 </div></div>`),
-      api: [['.ac-auth > .ac-auth__in', 'div', '—', 'Painel de imagem + formulário; abaixo de 720 px fica só o formulário'], ['.ac-auth__panel', 'aside', '—', 'Foto de fundo (img) com depoimento em .ac-auth__quote'], ['.ac-auth__box', 'form', '—', 'Coluna do formulário (até 380 px)'], ['.ac-auth__or', 'div', '—', 'Divisor “ou”']],
+      api: [['.ac-auth > .ac-auth__in', 'div', '—', 'Painel de imagem + formulário; com o contêiner até 720 px fica só o formulário'], ['.ac-auth__panel', 'aside', '—', 'Foto de fundo (img filha direta) com depoimento em .ac-auth__quote (<cite> para o autor)'], ['.ac-auth__form / __box', 'div / form', '—', 'Área centralizada e coluna do formulário (até 380 px)'], ['.ac-auth__title / __row', 'h2 / div', '—', 'Título e linha rótulo + link (“Esqueci a senha”)'], ['.ac-auth__or', 'div', '—', 'Divisor “ou”'], ['[data-tpl-step]', 'div', '—', 'Etapas senha/código; o CSS só as empilha, a troca é do script do exemplo']],
       a11y: ['Rótulos visíveis e autocomplete (username, current-password) para gerenciadores de senha.', 'Mostrar senha e colar permitidos (GOV.UK).', 'O código chega num campo único com one-time-code; o erro é anunciado.'] },
 
     { id: 'tpl-checkout', grupo: 'Modelos', nome: 'Pagamento', aka: 'Checkout', novo: '2026-10-28',
@@ -148,11 +148,11 @@ ${inner}
     <details><summary class="ac-hint" style="cursor:pointer">Tem um cupom?</summary><div style="display:flex;gap:8px;margin-top:8px"><input class="ac-input" aria-label="Cupom"><button class="ac-btn ac-btn--secondary" type="button">Aplicar</button></div></details>
   </aside>
 </div></div>`),
-      api: [['.ac-checkout > .ac-checkout__in', 'div', '—', 'Formulário + resumo fixo ao lado; abaixo de 760 px o resumo vem primeiro'], ['.ac-checkout__secure', 'div', '—', 'Área do cartão destacada (aumenta a sensação de segurança, segundo a Baymard)'], ['data-ac="card-number"', 'div', '—', 'Espaça o número e mostra a bandeira (Visa, Mastercard, Elo, Amex, Hipercard) em data-brand'], ['.ac-checkout__lines', 'dl', '—', 'Linhas do resumo; .ac-checkout__total no total']],
+      api: [['.ac-checkout > .ac-checkout__in', 'div', '—', 'Formulário + resumo preso ao lado (sticky); com o contêiner até 760 px o resumo vem primeiro'], ['.ac-checkout__form / __section', 'form / fieldset', '—', 'Formulário e grupos com <legend>'], ['.ac-checkout__row', 'div', '—', 'Campos lado a lado (140 px no mínimo cada)'], ['.ac-checkout__secure / __note', 'div / p', '—', 'Área do cartão destacada (aumenta a sensação de segurança, segundo a Baymard) e a nota com cadeado'], ['data-ac="card-number"', 'div com <input>', '—', 'Até 19 dígitos, espaçados (Amex 4-6-5); põe inputmode numeric e autocomplete cc-number; a bandeira (Visa, Mastercard, Elo, Amex, Hipercard) vai num selo e em data-brand'], ['.ac-checkout__summary / __item', 'aside / div', '—', 'Resumo e item com miniatura de 56 px, nome (<small> de apoio) e valor'], ['.ac-checkout__lines', 'dl', '—', 'Linhas do resumo; .ac-checkout__total no total'], ['data-pattern-msg', 'texto', 'Formato inválido.', 'Mensagem do data-ac="validate" quando o pattern não bate']],
       a11y: ['Campos com autocomplete de cartão e endereço (cc-number, cc-exp, cc-csc, postal-code).', 'Erros em texto ao lado do campo, sem apagar o que foi digitado.', 'A bandeira detectada é anunciada (aria-live).'] },
 
     { id: 'tpl-pricing', grupo: 'Modelos', nome: 'Página de preços', aka: 'Pricing', novo: '2026-10-28',
-      desc: 'Página de planos: alternância mensal/anual que recalcula os preços, três planos com o do meio em destaque (Lei de Von Restorff), o que cada um inclui e perguntas frequentes. O preço aparece sempre (NN/g: esconder manda o cliente para o concorrente).',
+      desc: 'Página de planos: alternância mensal/anual (no exemplo, um script da página troca os preços), três planos com o do meio em destaque (Lei de Von Restorff), o que cada um inclui e perguntas frequentes. O preço aparece sempre (NN/g: esconder manda o cliente para o concorrente).',
       ref: { nome: 'NN/g · Mostre o preço e Laws of UX', url: 'https://www.nngroup.com/articles/show-price/' },
       wide: true,
       html: device('full', `<div class="ac-pricing" data-tpl="pricing">
@@ -171,7 +171,7 @@ ${inner}
     ${faq('Emitem nota fiscal?', 'Sim, nota fiscal de serviço em todo pagamento, enviada para o e-mail da conta.')}
   </div>
 </div>`),
-      api: [['.ac-pricing', 'div', '—', 'Página de planos; abaixo de 760 px os planos empilham e o destaque vem primeiro'], ['.ac-plan / .ac-plan--featured', 'article', '—', 'Plano e plano em destaque (borda e sombra)'], ['.ac-plan__price', 'div', '—', 'Preço; no exemplo, data-m e data-y guardam mensal e anual'], ['.ac-plan__badge', 'span', '—', 'Selo “Mais escolhido”']],
+      api: [['.ac-pricing', 'div', '—', 'Página de planos; com o contêiner até 760 px os planos empilham e o destaque vem primeiro'], ['.ac-pricing__title / __plans / __faq', 'h2 / div / div', '—', 'Título, grade de 3 planos (até 980 px) e perguntas (até 680 px)'], ['.ac-plan / .ac-plan--featured', 'article', '—', 'Plano e plano em destaque (borda e sombra); o botão vai para o fim'], ['.ac-plan__name / __price / __note', 'h3 / div / p', '—', 'Nome, preço (com <small> para “/mês”) e nota de cobrança'], ['data-m / data-y / data-note', 'só no exemplo', '—', 'Valores que o script da página usa na troca mensal/anual; a biblioteca não lê'], ['.ac-plan__badge', 'span', '—', 'Selo “Mais escolhido”']],
       a11y: ['A troca mensal/anual é um grupo de botões com aria-pressed.', 'O que cada plano inclui está em lista; o check é decorativo.', 'Perguntas no accordion acessível do Orthos.'] }
   ];
 

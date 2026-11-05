@@ -56,7 +56,7 @@
   <button class="ac-btn ac-btn--secondary ac-btn--icon" type="button" aria-label="Adicionar" data-tip="Adicionar">${ico(P.plus)}</button>
   <button class="ac-btn ac-btn--secondary" type="button" data-loading="true">Enviando</button>
 </div>`,
-      api: [['.ac-btn--secondary / --ghost / --danger / --accent', 'classe', '—', 'Variantes de ênfase'], ['.ac-btn--sm / --lg', 'classe', 'médio', 'Tamanhos'], ['.ac-btn--icon', 'classe', '—', 'Botão quadrado só com ícone (use aria-label)'], ['.ac-btn--shimmer', 'classe', '—', 'Brilho animado para CTA'], ['data-loading="true"', 'atributo', 'false', 'Mostra spinner e bloqueia cliques']],
+      api: [['.ac-btn--secondary / --ghost / --danger / --accent', 'classe', '—', 'Variantes de ênfase'], ['.ac-btn--sm / --lg', 'classe', 'médio (38px)', 'Tamanhos: 32px e 46px de altura'], ['.ac-btn--icon', 'classe', '—', 'Botão quadrado só com ícone (use aria-label)'], ['.ac-btn--square', 'classe', '—', 'Cantos levemente arredondados em vez de pílula'], ['.ac-btn--shimmer', 'classe', '—', 'Brilho animado para CTA'], ['data-loading="true"', 'atributo', 'false', 'Esconde o texto, mostra spinner e bloqueia cliques'], ['disabled / aria-disabled="true"', 'atributo', '—', 'Esmaece e bloqueia cliques'], ['.ac-btn-group', 'container', '—', 'Alinha botões com espaço de 8px e quebra de linha'], ['--ac-btn-radius', 'token', 'pílula', 'Raio de todos os botões']],
       a11y: ['Use <button> para ações e <a> para navegação.', 'Botão só com ícone precisa de aria-label.', 'Foco visível com anel de 3px.'] },
 
     { id: 'magnetic', grupo: 'Fundamentos', nome: 'Botão magnético', aka: 'Magnetic button', desc: 'Botão que acompanha levemente o cursor, com retorno elástico. Para chamadas para ação de destaque, sem exagero.',
@@ -75,7 +75,7 @@
   <span class="ac-badge ac-badge--danger"><span class="ac-badge__dot"></span>Falhou</span>
 </div>
 <div class="ac-btn-group" style="color:var(--ac-text-2);font-size:14px">Abrir busca <kbd class="ac-kbd">⌘</kbd><kbd class="ac-kbd">K</kbd></div>`,
-      api: [['.ac-badge--solid / --success / --warning / --danger', 'classe', 'neutro', 'Tom'], ['.ac-badge__dot', 'elemento', '—', 'Ponto de status; --pulse anima'], ['.ac-kbd', 'classe', '—', 'Tecla']],
+      api: [['.ac-badge--solid / --success / --warning / --danger', 'classe', 'neutro', 'Tom'], ['.ac-badge__dot', 'elemento', '—', 'Ponto de status na cor do texto'], ['.ac-badge__dot--pulse', 'classe', '—', 'Ponto que pulsa (estado ao vivo)'], ['.ac-kbd', 'classe', '—', 'Tecla']],
       a11y: ['O texto do badge comunica o estado; a cor é reforço.'] },
 
     { id: 'avatar', grupo: 'Fundamentos', nome: 'Avatar', desc: 'Iniciais ou foto, com status e pilha para equipes.',
@@ -87,7 +87,7 @@
     <span class="ac-avatar" style="background:#e9e4ff;color:#5b3fd6">AR</span><span class="ac-avatar" style="background:#ffe7d6;color:#b4500e">BC</span><span class="ac-avatar" style="background:#dcf5e7;color:#13804a">CM</span><span class="ac-avatar" style="background:#dfeeff;color:#1f5fc4">DA</span><span class="ac-avatar">+3</span>
   </div>
 </div>`,
-      api: [['data-status', '"online" | "busy"', '—', 'Indicador de presença'], ['.ac-avatar-stack', 'classe', '—', 'Sobrepõe avatares; hover eleva']],
+      api: [['.ac-avatar', 'classe', '—', 'Círculo de 36px com as iniciais; um <img> dentro vira foto'], ['data-status', '"online" | "busy"', '—', 'Ponto de presença verde ou vermelho'], ['.ac-avatar-stack', 'classe', '—', 'Sobrepõe avatares; hover eleva']],
       a11y: ['Em pilhas, descreva o grupo com aria-label.'] },
 
     { id: 'tooltip', grupo: 'Fundamentos', nome: 'Dica', aka: 'Tooltip', desc: 'Dica curta que aparece ao passar o mouse ou no foco do teclado. Para ícones e abreviações, nunca para conteúdo essencial.',
@@ -97,8 +97,8 @@
   <button class="ac-btn ac-btn--secondary ac-btn--icon" type="button" aria-label="Editar" data-tip="Editar (E)">${ico(P.edit)}</button>
   <button class="ac-btn ac-btn--secondary" type="button" data-tip="Aparece embaixo" data-tip-side="bottom">Embaixo</button>
 </div>`,
-      api: [['data-tip', 'texto', '—', 'Conteúdo da dica'], ['data-tip-side', '"top" | "bottom"', 'top', 'Lado preferido']],
-      a11y: ['Abre com foco de teclado e fecha com Esc.', 'Vinculada por aria-describedby.'] },
+      api: [['data-tip', 'texto', '—', 'Conteúdo da dica (qualquer elemento, sem JS extra)'], ['data-tip-side', '"top" | "bottom"', 'top', 'Lado preferido'], ['atraso', 'comportamento', '350 ms', 'Tempo até a dica aparecer']],
+      a11y: ['Abre no hover e no foco de teclado (:focus-visible); fecha com Esc ou ao sair.', 'A dica tem role="tooltip" e é vinculada por aria-describedby.'] },
 
     /* ---------------- Formulários ---------------- */
     { id: 'input', grupo: 'Formulários', nome: 'Campo de texto', aka: 'Input', desc: 'Campo com rótulo, ajuda e erro associados. Ícones, atalho e contador de caracteres.',
@@ -109,8 +109,8 @@
   <div class="ac-field"><label class="ac-label" for="d-bio">Bio</label><textarea class="ac-textarea" id="d-bio" maxlength="120" data-ac="counter" placeholder="Conte em poucas palavras"></textarea></div>
   <div class="ac-field"><label class="ac-label" for="d-erro">Usuário</label><input class="ac-input" id="d-erro" value="ana ribeiro" aria-invalid="true" aria-describedby="d-erro-m"><p class="ac-error" id="d-erro-m">${I('alert')}Use apenas letras, números e ponto.</p></div>
 </div>`,
-      api: [['.ac-field', 'container', '—', 'Agrupa rótulo, controle, ajuda e erro'], ['aria-invalid="true"', 'atributo', '—', 'Estado de erro'], ['data-ac="counter"', 'textarea', '—', 'Contador usando maxlength'], ['.ac-input-wrap', 'container', '—', 'Ícone à esquerda e kbd à direita']],
-      a11y: ['label for/id em todo campo.', 'Erro ligado via aria-describedby e escrito em texto.'] },
+      api: [['.ac-field', 'container', '—', 'Agrupa rótulo, controle, ajuda e erro'], ['.ac-input / .ac-textarea', 'classe', '—', 'Campo de texto e área de texto; texto de exemplo longo termina em reticências'], ['.ac-label / .ac-hint / .ac-error', 'classe', '—', 'Rótulo, ajuda e mensagem de erro'], ['.ac-sr', 'classe', '—', 'Esconde o rótulo na tela e o mantém para leitores'], ['aria-invalid="true"', 'atributo', '—', 'Estado de erro (borda vermelha)'], ['data-ac="counter"', 'input / textarea', '—', 'Contador “n/máx” usando maxlength (ou data-max); fica vermelho ao chegar no limite'], ['.ac-input-wrap', 'container', '—', 'Ícone à esquerda e kbd à direita'], ['--ac-border-input', 'token', '#8e8f95 / #6b6b73', 'Borda dos campos (claro / escuro); vale também em select, checkbox, switch, number field, pessoas e tags, telefone, chat e campo copiável']],
+      a11y: ['label for/id em todo campo.', 'Erro ligado via aria-describedby e escrito em texto.', 'A borda do campo tem 3:1 de contraste contra o fundo (WCAG 1.4.11).'] },
 
     { id: 'form', grupo: 'Formulários', nome: 'Validação de formulário', desc: 'Valida ao sair do campo e ao enviar, com mensagens específicas em português, foco no primeiro erro e retorno de sucesso.',
       ref: { nome: 'GOV.UK · Validation', url: 'https://design-system.service.gov.uk/patterns/validation/' },
@@ -124,8 +124,8 @@
   </div>
   <div class="ac-card__foot"><button class="ac-btn" type="submit">Criar conta</button></div>
 </form>`,
-      api: [['data-ac="validate"', '<form>', '—', 'Ativa validação nativa com mensagens próprias'], ['required / minlength / type="email" / pattern', 'HTML', '—', 'Regras usadas'], ['data-pattern-msg', 'texto', '—', 'Mensagem para pattern']],
-      a11y: ['Erros aparecem em texto ao lado do campo.', 'Ao enviar com erros, o foco vai para o primeiro campo inválido.'] },
+      api: [['data-ac="validate"', '<form>', '—', 'Ativa validação nativa com mensagens próprias'], ['required / minlength / maxlength / min / max / step / type="email" / pattern', 'HTML', '—', 'Regras usadas'], ['data-pattern-msg', 'texto', 'Formato inválido.', 'Mensagem para pattern'], ['setCustomValidity()', 'JS', '—', 'Erro próprio do campo; a mensagem aparece igual às outras'], ['ac:valid', 'evento', '—', 'Cancelável; detail: { submitter }. Disparado ao enviar sem erros; preventDefault() para enviar por fetch'], ['reset', 'comportamento', '—', 'Limpar o formulário apaga os erros']],
+      a11y: ['Erros aparecem em texto no .ac-field (ou logo após o label) e entram no aria-describedby, junto da ajuda.', 'aria-invalid marca o campo; depois do erro, a mensagem se atualiza enquanto a pessoa digita.', 'Ao enviar com erros, o foco vai para o primeiro campo inválido.'] },
 
     { id: 'otp', grupo: 'Formulários', nome: 'Código de verificação', aka: 'OTP', desc: 'Código segmentado num único campo: um anel desliza até a casa ativa, os dígitos entram girando, colar deixa um rastro e, ao completar, as casas ondulam enquanto o código é conferido. Certo: varredura verde com salto. Errado: limpa, anel vermelho e mensagem.',
       ref: { nome: 'Kobra · Input OTP', url: 'https://kobra.systems/components/input-otp' },
@@ -133,7 +133,7 @@
   <div class="ac-otp" data-ac="otp" data-length="6" data-valid="888813"></div>
   <p class="ac-hint">Código de teste: <code>888813</code> (cole também “Seu código: 888 813”)</p>
 </div>`,
-      api: [['data-length', 'número', '6', 'Quantidade de dígitos'], ['data-valid', 'texto', '—', 'Código esperado (demo); omita para validar fora'], ['data-delay', 'ms', '700', 'Tempo da conferência com data-valid'], ['data-error / data-success', 'texto', '—', 'Mensagens de erro e de acerto'], ['data-name / data-label / data-disabled', 'atributos', '—', 'Nome no formulário, rótulo do campo, desativado'], ['ac:complete', 'evento', '—', 'detail: { value, valid, resolve(ok, mensagem) }; sem data-valid, chame resolve depois de conferir no servidor'], ['data-state', 'saída', '—', 'pending | success | error'], ['--otp-size', 'CSS', '56px', 'Tamanho da casa (no celular encolhe até 11vw)']],
+      api: [['data-length', 'número', '6', 'Quantidade de dígitos'], ['data-valid', 'texto', '—', 'Código esperado (demo); omita para validar fora'], ['data-delay', 'ms', '700', 'Tempo da conferência com data-valid'], ['data-error / data-success', 'texto', '—', 'Mensagens de erro e de acerto'], ['data-name / data-label / data-disabled', 'atributos', '—', 'Nome no formulário, rótulo do campo, desativado'], ['ac:complete', 'evento', '—', 'detail: { value, valid, resolve(ok, mensagem) }; sem data-valid, chame resolve depois de conferir no servidor'], ['data-state', 'saída', '—', 'pending | success | error'], ['--otp-size', 'CSS', '56px', 'Tamanho da casa (no celular encolhe até 11vw)'], ['--otp-r / --otp-gap', 'CSS', '12px / até 12px', 'Raio das casas e espaço entre elas']],
       a11y: ['Um único campo com rótulo “Código de verificação, 6 dígitos”; as casas são só desenho (aria-hidden).', 'autocomplete="one-time-code": o SMS preenche o código inteiro de uma vez, também no iOS.', 'Erro e acerto aparecem em texto num role="status"; o campo ganha aria-invalid no erro e aria-busy enquanto confere.', 'Setas, Home e End movem entre as casas; movimento reduzido desliga rastros, saltos e a onda.'] },
 
     { id: 'choice', grupo: 'Formulários', nome: 'Caixa de seleção, rádio e interruptor', aka: 'Checkbox, Radio, Switch', desc: 'Controles nativos estilizados, com estado indeterminado e animação de mola.',
@@ -152,7 +152,7 @@
     <label class="ac-switch"><input type="checkbox" role="switch"><span>Sons</span></label>
   </div>
 </div>`,
-      api: [['.ac-check > input[type=checkbox|radio]', 'HTML', '—', 'Checkbox e radio'], ['.ac-switch > input[role=switch]', 'HTML', '—', 'Alternador de efeito imediato']],
+      api: [['.ac-check > input[type=checkbox|radio]', 'HTML', '—', 'Checkbox e radio'], ['.ac-check small', 'elemento', '—', 'Texto de apoio abaixo do rótulo'], ['input.indeterminate = true', 'JS', 'false', 'Estado indeterminado (traço) do checkbox'], ['.ac-switch > input[role=switch]', 'HTML', '—', 'Alternador de efeito imediato']],
       a11y: ['Controles nativos: teclado e leitores de tela funcionam sem JS.', 'Agrupe opções em <fieldset> com <legend>.'] },
 
     { id: 'slider', grupo: 'Formulários', nome: 'Controle deslizante', aka: 'Slider', desc: 'Range nativo com trilha preenchida, valor ao vivo e polegar que cresce ao arrastar.',
@@ -161,7 +161,7 @@
   <div class="ac-field"><label class="ac-label" for="s1">Volume</label><div class="ac-slider-row"><input class="ac-slider" id="s1" type="range" min="0" max="100" value="64" data-ac="slider"><output for="s1"></output></div></div>
   <div class="ac-field"><label class="ac-label" for="s2">Desconto</label><div class="ac-slider-row"><input class="ac-slider" id="s2" type="range" min="0" max="50" step="5" value="15" data-ac="slider" data-suffix="%"><output for="s2"></output></div></div>
 </div>`,
-      api: [['data-ac="slider"', 'input range', '—', 'Atualiza preenchimento e <output>'], ['data-suffix', 'texto', '—', 'Sufixo do valor']],
+      api: [['data-ac="slider"', 'input range', '—', 'Atualiza o preenchimento (--p) e o <output> do mesmo elemento pai'], ['data-suffix', 'texto', '—', 'Sufixo do valor'], ['.ac-slider-row', 'container', '—', 'Põe o range e o <output> lado a lado']],
       a11y: ['Range nativo: setas, Home/End e Page Up/Down.'] },
 
     { id: 'segmented', grupo: 'Formulários', nome: 'Controle segmentado', aka: 'Segmented control', desc: 'Grupo de opções exclusivas com pílula deslizante.',
@@ -169,20 +169,20 @@
       html: `<div class="ac-segmented" data-ac="segmented" aria-label="Período">
   <button type="button" aria-pressed="true">Dia</button><button type="button">Semana</button><button type="button">Mês</button><button type="button">Ano</button>
 </div>`,
-      api: [['data-ac="segmented"', 'container', '—', 'Ativa o grupo'], ['ac:change', 'evento', '—', 'detail: texto da opção']],
-      a11y: ['Botões com aria-pressed; o grupo tem aria-label.'] },
+      api: [['data-ac="segmented"', 'container', '—', 'Ativa o grupo de <button>'], ['aria-pressed="true"', 'botão', '1º', 'Opção inicial'], ['value', 'botão', 'texto', 'Valor enviado no evento; sem value, vai o texto do botão'], ['ac:change', 'evento', '—', 'detail: value (ou texto) da opção; também dispara ao iniciar']],
+      a11y: ['O grupo ganha role="group" (dê um aria-label); botões com aria-pressed.'] },
 
-    { id: 'combobox', grupo: 'Formulários', nome: 'Busca com lista', aka: 'Combobox', desc: 'Seleção com busca, destaque do trecho encontrado, teclado completo e estado vazio.',
+    { id: 'combobox', grupo: 'Formulários', nome: 'Busca com lista', aka: 'Combobox', desc: 'Seleção com busca, destaque do trecho encontrado, teclado completo e estado vazio. No toque, o primeiro toque abre só a lista, sem o teclado.',
       ref: { nome: 'shadcn/ui · Combobox', url: 'https://ui.shadcn.com/docs/components/combobox' },
       html: `<div class="ac-field" style="width:min(300px,100%)"><label class="ac-label" for="cb-pais">País</label><div class="ac-combo" data-ac="combo" data-options='${attr(countries)}'><input class="ac-input ac-select" id="cb-pais" placeholder="Selecione um país"></div></div>`,
-      api: [['data-options', 'JSON', '[]', 'Lista de { label, hint }'], ['ac:change', 'evento', '—', 'detail: opção escolhida']],
-      a11y: ['Padrão ARIA combobox com aria-activedescendant.', '↑ ↓ navegam, Enter escolhe, Esc fecha.'] },
+      api: [['data-ac="combo"', 'container', '—', 'Precisa de um <input> dentro'], ['data-options', 'JSON', '[]', 'Lista de { label, hint }; a busca ignora acentos e maiúsculas'], ['no toque', 'comportamento', '—', 'O campo fica somente leitura: o 1º toque abre a lista; tocar de novo no campo com a lista aberta libera a digitação. Escolher ou sair trava de novo'], ['lista', 'comportamento', '—', 'Abre no lado com mais espaço visível (até 260 px), acompanha a rolagem e o teclado virtual e fecha quando o campo sai da tela'], ['ac:change', 'evento', '—', 'detail: a opção escolhida ({ label, hint })']],
+      a11y: ['Padrão ARIA combobox (role="combobox", listbox e aria-activedescendant).', 'Abre ao focar ou clicar; ↑ ↓ navegam, Enter escolhe, Esc fecha.', 'A opção é escolhida no clique: arrastar o dedo sobre a lista rola sem escolher.'] },
 
     { id: 'datepicker', grupo: 'Formulários', nome: 'Seletor de data', aka: 'Date picker', desc: 'Calendário em balão com navegação por mês e por setas, em português.',
       ref: { nome: 'shadcn/ui · Date Picker', url: 'https://ui.shadcn.com/docs/components/date-picker' },
       html: `<div class="ac-field"><span class="ac-label" id="dp-l">Data de entrega</span><button class="ac-btn ac-btn--secondary ac-btn--square ac-date-trigger" type="button" data-ac="datepicker" data-empty aria-labelledby="dp-l">${ico(P.calendar)}<span>Escolha uma data</span></button></div>`,
-      api: [['data-ac="datepicker"', 'button', '—', 'Abre o calendário'], ['ac:change', 'evento', '—', 'detail: Date']],
-      a11y: ['Setas movem entre dias; Enter seleciona; Esc fecha e devolve o foco.'] },
+      api: [['data-ac="datepicker"', 'button', '—', 'Abre o calendário; o 1º <span> dentro recebe a data escolhida'], ['data-empty', 'atributo', '—', 'Texto em cinza até escolher; sai ao escolher'], ['.ac-date-trigger', 'classe', '—', 'Visual de campo para o botão'], ['ac:change', 'evento', '—', 'detail: Date']],
+      a11y: ['O botão tem aria-haspopup="dialog"; o calendário é um role="dialog".', '← → mudam o dia, ↑ ↓ a semana (troca de mês sozinha); Enter seleciona; Esc fecha e devolve o foco.'] },
 
     { id: 'dropzone', grupo: 'Formulários', nome: 'Envio de arquivos', aka: 'Dropzone', desc: 'Arraste e solte com reação visual, lista de arquivos e progresso de envio (simulado).',
       ref: { nome: 'Kobra · Magnetic Dropzone', url: 'https://kobra.systems/components/magnetic-dropzone' },
@@ -190,14 +190,14 @@
   <div class="ac-drop" data-ac="dropzone" aria-label="Enviar arquivos"><span class="ac-drop__icon">${I('upload')}</span><strong>Solte arquivos aqui</strong><span>ou clique para escolher · até 10 MB</span><input type="file" multiple hidden></div>
   <ul class="ac-files" aria-label="Arquivos"></ul>
 </div>`,
-      api: [['data-ac="dropzone"', 'container', '—', 'Precisa de <input type=file> dentro e .ac-files logo após']],
-      a11y: ['Focável e ativável com Enter/Espaço.', 'Progresso com role="progressbar".'] },
+      api: [['data-ac="dropzone"', 'container', '—', 'Precisa de <input type=file> dentro e de uma lista .ac-files no mesmo elemento pai'], ['limite', 'comportamento', '6', 'Arquivos aceitos por vez; tipo e tamanho não são conferidos'], ['.is-over', 'classe (saída)', '—', 'Enquanto um arquivo é arrastado por cima']],
+      a11y: ['Ganha role="button" e tabindex; ativa com Enter/Espaço.', 'Progresso com role="progressbar"; ao terminar, um badge “Enviado”.'] },
 
     { id: 'palette', grupo: 'Formulários', nome: 'Paleta de cores 3D', aka: 'Color palette', desc: 'Seletor de cor em esferas, feito neste projeto. Com mouse, a esfera sobe e afasta as vizinhas; no toque, a esfera tocada dá uma leve retraída. A escolhida fica por cima, com anel; com data-copy, o código é copiado e uma pílula no topo mostra a amostra, o nome e o código da cor.',
       ref: { nome: 'Kobra · Color Palette (inspiração visual)', url: 'https://kobra.systems/components/color-palette' },
       html: `<div style="display:grid;gap:16px;justify-items:center"><div data-ac="palette" data-copy id="pal-demo" style="--size:200px"></div><p class="ac-hint" id="pal-out">Escolha uma cor</p></div>`,
-      api: [['data-copy', 'atributo', 'desligado', 'O clique, o toque ou o Enter copiam o código da cor e mostram "Copiado #hex" numa pílula no topo (as setas só escolhem)'], ['data-ac="palette"', 'div', '—', 'Gera 19 esferas'], ['--size', 'CSS', '200px', 'Diâmetro'], ['ac:change', 'evento', '—', 'detail: { name, color }'], ['dataset.value', 'leitura', '—', 'Cor selecionada']],
-      a11y: ['radiogroup com setas para navegar.', 'Respeita prefers-reduced-motion.'] },
+      api: [['data-ac="palette"', 'div', '—', 'Gera 19 esferas (12 por fora, 6 por dentro e o branco no centro)'], ['data-label', 'texto', 'Cor', 'Nome do grupo (aria-label do radiogroup)'], ['data-copy', 'atributo', 'desligado', 'Clique, toque, Enter ou Espaço copiam o código da cor e mostram numa pílula no topo a amostra, “Copiado: Lima” e o código; as setas só escolhem. Se falhar: “Não deu para copiar a cor”'], ['--size', 'CSS', '200px', 'Diâmetro (nunca passa da largura do contêiner)'], ['ac:change', 'evento', '—', 'detail: { name, color }; sai no clique e nas setas'], ['dataset.value', 'leitura', '—', 'Código da cor selecionada']],
+      a11y: ['radiogroup com um só ponto de Tab; cada esfera é um radio com o nome da cor e aria-checked.', '← → ↑ ↓ andam e já escolhem, sem copiar.', 'Com data-copy, a confirmação sai na região de avisos; a amostra é só visual, o nome e o código vão no texto.', 'Respeita prefers-reduced-motion.'] },
 
     /* ---------------- Navegação ---------------- */
     { id: 'tabs', grupo: 'Navegação', nome: 'Abas', aka: 'Tabs', desc: 'Abas com indicador que desliza até a aba ativa e painel que entra suavemente.',
@@ -209,8 +209,8 @@
   <div class="ac-tabs__panel">Nenhum relatório agendado. Crie o primeiro para receber por e-mail.</div>
   <div class="ac-tabs__panel">Preferências do espaço de trabalho.</div>
 </div>`,
-      api: [['data-ac="tabs"', 'container', '—', 'Precisa de .ac-tabs__list, .ac-tabs__tab e .ac-tabs__panel'], ['aria-selected="true"', 'tab', '1ª', 'Aba inicial']],
-      a11y: ['Padrão ARIA tabs: ← → Home End.', 'Só a aba ativa entra na ordem de Tab.'] },
+      api: [['data-ac="tabs"', 'container', '—', 'Precisa de .ac-tabs__list, .ac-tabs__tab e .ac-tabs__panel (na mesma ordem)'], ['aria-selected="true"', 'tab', '1ª', 'Aba inicial'], ['muitas abas', 'comportamento', '—', 'A lista rola na horizontal, com esmaecimento e setas nas pontas; a aba ativa sempre fica à vista']],
+      a11y: ['Padrão ARIA tabs (tablist, tab, tabpanel, aria-controls) criado pelo JS.', '← → (dão a volta), Home e End.', 'Só a aba ativa entra na ordem de Tab; o painel é focável.'] },
 
     { id: 'sidebar', grupo: 'Navegação', nome: 'Menu lateral', aka: 'Sidebar', desc: 'Menu lateral agrupado, com item ativo marcado e modo recolhido com dicas.',
       ref: { nome: 'shadcn/ui · Sidebar', url: 'https://ui.shadcn.com/docs/components/sidebar' },
@@ -224,8 +224,8 @@
   <a class="ac-sidebar__item" href="#">${ico(P.gear)}<span class="ac-sidebar__text">Configurações</span></a>
   <div class="ac-sidebar__resize" data-ac-resize></div>
 </nav>`,
-      api: [['data-ac="sidebar"', 'nav', '—', 'Ativa itens e o botão de recolher'], ['data-collapsed', '"true" | "false"', 'false', 'Estado recolhido'], ['[data-ac-toggle]', 'botão', '—', 'Alterna o modo'], ['.ac-sidebar__resize[data-ac-resize]', 'alça', '—', 'Arrastar muda a largura (200–420 px); abaixo de 180 px recolhe; duplo clique volta ao padrão'], ['data-width', 'px', '240', 'Largura padrão (a escolhida fica salva no navegador)']],
-      a11y: ['aria-current="page" no item ativo.', 'No modo recolhido, os rótulos viram tooltips.', 'A alça é um separador focável: ← → mudam a largura (Shift anda mais), Home/End vão ao mínimo e ao máximo.'] },
+      api: [['data-ac="sidebar"', 'nav', '—', 'Ativa itens e o botão de recolher'], ['data-collapsed', '"true" | "false"', 'false', 'Estado recolhido (64 px de largura)'], ['[data-ac-toggle]', 'botão', '—', 'Alterna o modo; atualiza aria-expanded e o aria-label'], ['.ac-sidebar__head / __brand', 'classe', '—', 'Cabeçalho com a marca e o botão de recolher; recolhido, a marca some e o botão fica no centro'], ['.ac-sidebar__item / __text / __label', 'classe', '—', 'Item (link), rótulo do item e título de grupo'], ['.ac-sidebar__resize[data-ac-resize]', 'alça', '—', 'Arrastar muda a largura (200–420 px); abaixo de 180 px recolhe; duplo clique volta ao padrão'], ['data-width', 'px', '240', 'Largura padrão; a escolhida fica salva no navegador (chave por id do nav)'], ['--w', 'CSS', '240px', 'Largura aberta (a alça grava aqui); recolhido, o menu fica em 64 px e o --w é mantido para quando abrir']],
+      a11y: ['aria-current="page" no item clicado.', 'No modo recolhido, os rótulos viram dicas à direita.', 'A alça é um separador focável: ← → mudam a largura (Shift anda mais), ← abaixo de 180 px recolhe e → reabre; Home/End vão ao mínimo e ao máximo.'] },
 
     { id: 'menu', grupo: 'Navegação', nome: 'Menu suspenso', aka: 'Dropdown', desc: 'Menu de ações com atalhos, separadores e ação destrutiva destacada.',
       ref: { nome: 'Radix · Dropdown Menu', url: 'https://www.radix-ui.com/primitives/docs/components/dropdown-menu' },
@@ -238,31 +238,31 @@
   <div class="ac-menu__sep" role="separator"></div>
   <button class="ac-menu__item ac-menu__item--danger" type="button">${I('trash')}Excluir</button>
 </div>`,
-      api: [['data-ac="menu"', 'botão', '—', 'Gatilho'], ['data-target', 'seletor', '—', 'O .ac-pop do menu'], ['data-align', '"start" | "end"', 'start', 'Alinhamento'], ['ac:select', 'evento', '—', 'detail: item escolhido']],
-      a11y: ['↓ abre e foca o 1º item; ↑ ↓ navegam; Esc fecha e devolve o foco.'] },
+      api: [['data-ac="menu"', 'botão', '—', 'Gatilho'], ['data-target', 'seletor', '—', 'O .ac-pop do menu'], ['data-align', '"start" | "end"', 'start', 'Alinhamento'], ['.ac-menu__item / __label / __sep', 'classe', '—', 'Item, título de seção e separador'], ['.ac-menu__item--danger', 'classe', '—', 'Ação destrutiva em vermelho'], ['data-value', 'item', 'texto', 'Valor enviado no evento'], ['ac:select', 'evento', '—', 'No gatilho; detail: data-value ou o texto do item']],
+      a11y: ['role="menu" e "menuitem" aplicados pelo JS; o gatilho tem aria-haspopup e aria-expanded.', '↓ abre no 1º item e ↑ no último; ↑ ↓ Home End navegam; uma letra pula para o item que começa com ela.', 'Esc fecha e devolve o foco; Tab fecha.'] },
 
-    { id: 'command', grupo: 'Navegação', nome: 'Paleta de comandos', aka: 'Command palette', desc: 'Busca de ações e páginas com agrupamento, teclado e atalho global.',
+    { id: 'command', grupo: 'Navegação', nome: 'Paleta de comandos', aka: 'Command palette', desc: 'Busca de ações e páginas com grupos (ícone e cor no título), ordem por relevância e teclado. O atalho (Ctrl K) é registrado pela página.',
       ref: { nome: 'shadcn/ui · Command (cmdk)', url: 'https://ui.shadcn.com/docs/components/command' },
       html: `<button class="ac-btn ac-btn--secondary" type="button" id="cmd-demo" style="min-width:260px;justify-content:space-between">${I('search')}<span style="flex:1;text-align:left;color:var(--ac-text-3)">Buscar…</span><kbd class="ac-kbd">Ctrl K</kbd></button>`,
-      api: [['Orthos.command({ items, groups })', 'função', '—', 'Abre a paleta (um <dialog> só, reaproveitado)'], ['items', 'array', '—', '{ label, group, hint, keywords, run }; hint aparece à direita do item (ex.: "novo")'], ['groups', 'objeto', '—', '{ "Nome do grupo": { icon, color } }: ícone (nome de Orthos.icon ou <path …/> de 24×24) e cor (qualquer cor CSS, inclusive var(--x)) no título do grupo'], ['limit', 'número', '60', 'Máximo de resultados; Infinity mostra todos'], ['placeholder', 'texto', 'Buscar comandos…', 'Texto do campo de busca']],
-      a11y: ['Combobox dentro de <dialog>; foco preso e Esc fecha.', '↑ ↓ movem o item ativo (aria-activedescendant e aria-selected) e Enter abre; o ativo e o título do seu grupo ficam sempre à vista.', 'Título de grupo é só visual (role="presentation") e o ícone tem aria-hidden; o nome do grupo continua sendo buscado.'] },
+      api: [['Orthos.command({ items, groups, limit, placeholder })', 'função', '—', 'Abre a paleta (um <dialog> só, reaproveitado; reabre com a lista no topo)'], ['items', 'array', '—', '{ label, group, hint, aliases, keywords, run }; hint aparece à direita do item (ex.: "novo"); run roda depois de fechar'], ['aliases', 'texto', '—', 'Nomes alternativos separados por vírgula (ex.: o termo em inglês); valem na busca e na relevância'], ['busca', 'comportamento', '—', 'Ignora acentos e maiúsculas e procura em label, aliases, group e keywords. Com texto, ordena: nome que começa com o termo, alias que começa, nome que contém, alias que contém, grupo e palavras-chave; cada grupo aparece uma vez'], ['groups', 'objeto', '—', '{ "Nome do grupo": { icon, color } }: ícone (nome de Orthos.icon ou <path …/> de 24×24) e cor (qualquer cor CSS, inclusive var(--x)) no título do grupo'], ['limit', 'número', '60', 'Máximo de resultados; Infinity mostra todos'], ['placeholder', 'texto', 'Buscar comandos…', 'Texto do campo de busca']],
+      a11y: ['Combobox dentro de <dialog>; foco preso e Esc fecha.', '↑ ↓ movem o item ativo (aria-activedescendant e aria-selected) e Enter abre; o ativo e o título do seu grupo ficam sempre à vista.', 'Título de grupo é só visual (role="presentation") e o ícone tem aria-hidden; o nome do grupo continua sendo buscado.', 'No toque, o foco fica no diálogo: a lista aparece inteira e o teclado só abre ao tocar no campo; as dicas de teclado do rodapé somem.'] },
 
-    { id: 'breadcrumb', grupo: 'Navegação', nome: 'Trilha e paginação', aka: 'Breadcrumb, Pagination', desc: 'Trilha de localização e paginação compacta.',
+    { id: 'breadcrumb', grupo: 'Navegação', nome: 'Trilha e paginação', aka: 'Breadcrumb, Pagination', desc: 'Trilha de localização e paginação que troca de página: primeira, última e vizinhas da atual, com “…” no meio.',
       ref: { nome: 'shadcn/ui · Breadcrumb', url: 'https://ui.shadcn.com/docs/components/breadcrumb' },
       html: `<nav aria-label="Trilha"><ol class="ac-crumbs"><li><a href="#">Início</a></li><li><a href="#">Projetos</a></li><li><a href="#">Site 2026</a></li><li><span aria-current="page">Configurações</span></li></ol></nav>
 <nav class="ac-pager" data-ac="pagination" data-pages="12" data-page="1" aria-label="Paginação"></nav>
 <p class="ac-hint" id="pg-out" aria-live="polite">Mostrando a página 1 de 12.</p>`,
-      api: [['.ac-crumbs', '<ol>', '—', 'Trilha'], ['data-ac="pagination"', '<nav>', '—', 'Monta a paginação; o clique troca a página e emite ac:change (número)'], ['data-pages / data-page', 'número', '1 / 1', 'Total de páginas e página atual'], ['data-siblings', 'número', '1', 'Quantas páginas vizinhas da atual aparecem antes do "…"'], ['el._pagination.go(n)', 'JS', '—', 'Vai para a página n sem emitir evento'], ['.ac-pager', '<nav>', '—', 'Só o visual (sem data-ac); aria-current="page" na atual']],
-      a11y: ['<nav> com aria-label; página atual com aria-current.'] },
+      api: [['.ac-crumbs', '<ol>', '—', 'Trilha'], ['data-ac="pagination"', '<nav>', '—', 'Monta a paginação (põe .ac-pager e aria-label “Paginação” se faltar); o clique troca a página'], ['data-pages', 'número', 'maior número nos botões, ou 1', 'Total de páginas'], ['data-page', 'número', 'botão com aria-current, ou 1', 'Página atual; atualizado a cada troca'], ['data-siblings', 'número', '1', 'Quantas páginas vizinhas da atual aparecem antes do "…"'], ['ac:change', 'evento', '—', 'detail: o número da nova página'], ['el._pagination.go(n)', 'JS', '—', 'Vai para a página n sem emitir evento'], ['.ac-pager', '<nav>', '—', 'Só o visual (sem data-ac); aria-current="page" na atual']],
+      a11y: ['<nav> com aria-label; página atual com aria-current="page".', 'Cada botão se chama “Página 3”; anterior e próxima ficam desativados nas pontas; o “…” fica fora da leitura (aria-hidden).', 'Ao trocar de página, o foco continua no mesmo controle (ou vai para a página atual).'] },
 
-    { id: 'stepper', grupo: 'Navegação', nome: 'Etapas', aka: 'Stepper', desc: 'Etapas com progresso preenchendo a linha e conclusão animada.',
+    { id: 'stepper', grupo: 'Navegação', nome: 'Etapas', aka: 'Stepper', desc: 'Etapas com progresso preenchendo a linha e conclusão animada. Em largura de celular, só a etapa atual mostra o nome.',
       ref: { nome: 'Ant Design · Steps', url: 'https://ant.design/components/steps' },
       html: `<div data-ac="stepper" style="width:min(560px,100%);display:grid;gap:22px">
   <ol class="ac-steps"><li data-state="current">Conta</li><li>Equipe</li><li>Plano</li><li>Revisão</li></ol>
   <div class="ac-btn-group" style="justify-content:flex-end"><button class="ac-btn ac-btn--ghost" type="button" data-step="-1">Voltar</button><button class="ac-btn" type="button" data-step="1">Continuar</button></div>
 </div>`,
-      api: [['data-ac="stepper"', 'container', '—', 'Controla .ac-steps'], ['data-step="1|-1"', 'botão', '—', 'Avança/volta']],
-      a11y: ['Etapa atual com aria-current="step".'] },
+      api: [['data-ac="stepper"', 'container', '—', 'Controla .ac-steps'], ['data-state="current"', 'li', '1ª', 'Etapa inicial; as anteriores viram done (✓)'], ['data-step="1" e data-step="-1"', 'botão', '—', 'Avança e volta; os dois precisam existir'], ['fim do fluxo', 'comportamento', '—', 'Na última etapa o botão vira “Concluir”; ao clicar, toast “Fluxo concluído” e volta ao início'], ['.ac-steps até 480 px', 'comportamento', 'automático', 'Container query: só a etapa atual mostra o nome; as outras ficam no número, sem rolar para o lado']],
+      a11y: ['Etapa atual com aria-current="step".', '“Voltar” fica desativado na primeira etapa.', 'No estreito, o nome das outras etapas sai da tela, mas continua no HTML.'] },
 
     { id: 'accordion', grupo: 'Navegação', nome: 'Acordeão', aka: 'Accordion', desc: 'Perguntas frequentes com abertura suave de altura automática.',
       ref: { nome: 'Motion-Primitives · Accordion', url: 'https://motion-primitives.com/docs/accordion' },
@@ -271,11 +271,11 @@
   <div class="ac-accordion__item"><button class="ac-accordion__trigger" type="button">Há desconto anual?${ico(P.plus)}</button><div class="ac-accordion__panel"><div><p>O plano anual sai 20% mais barato que doze meses no mensal.</p></div></div></div>
   <div class="ac-accordion__item"><button class="ac-accordion__trigger" type="button">Meus dados ficam no Brasil?${ico(P.plus)}</button><div class="ac-accordion__panel"><div><p>Sim, em data centers em São Paulo, com backup diário.</p></div></div></div>
 </div>`,
-      api: [['data-ac="accordion"', 'container', '—', 'Ativa'], ['data-type="multiple"', 'atributo', 'single', 'Permite vários abertos'], ['.is-open', 'classe', '—', 'Item aberto inicialmente']],
-      a11y: ['Botões com aria-expanded e aria-controls.'] },
+      api: [['data-ac="accordion"', 'container', '—', 'Ativa; cada .ac-accordion__item tem __trigger (botão) e __panel com um <div> dentro'], ['data-type="multiple"', 'atributo', 'single', 'Permite vários abertos'], ['.is-open', 'classe', '—', 'Item aberto (inicial e atual)']],
+      a11y: ['Botões com aria-expanded e aria-controls.', 'Painéis com role="region" ligados ao botão por aria-labelledby.'] },
 
     /* ---------------- Feedback ---------------- */
-    { id: 'toast', grupo: 'Feedback', nome: 'Aviso rápido', aka: 'Toast', desc: 'Notificações empilhadas com entrada em mola, pausa ao passar o mouse e ação de desfazer.',
+    { id: 'toast', grupo: 'Feedback', nome: 'Aviso rápido', aka: 'Toast', desc: 'Notificações empilhadas com entrada em mola, pausa ao passar o mouse e ação de desfazer. Duas pilhas: embaixo à direita (padrão) e no topo, centralizada; a pílula serve para confirmações curtas.',
       ref: { nome: 'shadcn/ui · Toast', url: 'https://ui.shadcn.com/docs/components/sonner' },
       html: `<div class="ac-btn-group">
   <button class="ac-btn ac-btn--secondary" type="button" data-demo-toast="success">Sucesso</button>
@@ -283,8 +283,8 @@
   <button class="ac-btn ac-btn--secondary" type="button" data-demo-toast="danger">Erro</button>
   <button class="ac-btn ac-btn--secondary" type="button" data-demo-toast="promise">Com promessa</button>
 </div>`,
-      api: [['Orthos.toast({ title, desc, type, action, duration })', 'função', '—', 'type: "default" | "success" | "danger" | "loading"; action: { label, onClick }; retorna uma função que fecha, com .update()'], ['Orthos.toast.promise(promessa, { loading, success, error })', 'função', '—', 'Aviso que acompanha a tarefa: carregando, depois sucesso ou erro'], ['Alt+T', 'atalho', '—', 'Leva o foco ao aviso mais recente; Esc o dispensa'], ['arrastar para a direita', 'gesto', '—', 'Dispensa o aviso']],
-      a11y: ['Região aria-live="polite" criada no carregamento: o primeiro aviso também é anunciado.', 'Erros usam role="alert".', 'Alt+T foca os avisos; a pilha abre com foco ou hover.', 'Não some enquanto o cursor está em cima.'] },
+      api: [['Orthos.toast({ title, desc, type, action, duration, position, variant, swatch })', 'função', '—', 'type: "default" | "success" | "danger" | "loading"; action: { label, onClick }; aceita também só o texto do título'], ['duration', 'ms', '4200', 'Tempo na tela; "loading" fica até mudar de tipo'], ['position', '"top"', 'embaixo à direita', '"top" usa a pilha centralizada no alto, que cresce para baixo'], ['variant', '"pill"', '—', 'Pílula de uma linha (ícone, título e descrição curta), para confirmações rápidas como “Copiado”'], ['swatch', 'cor CSS', '—', 'Amostra de cor no lugar do ícone; só aceita uma cor válida e não vale para "loading"'], ['retorno', 'função', '—', 'Chamar fecha o aviso; .update({ … }) troca título, tipo e o resto'], ['Orthos.toast.promise(promessa, { loading, success, error })', 'função', '—', 'Carregando, depois sucesso ou erro; success e error podem ser funções; loadingDesc / successDesc / errorDesc dão a descrição; retorna a promessa'], ['limite', 'comportamento', '5', 'Avisos ao mesmo tempo em cada pilha; o mais antigo sai'], ['Alt+T', 'atalho', '—', 'Leva o foco ao último aviso; Esc ou Delete o dispensa'], ['arrastar para a direita', 'gesto', '—', 'Mais de 80 px dispensa o aviso']],
+      a11y: ['Região aria-live="polite" criada no carregamento: o primeiro aviso também é anunciado. A pilha do topo, também aria-live="polite", nasce no primeiro aviso com position: "top".', 'Erros usam role="alert"; o aviso “loading” tem aria-busy.', 'Alt+T foca os avisos; a pilha abre com foco ou hover; ao dispensar, o foco passa ao próximo aviso ou volta para onde estava.', 'Não some enquanto o cursor ou o foco está nele.', 'A amostra (swatch) é aria-hidden: o nome da cor vai no título ou na descrição.'] },
 
     { id: 'alert', grupo: 'Feedback', nome: 'Alerta e faixa', aka: 'Alert, Banner', desc: 'Avisos em contexto, que ficam até serem lidos.',
       ref: { nome: 'shadcn/ui · Alert', url: 'https://ui.shadcn.com/docs/components/alert' },
@@ -294,7 +294,7 @@
   <div class="ac-alert ac-alert--success" role="status">${I('check')}<p class="ac-alert__title">Pagamento confirmado</p><p class="ac-alert__text">O recibo foi enviado para financeiro@estudio.co.</p></div>
   <div class="ac-alert ac-alert--danger" role="alert">${I('alert')}<p class="ac-alert__title">Não foi possível sincronizar</p><p class="ac-alert__text">Verifique a conexão e tente de novo. Nada foi perdido.</p></div>
 </div>`,
-      api: [['.ac-alert--success / --warning / --danger', 'classe', 'neutro', 'Tom'], ['.ac-banner', 'classe', '—', 'Faixa de aviso global']],
+      api: [['.ac-alert', 'container', '—', 'Ícone, .ac-alert__title e .ac-alert__text'], ['.ac-alert--success / --warning / --danger', 'classe', 'neutro', 'Tom'], ['.ac-banner', 'classe', '—', 'Faixa de aviso global']],
       a11y: ['Use role="alert" só para erros urgentes.'] },
 
     { id: 'dialog', grupo: 'Feedback', nome: 'Diálogo e confirmação', aka: 'Dialog', desc: 'Modal nativo com entrada em mola, saída suave e confirmação destrutiva que explica o impacto.',
@@ -314,8 +314,8 @@
   <p class="ac-dialog__desc" id="dlg-del-d">Os 48 arquivos e 3 integrações deste projeto serão removidos. Não é possível desfazer.</p>
   <div class="ac-dialog__actions"><button class="ac-btn ac-btn--ghost" type="button" data-ac-close autofocus>Cancelar</button><button class="ac-btn ac-btn--danger" type="button" data-ac-close="del" data-demo-deleted>Excluir projeto</button></div>
 </div></dialog>`,
-      api: [['data-ac-open="#id"', 'gatilho', '—', 'Abre o <dialog>'], ['data-ac-close', 'botão', '—', 'Fecha com animação'], ['Orthos.open / close', 'função', '—', 'Controle por código']],
-      a11y: ['<dialog> nativo: foco preso, Esc e clique fora fecham.', 'Na confirmação destrutiva, o foco inicial vai para “Cancelar”.'] },
+      api: [['data-ac-open="#id"', 'gatilho', '—', 'Abre o <dialog> com showModal()'], ['data-ac-close="valor"', 'botão', '—', 'Fecha com animação; o valor vai para dialog.returnValue'], ['Orthos.open(dlg) / Orthos.close(dlg, valor)', 'função', '—', 'Controle por código; aceitam o elemento ou um seletor'], ['aria-busy="true"', 'dialog', '—', 'Segura o diálogo aberto (Esc, clique fora e data-ac-close não fecham)'], ['.ac-dialog__in / __title / __desc / __actions / __icon', 'classe', '—', 'Partes do diálogo']],
+      a11y: ['<dialog> nativo: foco preso, Esc e clique fora fecham.', 'Na confirmação destrutiva, ponha autofocus em “Cancelar”.'] },
 
     { id: 'sheet', grupo: 'Feedback', nome: 'Painel lateral', aka: 'Sheet', desc: 'Painel lateral para edições longas sem perder o contexto da página.',
       ref: { nome: 'shadcn/ui · Sheet', url: 'https://ui.shadcn.com/docs/components/sheet' },
@@ -329,7 +329,7 @@
   </div>
   <div class="ac-sheet__foot"><button class="ac-btn ac-btn--ghost" type="button" data-ac-close>Limpar</button><button class="ac-btn" type="button" data-ac-close>Aplicar</button></div>
 </div></dialog>`,
-      api: [['.ac-sheet', '<dialog>', '—', 'Painel à direita'], ['data-ac-open / data-ac-close', 'gatilhos', '—', 'Iguais ao Dialog']],
+      api: [['.ac-sheet', '<dialog>', '—', 'Painel à direita, até 400px de largura'], ['.ac-sheet__in / __head / __body / __foot', 'classe', '—', 'Cabeçalho, corpo que rola e rodapé fixo'], ['data-ac-open / data-ac-close', 'gatilhos', '—', 'Iguais ao Dialog']],
       a11y: ['Mesmo comportamento de foco do Dialog.'] },
 
     { id: 'progress', grupo: 'Feedback', nome: 'Progresso e carregamento', aka: 'Progress, Spinner', desc: 'Progresso determinado (barra e anel), indeterminado e indicadores de espera curta.',
@@ -339,8 +339,8 @@
   <div class="ac-progress" data-indeterminate role="progressbar" aria-label="Carregando"></div>
   <div class="ac-btn-group" style="gap:22px"><svg class="ac-ring" viewBox="0 0 56 56" style="--v:.72" role="img" aria-label="72% concluído"><circle class="t" cx="28" cy="28" r="22"/><circle class="v" cx="28" cy="28" r="22"/></svg><span class="ac-spinner" role="status" aria-label="Carregando"></span><span class="ac-dots" role="status" aria-label="Carregando"><i></i><i></i><i></i></span><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button" id="pg-run">Simular importação</button></div>
 </div>`,
-      api: [['.ac-progress (--v)', 'CSS', '40%', 'Barra; data-indeterminate para indeterminado'], ['.ac-ring (--v)', 'SVG', '0.65', 'Anel de 0 a 1'], ['.ac-spinner / .ac-dots', 'classe', '—', 'Esperas curtas']],
-      a11y: ['role="progressbar" com aria-valuenow.'] },
+      api: [['.ac-progress (--v)', 'CSS', '40%', 'Barra; data-indeterminate para indeterminado'], ['.ac-ring (--v)', 'SVG', '0.65', 'Anel de 0 a 1; precisa dos círculos .t (trilha) e .v (valor) com r="22"'], ['.ac-spinner / .ac-dots', 'classe', '—', 'Esperas curtas (.ac-dots leva três <i>)']],
+      a11y: ['role="progressbar" com aria-valuenow: atualize junto com --v (a biblioteca não faz isso).', 'Spinner e pontos com role="status" e aria-label.'] },
 
     { id: 'skeleton', grupo: 'Feedback', nome: 'Esqueleto automático', aka: 'Skeleton', desc: 'Gera o esqueleto medindo a interface real, como o boneyard: os blocos batem com o layout final.',
       ref: { nome: 'boneyard', url: 'https://boneyard.vercel.app/overview' },
@@ -356,22 +356,22 @@
     <div data-ac="bars" data-values="4,7,5,9,6,11,8,12" style="height:80px"></div>
   </div></article>
 </div>`,
-      api: [['Orthos.skeleton(el, true|false, opções)', 'função', '—', 'Liga/desliga o esqueleto medido do conteúdo de el'], ['animation', 'opção', 'shimmer', 'shimmer (brilho), pulse (pulso, mais calmo) ou static (parado); ou data-skeleton-animation'], ['cascade', 'opção', 'false', 'Cada osso começa 80 ms depois do de cima; ou data-skeleton-cascade'], ['delay', 'opção', '0', 'Espera menor que isso nem mostra o esqueleto; ou data-skeleton-delay'], ['.ac-skel--pulse / .ac-skel--static', 'classe', '—', 'As mesmas variantes no .ac-skel avulso'], ['ao desligar', 'comportamento', '—', 'Se o esqueleto chegou a aparecer, o conteúdo entra com fade de .3 s']],
-      a11y: ['Marca aria-busy="true" enquanto carrega; os ossos ficam aria-hidden.'] },
+      api: [['Orthos.skeleton(el, true|false, opções)', 'função', '—', 'Liga/desliga o esqueleto medido do conteúdo de el'], ['animation', 'opção', 'shimmer', 'shimmer (brilho), pulse (pulso, mais calmo) ou static (parado); ou data-skeleton-animation'], ['cascade', 'opção', 'false', 'Cada osso começa 80 ms depois do de cima; ou o atributo data-skeleton-cascade'], ['delay', 'opção', '0', 'Em ms; espera menor que isso nem mostra o esqueleto; ou data-skeleton-delay'], ['data-skeleton="on"', 'saída', '—', 'Enquanto o esqueleto está na tela'], ['.ac-skel--pulse / .ac-skel--static', 'classe', '—', 'As mesmas variantes no .ac-skel avulso'], ['ao desligar', 'comportamento', '—', 'Se o esqueleto chegou a aparecer, o conteúdo entra com fade de .3 s']],
+      a11y: ['Marca aria-busy="true" enquanto carrega (e "false" ao desligar); os ossos ficam aria-hidden.', 'Com movimento reduzido, o fade de entrada é desligado.'] },
 
     { id: 'empty', grupo: 'Feedback', nome: 'Estado vazio', aka: 'Empty state', desc: 'Estado vazio que explica o que falta e oferece o próximo passo.',
       ref: { nome: 'Carbon · Empty states', url: 'https://carbondesignsystem.com/patterns/empty-states-pattern/' },
       html: `<div class="ac-empty" style="width:min(440px,100%)"><span class="ac-empty__icon">${ico(P.folder)}</span><h4>Nenhum projeto ainda</h4><p>Projetos reúnem arquivos, pessoas e prazos. Crie o primeiro ou importe de outra ferramenta.</p><div class="ac-btn-group"><button class="ac-btn ac-btn--sm" type="button">${ico(P.plus)}Novo projeto</button><button class="ac-btn ac-btn--ghost ac-btn--sm" type="button">Importar</button></div></div>`,
-      api: [['.ac-empty', 'container', '—', 'Ícone, título, texto e ações']],
+      api: [['.ac-empty', 'container', '—', 'Ícone, título (<h4>), texto (<p>) e ações'], ['.ac-empty__icon', 'elemento', '—', 'Moldura do ícone']],
       a11y: ['Texto orienta a ação; não use só ilustração.'] },
 
     /* ---------------- Dados ---------------- */
-    { id: 'table', grupo: 'Dados', nome: 'Tabela de dados', aka: 'Data table', desc: 'Tabela com busca, filtro de status, ordenação, seleção em lote com desfazer, paginação e estado vazio.',
+    { id: 'table', grupo: 'Dados', nome: 'Tabela de dados', aka: 'Data table', desc: 'Tabela com busca, filtro de status (na Lista de opções do Orthos), ordenação, seleção em lote com desfazer, paginação e estado vazio.',
       ref: { nome: 'shadcn/ui · Data Table', url: 'https://ui.shadcn.com/docs/components/data-table' },
       wide: true,
       html: `<div data-ac="table" style="width:100%" data-per-page="5" data-columns='${attr(cols)}' data-rows='${attr(people)}'></div>`,
-      api: [['data-columns', 'JSON', '—', '{ k, label, sort, num, money }'], ['data-rows', 'JSON', '—', 'Registros (precisam de id)'], ['data-per-page', 'número', '5', 'Linhas por página']],
-      a11y: ['Cabeçalhos com aria-sort.', 'Checkbox “selecionar página” com estado indeterminado.', 'Contagem anunciada via aria-live.'] },
+      api: [['data-columns', 'JSON', '—', '{ k, label, sort, num, money }; num alinha à direita, money formata em R$'], ['data-rows', 'JSON', '—', 'Registros com id numérico, name e email (a busca usa os dois)'], ['coluna name / status', 'convenção', '—', 'name vira avatar + e-mail; status vira badge (Ativo, Pendente) e alimenta o filtro'], ['filtro de status', 'comportamento', 'Todos os status', 'Lista de opções do Orthos (a mesma do data-ac="select"), não a lista do navegador; “Limpar filtros”, no estado vazio, zera busca e filtro'], ['busca', 'comportamento', '—', 'Texto de exemplo “Nome ou e-mail”; busca e filtro ficam lado a lado e, sem espaço, o filtro desce em vez de cortar o texto'], ['data-per-page', 'número', '5', 'Linhas por página'], ['excluir em lote', 'comportamento', '—', 'Remove os selecionados e mostra toast com Desfazer'], ['modo cartão', 'tabela < 640 px', 'automático', 'Usa .ac-table--stack: cada linha vira um cartão “rótulo: valor” (data-label); a coluna name é o título (veja Tabela em cartões no celular)']],
+      a11y: ['Cabeçalhos com aria-sort; ordenar por botão.', 'Checkbox “selecionar página” com estado indeterminado.', 'Contagem e seleção anunciadas via aria-live / role="status".', 'A busca se chama “Filtrar por nome ou e-mail” e o filtro, “Status”.', 'Papéis table/row/cell explícitos para a versão em cartões.'] },
 
     { id: 'stats', grupo: 'Dados', nome: 'Cartões de indicadores', aka: 'Stat cards', desc: 'Indicadores com número animado, variação, sparkline que se desenha e barras com dica.',
       ref: { nome: 'shadcn/ui · Chart', url: 'https://ui.shadcn.com/docs/components/chart' },
@@ -382,15 +382,15 @@
   <article class="ac-card ac-spotlight" data-ac="spotlight"><div class="ac-card__body"><div class="ac-stat__label">Cancelamentos <span class="ac-stat__delta ac-stat__delta--down">+0,4 p.p.</span></div><div class="ac-stat__value"><span data-ac="number" data-to="2.1" data-decimals="1" data-suffix="%">0</span></div><div data-ac="spark" data-values="8,7,9,6,7,8,10,9,11,12"></div></div></article>
 </div>
 <article class="ac-card" style="width:100%"><div class="ac-card__head"><h3 class="ac-card__title">Vendas por mês</h3><p class="ac-card__desc">2026, em milhares de reais</p></div><div class="ac-card__body"><div data-ac="bars" data-label="Vendas por mês em 2026" data-values="32,41,38,52,47,61,58,66,72,69,80,91" data-labels="Jan,Fev,Mar,Abr,Mai,Jun,Jul,Ago,Set,Out,Nov,Dez"></div></div></article>`,
-      api: [['data-ac="number"', 'span', '—', 'data-to, data-decimals, data-prefix, data-suffix'], ['data-ac="spark"', 'div', '—', 'data-values separados por vírgula'], ['data-ac="bars"', 'div', '—', 'data-values, data-labels, data-label'], ['data-ac="spotlight"', 'card', '—', 'Luz que segue o cursor']],
-      a11y: ['Barras focáveis mostram o valor; o gráfico tem aria-label.'] },
+      api: [['data-ac="number"', 'span', '—', 'data-to, data-decimals, data-prefix, data-suffix; conta até o valor (1,4 s, pt-BR) quando entra na tela; el._replay() repete'], ['data-ac="spark"', 'div', '—', 'data-values separados por vírgula'], ['data-ac="bars"', 'div', '—', 'data-values, data-labels; data-label é o nome do gráfico (padrão “Gráfico de barras”)'], ['data-ac="spotlight"', 'card', '—', 'Luz que segue o cursor (--mx, --my)'], ['.ac-stat__label / __value / __delta--up / --down', 'classe', '—', 'Rótulo, número e variação em verde ou vermelho']],
+      a11y: ['Gráfico de barras com role="img" e aria-label; barras focáveis mostram o valor.', 'A sparkline é decorativa (aria-hidden): diga a tendência em texto.', 'Com movimento reduzido, o número aparece direto no valor final.'] },
 
     /* ---------------- Movimento ---------------- */
     { id: 'text-effect', grupo: 'Movimento', nome: 'Texto animado por palavra', aka: 'Text effect', desc: 'Texto que entra palavra por palavra, com desfoque e deslocamento.',
       ref: { nome: 'Motion-Primitives · Text Effect', url: 'https://motion-primitives.com/docs/text-effect' },
       html: `<p class="ac-text-effect" data-ac="text-effect" style="font:600 clamp(22px,4vw,34px)/1.2 var(--ac-font);letter-spacing:-.03em;margin:0;text-align:center;max-width:16ch">Interfaces calmas para trabalho sério.</p>`,
-      api: [['data-ac="text-effect"', 'elemento', '—', 'Divide em palavras e anima'], ['el._replay()', 'função', '—', 'Reexecuta']],
-      a11y: ['Texto completo em aria-label; palavras animadas aria-hidden.'] },
+      api: [['data-ac="text-effect"', 'elemento', '—', 'Divide em palavras e anima (60 ms entre elas)'], ['data-text', 'texto', 'conteúdo', 'Texto a animar no lugar do conteúdo'], ['el._replay()', 'função', '—', 'Reexecuta']],
+      a11y: ['O texto completo fica num span .ac-sr para leitores de tela; as palavras animadas são aria-hidden.'] },
 
     { id: 'text-shimmer', grupo: 'Movimento', nome: 'Brilho e embaralhamento de texto', aka: 'Text shimmer, Scramble', desc: 'Brilho percorrendo o texto (útil em “Pensando…”) e embaralhamento ao passar o mouse.',
       ref: { nome: 'Motion-Primitives · Text Shimmer', url: 'https://motion-primitives.com/docs/text-shimmer' },
@@ -398,13 +398,13 @@
   <span class="ac-text-shimmer" style="font:500 18px var(--ac-font)">Gerando relatório…</span>
   <span class="ac-scramble" data-ac="scramble" tabindex="0" style="font-size:18px;letter-spacing:.08em">PASSE O CURSOR</span>
 </div>`,
-      api: [['.ac-text-shimmer', 'classe', '—', 'Brilho contínuo'], ['data-ac="scramble"', 'elemento', '—', 'Embaralha no hover/foco']],
-      a11y: ['Scramble mantém o texto real no aria-label.'] },
+      api: [['.ac-text-shimmer', 'classe', '—', 'Brilho contínuo'], ['data-ac="scramble"', 'elemento', '—', 'Embaralha no hover/foco (ponha tabindex para o foco)'], ['el._replay()', 'função', '—', 'Embaralha de novo']],
+      a11y: ['Scramble mantém o texto real num span .ac-sr; o embaralhado é aria-hidden.', 'Com movimento reduzido, o scramble não roda.'] },
 
     { id: 'marquee', grupo: 'Movimento', nome: 'Faixa rolante', aka: 'Marquee', desc: 'Faixa contínua de logos ou depoimentos, que pausa ao passar o mouse.',
       ref: { nome: 'Magic UI · Marquee', url: 'https://magicui.design/docs/components/marquee' },
       html: `<div class="ac-marquee" style="width:100%;font:600 18px var(--ac-font);color:var(--ac-text-3)" aria-label="Clientes"><div class="ac-marquee__track"><span>Northwind</span><span>Acme Co.</span><span>Globex</span><span>Initech</span><span>Umbrella</span><span>Hooli</span></div><div class="ac-marquee__track" aria-hidden="true"><span>Northwind</span><span>Acme Co.</span><span>Globex</span><span>Initech</span><span>Umbrella</span><span>Hooli</span></div></div>`,
-      api: [['.ac-marquee > .ac-marquee__track ×2', 'HTML', '—', 'Duplique a trilha (a 2ª com aria-hidden)'], ['--gap', 'CSS', '40px', 'Espaço entre itens']],
+      api: [['.ac-marquee > .ac-marquee__track ×2', 'HTML', '—', 'Duplique a trilha (a 2ª com aria-hidden)'], ['--gap', 'CSS', '40px', 'Espaço entre itens'], ['velocidade', 'CSS', '22 s', 'Uma volta da trilha; sem variável própria']],
       a11y: ['Pausa no hover; parado com prefers-reduced-motion.'] }
   ];
 

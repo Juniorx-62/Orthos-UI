@@ -26,7 +26,7 @@
   const NOVOS = [
     /* ---------- Fundamentos ---------- */
     { id: 'toggle', grupo: 'Fundamentos', nome: 'Alternador e barra de ferramentas', aka: 'Toggle, Toolbar, Toggle group', novo: '2026-10-27',
-      desc: 'Botões liga/desliga, barra de ferramentas com um só ponto de Tab, grupo de botões unidos e separador.',
+      desc: 'Botões liga/desliga, grupo de escolha única (alinhamento), barra de ferramentas com um só ponto de Tab, grupo de botões unidos e separador.',
       ref: { nome: 'Radix · Toolbar', url: 'https://www.radix-ui.com/primitives/docs/components/toolbar' },
       html: `<div class="ac-toolbar" data-ac="toolbar" aria-label="Formatação">
   <button class="ac-toggle" type="button" data-ac="toggle" aria-label="Negrito" data-tip="Negrito (Ctrl B)">${ico(P.bold)}</button>
@@ -45,8 +45,8 @@
   <div class="ac-btn-joined" role="group" aria-label="Arquivo"><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button">Anterior</button><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button">Hoje</button><button class="ac-btn ac-btn--secondary ac-btn--sm" type="button">Próximo</button></div>
   <button class="ac-toggle ac-toggle--outline" type="button" data-ac="toggle">${ico(P.star)}Favoritar</button>
 </div>`,
-      api: [['data-ac="toggle"', 'button', '—', 'Alterna aria-pressed; evento ac:change (true/false)'], ['data-ac="toggle-group"', 'container de .ac-toggle', '1º marcado', 'Escolha única (alinhamento, visualização): marcar um desmarca os outros; aria-checked; evento ac:change com o value'], ['data-ac="toolbar"', 'container', '—', 'role=toolbar e setas entre controles'], ['.ac-btn-joined', 'grupo', '—', 'Botões colados com raio só nas pontas'], ['.ac-sep / .ac-sep--v', '<hr>', 'horizontal', 'Separador']],
-      a11y: ['A toolbar tem um só ponto de Tab; ← → Home End andam entre os itens.', 'Toggle anuncia o estado por aria-pressed.', 'Botões só com ícone têm aria-label e dica.'] },
+      api: [['data-ac="toggle"', 'button', '—', 'Alterna aria-pressed; evento ac:change (true/false)'], ['data-ac="toggle-group"', 'container de .ac-toggle', '1º marcado', 'Escolha única (alinhamento, visualização): marcar um desmarca os outros e sempre fica um marcado; começa no que tiver aria-checked="true"'], ['ac:change (grupo)', 'evento', '—', 'detail: o value do botão marcado (sem value, o aria-label); clicar no que já está marcado não dispara'], ['.ac-toggle-group', 'classe', '—', 'Botões do grupo lado a lado'], ['data-ac="toolbar"', 'container', '—', 'role=toolbar e setas entre controles'], ['.ac-btn-joined', 'grupo', '—', 'Botões colados com raio só nas pontas'], ['.ac-sep / .ac-sep--v', '<hr>', 'horizontal', 'Separador']],
+      a11y: ['A toolbar tem um só ponto de Tab; ← → Home End andam entre os itens.', 'Toggle anuncia o estado por aria-pressed.', 'O grupo vira radiogroup e cada botão um radio com aria-checked (o aria-pressed sai); dê aria-label ao grupo.', 'Fora de uma toolbar, o grupo tem um só ponto de Tab e as setas andam e já marcam; dentro dela, as setas são da toolbar e Espaço ou Enter marcam.', 'Botões só com ícone têm aria-label e dica.'] },
 
     /* ---------- Formulários ---------- */
     { id: 'select', grupo: 'Formulários', nome: 'Lista de opções', aka: 'Select', novo: '2026-10-27',
@@ -60,8 +60,8 @@
       <optgroup label="Europa"><option value="lis">Lisboa (GMT+0)</option><option value="mad">Madri (GMT+1)</option><option value="ber" disabled>Berlim (indisponível)</option></optgroup>
     </select><p class="ac-hint">Usado nos horários de publicação.</p></div>
 </div>`,
-      api: [['data-ac="select"', '<select>', '—', 'Melhora o select nativo; o valor segue no formulário'], ['data-placeholder', 'texto', 'Selecione', 'Texto quando vazio'], ['<optgroup> / disabled', 'HTML', '—', 'Grupos e opções indisponíveis'], ['change', 'evento', '—', 'Disparado no <select> original']],
-      a11y: ['Padrão ARIA select-only combobox: ↑ ↓ Home End, Enter escolhe, Esc fecha.', 'Digitar letras pula para a opção.', 'O rótulo do <label> passa para o botão.'] },
+      api: [['data-ac="select"', '<select>', '—', 'Melhora o select nativo; o valor segue no formulário'], ['data-placeholder', 'texto', 'Selecione', 'Texto quando vazio'], ['<optgroup> / disabled', 'HTML', '—', 'Grupos e opções indisponíveis'], ['<select disabled> / aria-label', 'HTML', '—', 'Passam para o botão desenhado'], ['change', 'evento', '—', 'Disparado no <select> original'], ['valor por código', 'JS', '—', 'Mude o value do <select> e dispare change: o botão atualiza o texto']],
+      a11y: ['Padrão ARIA select-only combobox: ↑ ↓ Home End, Enter ou Espaço escolhe, Esc fecha.', 'Digitar letras pula para a opção.', 'O rótulo do <label> passa para o botão.', 'A borda do botão usa --ac-border-input (3:1 contra o fundo).'] },
 
     { id: 'number', grupo: 'Formulários', nome: 'Campo numérico', aka: 'Number field', novo: '2026-10-27',
       desc: 'Campo numérico com − e +, segurar para repetir, setas, Page Up/Down e formato brasileiro.',
@@ -70,8 +70,8 @@
   <div class="ac-field"><span class="ac-label" id="nf-l">Assentos</span><div class="ac-number-field" data-ac="number-field" data-min="1" data-max="50"><input aria-labelledby="nf-l" value="5"></div></div>
   <div class="ac-field"><span class="ac-label" id="nf-p">Preço por assento</span><div class="ac-number-field" data-ac="number-field" data-min="0" data-step="0.5" data-decimals="2" data-suffix="R$"><input aria-labelledby="nf-p" value="49,90"></div></div>
 </div>`,
-      api: [['data-min / data-max', 'número', '—', 'Limites'], ['data-step', 'número', '1', 'Passo (Page Up/Down = 10 passos)'], ['data-decimals', 'número', '0', 'Casas decimais'], ['data-suffix', 'texto', '—', 'Unidade exibida'], ['ac:change', 'evento', '—', 'detail: número']],
-      a11y: ['role="spinbutton" com aria-valuenow/min/max.', '↑ ↓ Page Up/Down Home End.', 'Os botões ficam fora da ordem de Tab (o teclado usa as setas).'] },
+      api: [['data-ac="number-field"', 'div', '—', 'Envolve um <input>; os botões − e + entram sozinhos'], ['data-min / data-max', 'número', '—', 'Limites'], ['data-step', 'número', '1', 'Passo (Page Up/Down = 10 passos)'], ['data-decimals', 'número', '0', 'Casas decimais'], ['data-suffix', 'texto', '—', 'Unidade exibida depois do número'], ['ac:change', 'evento', '—', 'detail: número']],
+      a11y: ['role="spinbutton" com aria-valuenow/min/max e aria-valuetext.', '↑ ↓ Page Up/Down; Home End vão aos limites (quando definidos); Enter confirma o digitado.', 'Os botões ficam fora da ordem de Tab (o teclado usa as setas).'] },
 
     { id: 'people', grupo: 'Formulários', nome: 'Seletor de pessoas e tags', novo: '2026-10-27',
       desc: 'Seleção múltipla com busca e rosto e campo de tags livres.',
@@ -80,14 +80,14 @@
   <div class="ac-field"><span class="ac-label" id="pp-l">Responsáveis</span><div data-ac="people" data-label="Adicionar responsável" data-value="[1,3]" data-options='${attr(team)}'></div></div>
   <div class="ac-field"><span class="ac-label">Tags do projeto</span><div data-ac="tags" data-value="site,2026" data-max="6" data-label="Nova tag"></div><p class="ac-hint">Enter ou vírgula para adicionar. Backspace apaga a última.</p></div>
 </div>`,
-      api: [['data-ac="people"', 'div', '—', 'data-options: [{ id, name, detail }], data-value: ids'], ['data-ac="tags"', 'div', '—', 'data-value separado por vírgula, data-max'], ['ac:change', 'evento', '—', 'detail: lista atual']],
+      api: [['data-ac="people"', 'div', '—', 'data-options: [{ id, name, detail }], data-value: lista JSON de ids'], ['data-ac="tags"', 'div', '—', 'data-value separado por vírgula'], ['data-max', 'número', '10', 'Limite de tags'], ['data-label / data-placeholder', 'texto', 'Adicionar pessoa · Buscar pessoa / Nova tag · Adicionar tag', 'Rótulo e texto do campo'], ['ac:change', 'evento', '—', 'detail: lista atual (nas tags, só ao adicionar)']],
       a11y: ['Lista com aria-multiselectable; Enter marca e desmarca.', 'Cada etiqueta tem botão “Remover nome”.', 'Mudanças das tags são anunciadas.'] },
 
     { id: 'daterange', grupo: 'Formulários', nome: 'Intervalo de datas', aka: 'Date range', novo: '2026-10-27',
       desc: 'Atalhos por nome e dois meses lado a lado (um no celular), com prévia do intervalo ao passar o mouse.',
       ref: { nome: 'Ant Design · RangePicker', url: 'https://ant.design/components/date-picker' },
       html: `<div class="ac-field"><span class="ac-label" id="dr-l">Período do relatório</span><button class="ac-btn ac-btn--secondary ac-btn--square ac-date-trigger" type="button" data-ac="daterange" data-empty aria-labelledby="dr-l" style="width:260px">${ico(P.calendar)}<span>Escolha o período</span></button></div>`,
-      api: [['data-ac="daterange"', 'button', '—', 'Abre atalhos e calendário duplo'], ['ac:change', 'evento', '—', 'detail: { de: Date, ate: Date }']],
+      api: [['data-ac="daterange"', 'button', '—', 'Abre atalhos e calendário duplo; o período escrito vai no primeiro <span>'], ['data-empty', 'atributo', '—', 'Texto apagado até escolher; sai sozinho'], ['atalhos', 'fixos', '—', 'Hoje, Ontem, Últimos 7 dias, Últimos 30 dias, Este mês, Mês passado'], ['ac:change', 'evento', '—', 'detail: { de: Date, ate: Date }']],
       a11y: ['Setas andam pelos dias; a instrução (“escolha a data de fim”) é anunciada.', 'Esc fecha e devolve o foco.'] },
 
     { id: 'dirty', grupo: 'Formulários', nome: 'Alterações não salvas', novo: '2026-10-27',
@@ -102,7 +102,7 @@
     <div class="ac-savebar" data-dirty-show aria-hidden="true"><p class="ac-savebar__hint"><span class="ac-savebar__dot" aria-hidden="true"></span>Você tem alterações não salvas.</p><div class="ac-savebar__actions"><button class="ac-btn ac-btn--ghost ac-btn--sm" type="reset">Descartar</button><button class="ac-btn ac-btn--sm" type="submit">Salvar</button></div></div>
   </div>
 </form>`,
-      api: [['data-ac="dirty"', '<form>', '—', 'Compara os campos com o retrato inicial'], ['[data-dirty-show]', 'elemento', '—', 'Aparece com alterações (dentro do form ou com data-dirty-for="id")'], ['.ac-savebar', 'componente', '—', 'Barra fixa com aviso e ações'], ['data-warn="false"', 'atributo', 'avisa', 'Desliga o aviso ao sair da página'], ['Orthos.dirty.baseline(form)', 'função', '—', 'Novo retrato depois de salvar'], ['ac:dirty', 'evento', '—', 'detail: true/false']],
+      api: [['data-ac="dirty"', '<form>', '—', 'Compara os campos com o retrato inicial'], ['[data-dirty-show]', 'elemento', '—', 'Aparece com alterações (dentro do form ou com data-dirty-for="id")'], ['.ac-savebar', 'componente', '—', 'Barra fixa com aviso e ações'], ['data-warn="false"', 'atributo', 'avisa', 'Desliga o aviso ao sair da página'], ['Orthos.dirty.baseline(form)', 'função', '—', 'Novo retrato depois de salvar'], ['Orthos.dirty.refresh(form)', 'função', '—', 'Compara de novo (após mudar campos pelo código)'], ['.is-dirty', 'classe', '—', 'Fica no form enquanto há alterações'], ['ac:dirty', 'evento', '—', 'detail: true/false']],
       a11y: ['O aviso da barra é anunciado quando aparece.', 'Descartar é um reset de verdade: volta ao estado inicial e a barra some.', 'Campos sem name não contam.'] },
 
     { id: 'money', grupo: 'Formulários', nome: 'Campo de dinheiro', novo: '2026-10-27',
@@ -112,7 +112,7 @@
   <div data-ac="money" data-label="Quanto você quer sacar?" data-name="valor" data-min="10" data-max="1250.40" data-fee="3.67"></div>
   <button class="ac-btn" type="submit" style="width:100%">Solicitar saque</button>
 </form>`,
-      api: [['data-ac="money"', 'div', '—', 'Monta o campo'], ['data-label', 'texto', 'Valor', 'Rótulo'], ['data-min / data-max / data-fee', 'reais', '—', 'Regras e taxa mostradas na dica'], ['data-name', 'texto', '—', 'Campo oculto com o valor (ex.: 1250.40)'], ['data-value', 'reais', '—', 'Valor inicial'], ['el._money.set(v) / get()', 'função', '—', 'Lê e muda o valor'], ['ac:change', 'evento', '—', 'detail: { cents, valid }'], ['data-lock-submit="false"', 'atributo', 'trava', 'Por padrão, o botão de enviar fica desligado enquanto o valor é inválido']],
+      api: [['data-ac="money"', 'div', '—', 'Monta o campo'], ['data-label', 'texto', 'Valor', 'Rótulo'], ['data-min / data-max / data-fee', 'reais', '—', 'Regras e taxa mostradas na dica'], ['data-max-label', 'texto', 'Usar valor máximo', 'Botão que preenche o máximo (só com data-max)'], ['data-name', 'texto', '—', 'Campo oculto com o valor (ex.: 1250.40)'], ['data-value', 'reais', '—', 'Valor inicial'], ['el._money.set(v) / get()', 'função', '—', 'Lê e muda o valor'], ['ac:change', 'evento', '—', 'detail: { cents, valid }'], ['data-lock-submit="false"', 'atributo', 'trava', 'Por padrão, o botão de enviar fica desligado enquanto o valor é inválido']],
       a11y: ['Por baixo é um input de texto real (inputmode numérico) com rótulo; o desenho é aria-hidden.', 'A dica com limites e erros é anunciada (aria-live).', 'Movimento reduzido: os números trocam sem rolar.'] },
 
     { id: 'phone', grupo: 'Formulários', nome: 'Telefone com país', novo: '2026-10-27',
@@ -121,7 +121,7 @@
       html: `<div style="display:grid;gap:16px;width:min(360px,100%)">
   <div class="ac-field"><label class="ac-label" for="tel-demo">WhatsApp</label><div data-ac="phone" data-id="tel-demo" data-name="whatsapp" data-country="BR"></div><p class="ac-hint" id="tel-out" aria-live="polite">Formato do país escolhido.</p></div>
 </div>`,
-      api: [['data-ac="phone"', 'div', '—', 'Monta o campo'], ['data-country', 'ISO', 'BR', 'País inicial'], ['data-name', 'texto', '—', 'Cria name, name_ddi e name_pais (ocultos)'], ['data-value', 'texto', '—', 'Número inicial'], ['ac:change', 'evento', '—', 'detail: { numero, ddi, pais, completo, valido }'], ['Orthos.countries', 'lista', '19 países', 'DDI, máscara e tamanhos válidos']],
+      api: [['data-ac="phone"', 'div', '—', 'Monta o campo'], ['data-country', 'ISO', 'BR', 'País inicial'], ['data-name', 'texto', '—', 'Cria name (só dígitos), name_ddi e name_pais (ISO em minúsculas), ocultos'], ['data-value', 'texto', '—', 'Número inicial'], ['data-id / data-label', 'texto', '— / Telefone', 'id do campo (para o <label for>) e aria-label'], ['data-required', 'atributo', '—', 'Campo obrigatório'], ['ac:change', 'evento', '—', 'detail: { numero, ddi, pais, completo, valido }'], ['Orthos.countries', 'lista', '19 países', 'DDI, máscara e tamanhos válidos']],
       a11y: ['Botão do país com aria-label e lista com busca por teclado.', 'Número incompleto marca aria-invalid.', 'autocomplete="tel-national" para o preenchimento automático.'] },
 
     /* ---------- Navegação ---------- */
@@ -138,8 +138,8 @@
 <div class="ac-pop" id="mb-ver" hidden><button class="ac-menu__item" type="button" role="menuitemcheckbox" aria-checked="true">Régua</button><button class="ac-menu__item" type="button" role="menuitemcheckbox" aria-checked="false">Grade</button></div>
 <div class="ac-context-area" data-ac="contextmenu" data-target="#ctx-demo" aria-label="Área do arquivo; abra o menu com o botão direito ou Shift+F10">Clique com o botão direito aqui<br><small>ou foque e use Shift+F10</small></div>
 <div class="ac-pop" id="ctx-demo" hidden><button class="ac-menu__item" type="button">${ico(P.copy)}Copiar<kbd class="ac-kbd">Ctrl C</kbd></button><button class="ac-menu__item" type="button">${ico(P.edit)}Renomear</button><div class="ac-menu__sep" role="separator"></div><button class="ac-menu__item ac-menu__item--danger" type="button">${I('trash')}Excluir</button></div>`,
-      api: [['data-ac="contextmenu"', 'área', '—', 'data-target: o .ac-pop do menu'], ['data-ac="menubar"', 'container', '—', '.ac-menubar__trigger com data-target'], ['aria-checked', 'item', '—', 'Item marcável (menuitemcheckbox)'], ['ac:select', 'evento', '—', 'detail: item escolhido']],
-      a11y: ['Menubar: ← → trocam de menu, ↓ abre, Esc fecha.', 'Context menu também abre por Shift+F10 ou tecla Menu.', 'Itens: ↑ ↓ Home End e letra inicial.'] },
+      api: [['data-ac="contextmenu"', 'área', '—', 'data-target: o .ac-pop do menu'], ['data-ac="menubar"', 'container', '—', '.ac-menubar__trigger com data-target'], ['aria-checked', 'item', '—', 'Mostra o visto no item; o Orthos não alterna (atualize no ac:select)'], ['data-value', 'item', 'texto do item', 'Valor enviado no ac:select'], ['ac:select', 'evento', '—', 'detail: data-value ou o texto do item; na área ou na barra']],
+      a11y: ['Menubar: ← → trocam de menu, ↓ Enter ou Espaço abrem, Esc fecha.', 'Context menu também abre por Shift+F10 ou tecla Menu.', 'Itens: ↑ ↓ Home End e letra inicial.'] },
 
     { id: 'tabs-many', grupo: 'Navegação', nome: 'Abas com rolagem', aka: 'Tabs overflow', novo: '2026-10-27',
       desc: 'Quando as abas não cabem, a lista rola de lado, as bordas esmaecem e aparecem setas; a aba escolhida sempre fica à vista. Vale para todo data-ac="tabs".',
@@ -162,7 +162,7 @@
   <div class="ac-btn-group"><button class="ac-btn ac-btn--secondary" type="button" id="tour-produto">Novo produto</button><button class="ac-btn ac-btn--ghost" type="button" id="tour-ajuda">Ajuda</button></div>
   <button class="ac-btn" type="button" id="tour-start">Começar o tour</button>
 </div>`,
-      api: [['Orthos.tour(passos, opções)', 'função', '—', 'passos: [{ target, title, text, position }]; sem target = balão no centro'], ['position', '"bottom" | "top" | "right" | "left"', 'bottom', 'Troca de lado sozinho se não couber'], ['opções', 'objeto', '—', '{ id, once, doneLabel, skipLabel, onStep, onClose }'], ['retorno', 'objeto', '—', '{ next, prev, go, close } ou null se já visto']],
+      api: [['Orthos.tour(passos, opções)', 'função', '—', 'passos: [{ target, title, text, position, padding }]; sem target = balão no centro'], ['position', '"bottom" | "top" | "right" | "left"', 'bottom', 'Troca de lado sozinho se não couber'], ['padding', 'px', '6', 'Folga do recorte em volta do alvo'], ['opções', 'objeto', '—', '{ id, once, doneLabel ("Concluir"), skipLabel ("Pular"), onStep(i, passo), onClose(concluiu) }'], ['retorno', 'objeto', '—', '{ next, prev, go, close } ou null se já visto ou sem passo visível']],
       a11y: ['O balão é um diálogo não modal com título e texto ligados por aria-labelledby/describedby.', '← → andam entre os passos; Esc fecha e devolve o foco.', 'O foco vai para “Próximo” a cada passo.'] },
 
     /* ---------- Feedback ---------- */
@@ -180,8 +180,8 @@
   <div class="ac-dialog__actions"><button class="ac-btn ac-btn--ghost ac-btn--sm" type="button" data-ac-close>Cancelar</button><button class="ac-btn ac-btn--sm" type="button" data-ac-close>Aplicar</button></div>
 </div>
 <div id="hc-ana" hidden><div class="ac-hovercard__head"><span class="ac-avatar">AR</span><div><b>Ana Ribeiro</b><div class="ac-hint">Design · São Paulo</div></div></div><p>Cuida do design system e da pesquisa com clientes desde 2023.</p><div class="ac-hovercard__meta"><span><b>128</b> projetos</span><span><b>4,9</b> avaliação</span></div></div>`,
-      api: [['data-ac="popover"', 'botão', '—', 'data-target, data-side, data-align'], ['data-ac-close', 'botão', '—', 'Fecha o popover'], ['data-ac="hovercard"', 'link', '—', 'data-target, data-delay (500 ms)']],
-      a11y: ['Popover: role="dialog", foco vai para o 1º campo e Esc devolve o foco ao botão.', 'Hover card abre também com foco de teclado e não deve conter a única forma de fazer algo.'] },
+      api: [['data-ac="popover"', 'botão', '—', 'data-target: o conteúdo (vira .ac-popover)'], ['data-side / data-align', 'texto', 'bottom / start', 'Lado e alinhamento em relação ao botão'], ['data-ac-close', 'botão', '—', 'Fecha o popover'], ['data-ac="hovercard"', 'link', '—', 'data-target: o conteúdo do cartão'], ['data-delay', 'ms', '500', 'Espera antes de abrir o hover card (fecha 250 ms depois de sair)']],
+      a11y: ['Popover: role="dialog" com aria-expanded no botão; o foco vai para o 1º elemento focável (ou [autofocus]) e Esc devolve o foco ao botão.', 'Hover card abre também com foco de teclado e não deve conter a única forma de fazer algo.'] },
 
     { id: 'result', grupo: 'Feedback', nome: 'Páginas de erro e resultado', novo: '2026-10-27',
       desc: 'Uma página só que muda pelo código: 401, 403, 404, 500, 503, sem internet, erro na tela e sucesso. No desenho das páginas de erro do 4squad: ilustração, código grande, o que houve, o que fazer e a saída certa para quem está vendo.',
@@ -194,8 +194,8 @@
     <div data-ac="result" data-code="404" data-audience="guest" data-support="#suporte" id="res-demo"></div>
   </div>
 </div>`,
-      api: [['data-ac="result"', 'div', '—', 'Desenha a página a partir do código'], ['data-code', '"401" | "403" | "404" | "500" | "503" | "offline" | "error" | "success"', '404', 'Caso'], ['data-audience', '"guest" | "user" | "admin"', 'guest', 'Quem está vendo: muda o “voltar” (início, app ou painel)'], ['data-home / data-login / data-support', 'URL', '"/"', 'Destinos do “voltar”, do “Entrar de novo” (401) e do “Falar com o suporte” (403, só com ele)'], ['data-home-label', 'texto', 'pelo público', 'Rótulo do “voltar”'], ['data-error-id', 'texto', '—', 'Código para o suporte, com botão de copiar (500 e error mostram também o horário)'], ['data-retry-at', '"15:30" | data ISO', '—', 'Previsão de volta do 503'], ['data-title / data-text', 'texto', 'padrão do caso', 'Substitui título e texto'], ['data-level', '1…6', '2', 'Nível do título (1 numa página só de erro)'], ['conteúdo interno', 'HTML', 'ações padrão', 'Substitui as ações; data-for="admin" (ou "user admin") mostra só para esse público'], ['.ac-result--page', 'classe', '—', 'Ocupa a tela toda e centraliza'], ['ac:action', 'evento', '—', 'detail { action, code }; sem preventDefault, retry recarrega e back volta no histórico'], ['ac:online', 'evento', '—', 'A conexão voltou; sem preventDefault, a página recarrega'], ['Orthos.results', 'objeto', '—', 'Textos de cada caso e Orthos.results.labels, para traduzir ou ajustar']],
-      a11y: ['Título em <h2> (ou data-level) diz o problema em linguagem simples; o código grande é decorativo e o título leva “(código 404)” para leitores de tela.', 'Erros entram como role="alert"; sucesso como role="status".', 'Sempre há uma saída; “Voltar para a página anterior” só aparece quando há histórico.', 'Copiar o código do erro avisa “Código copiado” numa região viva.'] },
+      api: [['data-ac="result"', 'div', '—', 'Desenha a página a partir do código'], ['data-code', '"401" | "403" | "404" | "500" | "503" | "offline" | "error" | "success"', '404', 'Caso'], ['data-audience', '"guest" | "user" | "admin"', 'guest', 'Quem está vendo: muda o “voltar” (início, app ou painel)'], ['data-home / data-login / data-support', 'URL', '"/"', 'Destinos do “voltar”, do “Entrar de novo” (401) e do “Falar com o suporte” (403, só com ele)'], ['data-home-label', 'texto', 'pelo público', 'Rótulo do “voltar”'], ['data-error-id', 'texto', '—', 'Código para o suporte, com botão de copiar (500 e error mostram também o horário)'], ['data-retry-at', '"15:30" | data ISO', '—', 'Previsão de volta do 503'], ['data-title / data-text', 'texto', 'padrão do caso', 'Substitui título e texto'], ['data-level', '1…6', '2', 'Nível do título (1 numa página só de erro)'], ['conteúdo interno', 'HTML', 'ações padrão', 'Substitui as ações; data-for="admin" (ou "user admin") mostra só para esse público'], ['.ac-result--page', 'classe', '—', 'Ocupa a tela toda e centraliza'], ['--ac-result-bg', 'CSS', 'var(--ac-bg)', 'Fundo onde a página fica (o anel do selo usa)'], ['ac:action', 'evento', '—', 'detail { action, code }; action: home, back, retry, login, support, next ou copy (nas ações próprias, o data-action). Cancelável: sem preventDefault, retry recarrega, back volta no histórico, copy copia e os links seguem'], ['ac:online', 'evento', '—', 'A conexão voltou; sem preventDefault, a página recarrega'], ['Orthos.results', 'objeto', '—', 'Textos de cada caso e Orthos.results.labels, para traduzir ou ajustar']],
+      a11y: ['Título em <h2> (ou data-level) diz o problema em linguagem simples; o código grande é decorativo e o título leva “(código 404)” para leitores de tela.', 'Erros entram como role="alert" e sucesso como role="status"; o 404 fica sem papel. Um role posto por você é mantido.', 'Sempre há uma saída; “Voltar para a página anterior” só aparece quando há histórico.', 'Copiar o código do erro avisa “Código copiado” numa região viva.'] },
 
     { id: 'logo-loader', grupo: 'Feedback', nome: 'Carregamento com logo', novo: '2026-10-27',
       desc: 'O logo se desenha, aparece preenchido com um brilho passando e o traço some, em ciclos de 3,2 s. Carregue o seu logo (SVG é traçado; PNG, JPG e WebP são ajustados a um quadrado padrão), recarregue a animação ou veja na tela inteira.',
@@ -213,12 +213,12 @@
   <div class="ac-segmented" data-ac="segmented" id="ll-size" aria-label="Tamanho do logo"><button type="button" value="56">56 px</button><button type="button" value="88" aria-pressed="true">88 px</button><button type="button" value="120">120 px</button></div>
   <p class="ac-error" id="ll-err" role="alert" hidden></p>
 </div>`,
-      api: [['data-ac="logo-loader"', 'div', 'logo do Orthos', 'Anima o <svg> de dentro, o data-src ou o logo padrão'], ['data-src', 'URL', '—', 'SVG (traçado) ou imagem (ajustada a 240 × 240)'], ['--size / --cycle', 'CSS', '88px / 3.2s', 'Tamanho e duração do ciclo'], ['Orthos.logo.load(el, arquivo | URL | texto SVG)', 'função', '—', 'Troca o logo; aceita File de um <input type=file> (até 2 MB)'], ['Orthos.logo.replay(el)', 'função', '—', 'Recomeça a animação do zero'], ['Orthos.loading({ logo, text, delay, min, duration, dismissible })', 'função', 'delay 250 · min 1000', 'Mostra na tela inteira e devolve a função que esconde'], ['ac:load', 'evento', '—', 'detail: { type: "svg" | "image", shapes }']],
-      a11y: ['A animação é decorativa; o texto (“Carregando”) vai em role="status" e é lido pelo leitor de tela.', 'Com movimento reduzido, mostra só o logo parado.', 'Espera curta não aparece (sem piscar) e, uma vez visível, fica ao menos 1 s.'] },
+      api: [['data-ac="logo-loader"', 'div', 'logo do Orthos', 'Anima o <svg> de dentro, o data-src ou o logo padrão'], ['data-label', 'texto', 'Carregando', 'aria-label do logo (role="img")'], ['data-src', 'URL', '—', 'SVG (traçado) ou imagem (ajustada a 240 × 240); se falhar, volta ao logo padrão'], ['--size / --cycle', 'CSS', '88px / 3.2s', 'Tamanho e duração do ciclo'], ['Orthos.logo.load(el, arquivo | URL | texto SVG)', 'função', '—', 'Troca o logo (Promise); aceita File SVG, PNG, JPG, WebP ou GIF de até 2 MB; vazio = logo padrão'], ['Orthos.logo.replay(el)', 'função', '—', 'Recomeça a animação do zero'], ['Orthos.loading({ logo, text, size, delay, min, duration, dismissible })', 'função', 'size 88 · delay 250 · min 1000', 'Mostra na tela inteira e devolve a função que esconde; logo pode ser um elemento já carregado ou um src; dismissible fecha com Esc ou clique'], ['ac:load', 'evento', '—', 'detail: { type: "svg" | "image", shapes }']],
+      a11y: ['No lugar, o logo é role="img" com o rótulo de data-label (“Carregando”); na tela inteira, o texto vai em role="status" e é lido pelo leitor de tela.', 'Com movimento reduzido, mostra só o logo parado.', 'Espera curta não aparece (sem piscar) e, uma vez visível, fica ao menos 1 s.'] },
 
     /* ---------- Dados ---------- */
     { id: 'charts', grupo: 'Dados', nome: 'Gráficos: área, barras e meta', novo: '2026-10-27',
-      desc: 'Área com comparação ao período anterior e leitura por teclado, barras horizontais, barra de meta e barra empilhada, com “Ver tabela”.',
+      desc: 'Área com comparação ao período anterior, leitura por teclado e “Ver tabela”; barras horizontais, barra de meta e barra empilhada só com CSS.',
       ref: { nome: 'shadcn/ui · Chart', url: 'https://ui.shadcn.com/docs/components/chart' },
       wide: true,
       html: `<article class="ac-card" style="width:100%"><div class="ac-card__head"><h3 class="ac-card__title">Alcance por dia</h3><p class="ac-card__desc">Últimos 14 dias, comparado aos 14 anteriores</p></div><div class="ac-card__body"><div data-ac="area" data-label="Alcance" data-values="820,940,880,1020,1180,1100,1260,1210,1380,1460,1390,1540,1620,1710" data-compare="760,800,790,840,900,880,910,950,980,1010,990,1040,1080,1100" data-labels="14/10,15/10,16/10,17/10,18/10,19/10,20/10,21/10,22/10,23/10,24/10,25/10,26/10,27/10"></div></div></article>
@@ -229,8 +229,8 @@
     <div class="ac-stack"><div class="ac-stack__bar" role="img" aria-label="Planos: Pro 58%, Equipe 27%, Grátis 15%"><span style="--v:58;--c:var(--ac-text)"></span><span style="--v:27;--c:var(--ac-text-3)"></span><span style="--v:15;--c:var(--ac-border-strong)"></span></div><ul class="ac-stack__legend"><li style="--c:var(--ac-text)">Pro <b>58%</b></li><li style="--c:var(--ac-text-3)">Equipe <b>27%</b></li><li style="--c:var(--ac-border-strong)">Grátis <b>15%</b></li></ul></div>
   </div></article>
 </div>`,
-      api: [['data-ac="area"', 'div', '—', 'data-values, data-compare, data-labels, data-label'], ['.ac-hbars', '<ul>', '—', 'Cada <li>: rótulo, trilha com --v e valor'], ['.ac-goal', 'div', '—', '--v (atual) e --goal (marca da meta)'], ['.ac-stack', 'div', '—', 'Segmentos com --v (peso) e --c (cor)']],
-      a11y: ['Área: foco no gráfico e ← → leem cada ponto.', '“Ver tabela” mostra os mesmos números em tabela.', 'Barras empilhadas têm descrição completa em aria-label.'] },
+      api: [['data-ac="area"', 'div', '—', 'data-values e data-compare (números com vírgula), data-labels (rótulos com vírgula)'], ['data-label', 'texto', 'Série', 'Nome da série na legenda, na dica e na tabela'], ['.ac-hbars', '<ul>', '—', 'Cada <li>: rótulo, .ac-hbars__track com .ac-hbars__bar (--v) e valor em <b>'], ['.ac-goal', 'div', '—', '--v (atual) e --goal (marca da meta); .ac-goal__row e .ac-goal__track'], ['.ac-goal[data-hit]', 'atributo', '—', 'Meta batida: barra na cor de sucesso'], ['.ac-stack', 'div', '—', '.ac-stack__bar com segmentos (--v peso, --c cor) e .ac-stack__legend']],
+      a11y: ['Área: foco no gráfico e ← → Home End leem cada ponto.', '“Ver tabela” mostra os mesmos números em tabela.', 'Barras empilhadas têm descrição completa em aria-label.'] },
 
     { id: 'collapsible', grupo: 'Dados', nome: 'Cartão e cartão recolhível', aka: 'Card', novo: '2026-10-27',
       desc: 'O cartão base (cabeçalho, corpo e rodapé) e o cartão que abre e fecha com resumo, para listas longas de dados.',
@@ -240,7 +240,7 @@
   <section class="ac-collapsible" data-ac="collapsible"><div class="ac-collapsible__head"><div><h4>Pedido #4821</h4><p>Enviado · R$ 1.290,00</p></div><button class="ac-btn ac-btn--ghost ac-btn--icon ac-btn--sm" type="button" data-ac-trigger aria-label="Detalhes do pedido #4821">${ico(P.chev)}</button></div>
     <div class="ac-collapsible__panel"><div><div class="ac-datarow"><span>Status</span>Enviado</div><div class="ac-datarow"><span>Transportadora</span>Correios · SEDEX</div><div class="ac-datarow"><span>Previsão</span>30/10/2026</div></div></div></section>
 </div>`,
-      api: [['.ac-card / __head / __title / __desc / __body / __foot', 'classes', '—', 'Estrutura do card'], ['data-ac="collapsible"', 'section', '—', 'Precisa de [data-ac-trigger] e .ac-collapsible__panel'], ['.is-open', 'classe', '—', 'Começa aberto'], ['.ac-datarow', 'linha', '—', 'Rótulo e valor']],
+      api: [['.ac-card / __head / __title / __desc / __body / __foot', 'classes', '—', 'Estrutura do card'], ['data-ac="collapsible"', 'section', '—', 'Precisa de [data-ac-trigger] e .ac-collapsible__panel (com um <div> dentro, que recorta na animação)'], ['.ac-collapsible__head', 'div', '—', 'Título (h4), resumo (p) e o botão'], ['.is-open', 'classe', '—', 'Começa aberto; o Orthos alterna ao clicar'], ['.ac-datarow', 'linha', '—', 'Rótulo e valor']],
       a11y: ['O botão tem aria-expanded e aria-controls e um rótulo que diz o que abre.'] }
   ];
 
@@ -285,5 +285,6 @@
     root.addEventListener('ac:action', e => { if (!faz[e.detail.action]) return; e.preventDefault(); window.Orthos.toast({ title: `ac:action · ${e.detail.action}`, desc: `Numa página de verdade, ${faz[e.detail.action]}.` }); });
     root.addEventListener('ac:online', e => { e.preventDefault(); window.Orthos.toast({ type: 'success', title: 'A conexão voltou', desc: 'Numa página de verdade, ela recarrega sozinha.' }); });
   };
-  H.toast = (prev => root => { prev && prev(root); root.addEventListener('click', e => { if (e.target.closest('[data-demo-toast="promise"]')) window.Orthos.toast.promise(new Promise((ok, no) => setTimeout(() => Math.random() > .25 ? ok(3) : no(), 1800)), { loading: 'Publicando 3 posts…', success: n => `${n} posts publicados`, error: 'Não foi possível publicar', errorDesc: 'Tente de novo em instantes.' }); }); })(H.toast);
+  // a demo anterior fica em .prev para o markdown poder levar as duas
+  H.toast = (prev => Object.assign(root => { prev && prev(root); root.addEventListener('click', e => { if (e.target.closest('[data-demo-toast="promise"]')) window.Orthos.toast.promise(new Promise((ok, no) => setTimeout(() => Math.random() > .25 ? ok(3) : no(), 1800)), { loading: 'Publicando 3 posts…', success: n => `${n} posts publicados`, error: 'Não foi possível publicar', errorDesc: 'Tente de novo em instantes.' }); }); }, { prev }))(H.toast);
 })();

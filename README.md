@@ -16,7 +16,8 @@ orthos-ui/
 │   ├── site.js         ← rotas, palco de preview, código, busca
 │   ├── demos.js        ← catálogo: demo, API e acessibilidade de cada componente
 │   ├── demos-novos.js  ← componentes adicionados após a pesquisa de 27/10/2026
-│   └── guia.js         ← quando usar, quando evitar, boas práticas e a página Padrões
+│   ├── guia.js         ← quando usar, quando evitar, boas práticas e a página Padrões
+│   └── markdown.js     ← "Ver como Markdown": documentação + CSS e JS recortados do componente (recria sem a biblioteca)
 ├── tests/
 │   └── componentes.html ← testes automáticos (abra no navegador; também publicado em /tests/componentes.html)
 ├── docs/
