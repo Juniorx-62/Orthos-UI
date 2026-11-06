@@ -6,7 +6,6 @@ work/
 .vercel/
 __pycache__/
 *.pyc
-biblioteca-ui/tests/*-resultado.json
 
 # sistema
 Thumbs.db

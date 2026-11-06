@@ -9,8 +9,5 @@ work/
 # registros internos: mudanças, pesquisas, relatório de lint e protótipos (ficam no git, não no site)
 docs/
 
-# app separado de referências (inclui o inventário de peças do 4squad): só uso local
-biblioteca-ui/
-
 # entregas e validações pontuais: guardar em work/; se alguma vier para cá, não publica
 entregas/
