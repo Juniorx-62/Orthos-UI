@@ -509,7 +509,7 @@
   await t('vídeo: controles próprios, rótulos que mudam e teclado', async () => {
     mount('video'); const el = $('.ac-video', palco), v = $('video', el);
     ok(!v.controls && el.getAttribute('role') === 'region' && $$('[data-v="play"]', el).length === 2 && $('.ac-video__seek', el) && el.classList.contains('ac-video--liquid'), 'estrutura');
-    ok($('[data-v="play"]', el).getAttribute('aria-label') === 'Tocar' && $('.ac-video__pill', el).textContent === 'Tintas em câmera lenta', 'rótulos');
+    ok($('[data-v="play"]', el).getAttribute('aria-label') === 'Tocar' && $('.ac-video__pill', el).textContent === 'Telhados coloridos', 'rótulos');
     const sp = $('[data-v="speed"]', el); sp.click(); ok(v.playbackRate === 1.25 && sp.textContent === '1,25×', 'velocidade');
     key(el, 'm'); await w(30); ok(v.muted && $('[data-v="vol"]', el).getAttribute('aria-label') === 'Ligar o som', 'mudo'); key(el, 'm');
     const seg = $('[data-video-glass]', palco); $('button[value="blur"]', seg).click();
