@@ -38,7 +38,7 @@ orthos-ui/
     └── orthos.js
 ```
 
-A pasta `work/` é local: rascunhos, capturas e validações pontuais ficam nela e não vão para o git nem para o site. O conteúdo antigo dela (extração do `mvp-validacao.html`) está no histórico do git (`git checkout 7401fa1 -- work`).
+A pasta `work/` é local: rascunhos, capturas e validações pontuais ficam nela e não vão para o git nem para o site. O conteúdo antigo dela (extração do `mvp-validacao.html`, sem as imagens do 4squad, que saíram do histórico em 05/11/2026) está no histórico do git (`git checkout 7599bd4 -- work`).
 
 ## Ver o site
 
