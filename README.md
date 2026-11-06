@@ -95,7 +95,7 @@ As peças de 28/10/2026 foram reimplementadas em HTML/CSS/JS puro a partir de pa
 A suíte roda no Chrome e no Safari (WebKit) com 277 testes, entre eles um por componente que abre uma página em branco só com `orthos.css`, `orthos.js` e o que o botão Copiar da aba Código leva, e confere que tudo inicia sem erro; a mesma página publicada em https://orthos-ui.vercel.app/tests/componentes.html serve para conferir no Firefox e em aparelhos reais.
 
 Sirva a pasta (`python -m http.server`) e abra `/tests/componentes.html`. A página monta todos os componentes, confere a
-documentação de cada um e testa o teclado dos componentes interativos; o resultado aparece na tela e em `window.RESULTADO`.
+documentação de cada um e testa o teclado dos componentes interativos; o resultado aparece na tela e em `window.RESULTADO`. Mantenha a janela visível: em segundo plano o navegador pode cair para 2 quadros por segundo, e os testes de animação, foco e diálogo falham sem haver defeito.
 
 ## Acessibilidade
 
