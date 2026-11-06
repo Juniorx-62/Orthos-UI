@@ -1,5 +1,4 @@
 """Gera biblioteca-single.html: index.html com CSS, dados e JS embutidos (para visualizadores que só abrem um arquivo).
-As capturas do 4squad continuam sendo lidas de assets/4squad/ (ao lado do arquivo) e têm fallback se faltarem.
 Uso: python tests/build-single.py"""
 import re, pathlib
 r = pathlib.Path(__file__).resolve().parent.parent

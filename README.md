@@ -29,7 +29,7 @@ orthos-ui/
 ├── brand/              ← logo e símbolo (SVG)
 ├── assets/fotos/       ← fotos das demos (Unsplash, licença conferida; créditos em CREDITOS.md)
 ├── assets/video/       ← vídeo da demo do player (Pexels, licença conferida; créditos em CREDITOS.md)
-├── biblioteca-ui/      ← app separado: biblioteca de referências UI/UX (255 referências + 50 telas do 4squad); só uso local, não vai para o site
+├── biblioteca-ui/      ← app separado: biblioteca de referências UI/UX (255 referências + inventário de peças do 4squad); só uso local, não vai para o site
 ├── index.html          ← site de documentação
 ├── build.py            ← gera dist/ (python build.py --check avisa se dist/ ficou para trás)
 ├── .vercelignore       ← o que não vai para o site publicado

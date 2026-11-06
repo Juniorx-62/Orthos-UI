@@ -10,10 +10,9 @@ Sem build, sem dependências. Para servir por HTTP: `python -m http.server` na p
 | `index.html`, `css/app.css`, `js/app.js` | Interface (busca, filtros, fichas, comparação, favoritos, tema) |
 | `data/meta.js` | **Categorias, tipos, fontes e problemas de auditoria** (fonte única de metadados) |
 | `data/refs.js` | Referências externas curadas |
-| `data/local-4squad.js` | Conteúdo original do 4squad: 50 telas e 117 peças de código |
-| `assets/4squad/` | As 100 capturas de tela (50 telas × claro/escuro) extraídas do arquivo original |
+| `data/local-4squad.js` | Inventário das 117 peças de código do 4squad (as 50 telas e as capturas saíram em 05/11/2026) |
 | `tests/check-links.py` | Verifica todas as URLs externas (grava `links-resultado.json`, fora do git) |
-| `docs/` | Este arquivo, o relatório e as capturas antes/depois |
+| `docs/` | Este arquivo e o relatório |
 
 ## Categorias
 

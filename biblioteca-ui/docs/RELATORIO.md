@@ -1,5 +1,7 @@
 # Relatório — Biblioteca de referências UI/UX (26/10/2026)
 
+> Em 05/11/2026 saíram do repositório as capturas de tela do 4squad (`assets/4squad/`, 50 telas) e as capturas antes/depois (`docs/capturas/`): as menções a elas abaixo ficam só como registro.
+
 > Registro de 26/10/2026. Em 29/10/2026 saíram a pasta `legacy/`, as 20 seções da vitrine e 5 fontes sem uso; o estado atual está em `MANUTENCAO.md`.
 
 ## 1. Diagnóstico do arquivo original (`mvp-validacao.html`, 9,9 MB)
