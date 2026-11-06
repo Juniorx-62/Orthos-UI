@@ -45,7 +45,22 @@
   .tp-warn { display: inline-flex; align-items: center; gap: 6px; margin: 0; color: var(--ac-warning); font-size: var(--ac-fs-sm); font-weight: 500; }
   .tp-warn[hidden] { display: none; }
   .tp-warn .ac-icon { width: 16px; height: 16px; flex: none; }
+  /* o que são os testes: três tipos, que também filtram a lista */
+  .tp-tipos { display: grid; gap: 12px; }
+  .tp-tipos h2 { margin: 0; font: 650 var(--ac-fs-lg)/1.3 var(--ac-font); letter-spacing: -.01em; }
+  .tp-tipos > p { margin: -6px 0 0; color: var(--ac-text-2); }
+  .tp-tipos__grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .tp-tipo { display: grid; align-content: start; gap: 2px; padding: 14px 16px; border: 1px solid var(--ac-border); border-radius: var(--ac-r-lg); background: var(--ac-surface); color: inherit; font: inherit; text-align: left; cursor: pointer; transition: border-color var(--ac-dur-fast), background var(--ac-dur-fast); }
+  .tp-tipo:hover { border-color: var(--ac-border-strong); }
+  .tp-tipo:focus-visible { outline: 2px solid var(--ac-accent); outline-offset: 2px; }
+  .tp-tipo[aria-pressed="true"] { border-color: var(--ac-accent); box-shadow: inset 0 0 0 1px var(--ac-accent); }
+  .tp-tipo__t { color: var(--ac-text-2); font-weight: 500; }
+  .tp-tipo__n { font: 650 var(--ac-fs-xl)/1.25 var(--ac-font); font-variant-numeric: tabular-nums; }
+  .tp-tipo__n small { margin-left: 6px; color: var(--ac-danger); font: 500 var(--ac-fs-sm) var(--ac-font); }
+  .tp-tipo__d { color: var(--ac-text-3); font-size: var(--ac-fs-sm); }
   .tp-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+  .tp-pag { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; color: var(--ac-text-3); font-size: var(--ac-fs-sm); font-variant-numeric: tabular-nums; }
+  .tp-pag[hidden], #tp-vazio[hidden] { display: none; }
   .tp-tools .ac-input { width: min(280px, 100%); }
   .tp-cat { margin-right: 6px; }
   .tp-detail { display: block; margin-top: 6px; padding: 6px 10px; border-radius: 8px; background: var(--ac-danger-bg); color: var(--ac-danger); font: var(--ac-fs-sm)/1.5 var(--ac-mono); overflow-wrap: anywhere; white-space: normal; }
@@ -54,7 +69,7 @@
   #saida tr[hidden] { display: none; }
   .tp-foot { margin: 0; color: var(--ac-text-3); font-size: var(--ac-fs-sm); }
   #palco { position: absolute; left: -10000px; top: 0; width: 900px; }
-  @media (max-width: 640px) { .tp { padding: 18px 14px 40px; } .tp-sum__main { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; padding: 20px 16px; } .tp-sum__text { justify-items: center; } .tp-sum__stats { justify-content: center; } .tp-sum__foot { padding: 12px 16px; justify-content: center; } #saida td:first-child { min-width: 0; } }
+  @media (max-width: 640px) { .tp-tipos__grade { grid-template-columns: minmax(0, 1fr); } .tp-pag { justify-content: center; } .tp { padding: 18px 14px 40px; } .tp-sum__main { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; padding: 20px 16px; } .tp-sum__text { justify-items: center; } .tp-sum__stats { justify-content: center; } .tp-sum__foot { padding: 12px 16px; justify-content: center; } #saida td:first-child { min-width: 0; } }
 </style>
 </head>
 <body class="ac">
@@ -89,6 +104,16 @@
     </div>
   </section>
 
+  <section class="tp-tipos" aria-labelledby="tp-o-que">
+    <h2 id="tp-o-que">O que são os <span id="tp-n-total">0</span> testes</h2>
+    <p>Verificações automáticas dos <span id="tp-n-comp">0</span> componentes da biblioteca, feitas neste navegador. Clique em um tipo para ver só esses testes.</p>
+    <div class="tp-tipos__grade">
+      <button type="button" class="tp-tipo" data-tipo="copiado" aria-pressed="false"><span class="tp-tipo__t">Código copiado</span><span class="tp-tipo__n" data-n></span><span class="tp-tipo__d">O código da aba Código funciona sozinho numa página em branco.</span></button>
+      <button type="button" class="tp-tipo" data-tipo="monta" aria-pressed="false"><span class="tp-tipo__t">Montagem e documentação</span><span class="tp-tipo__n" data-n></span><span class="tp-tipo__d">Cada componente abre sem erro e tem API, acessibilidade e guia de uso.</span></button>
+      <button type="button" class="tp-tipo" data-tipo="comportamento" aria-pressed="false"><span class="tp-tipo__t">Comportamento</span><span class="tp-tipo__n" data-n></span><span class="tp-tipo__d">Teclado, foco, toque, telas estreitas e as regras de cada componente.</span></button>
+    </div>
+  </section>
+
   <div class="tp-tools">
     <div class="ac-segmented" data-ac="segmented" id="tp-filter" aria-label="Mostrar"><button type="button" aria-pressed="true" value="todos">Todos</button><button type="button" value="falha">Falhas <span id="tp-f-count">0</span></button><button type="button" value="ok">Passaram</button></div>
     <input class="ac-input" type="search" id="tp-search" placeholder="Buscar teste (ex.: OTP, tabela)" aria-label="Buscar teste">
@@ -99,6 +124,7 @@
     <thead><tr><th scope="col">Teste</th><th scope="col">Resultado</th><th scope="col" class="num">Tempo</th></tr></thead>
     <tbody id="saida"></tbody>
   </table></div></div>
+  <div class="tp-pag" id="tp-pag" hidden><span id="tp-pag-txt" role="status"></span><nav data-ac="pagination" id="tp-pager" data-pages="1" data-page="1" aria-label="Páginas de resultados"></nav></div>
   <div class="ac-empty" id="tp-vazio" hidden><span class="ac-empty__icon"><svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 17L21 21"/><path d="M19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19C15.4183 19 19 15.4183 19 11Z"/></svg></span><h4>Nenhum teste encontrado</h4><p>Nada combina com o filtro ou a busca. Limpe a busca ou escolha “Todos”.</p></div>
   <p class="tp-foot">Para automação: o resultado fica em <code>window.RESULTADO</code> (<code>{ passou, total, falhas }</code>) quando a suíte termina. Também dá para abrir no Firefox, no Safari e no celular para conferir nesses navegadores.</p>
 </div>
@@ -128,20 +154,31 @@
   const ICO_CHECK = '<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 14L8.5 17.5L19 6.5"/></svg>', ICO_X = '<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085"/></svg>';
   const ICO = { ok: '<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 14L8.5 17.5L19 6.5"/></svg>', no: '<svg class="ac-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085"/></svg>' };
   const escH = x => String(x ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const filtro = { modo: 'todos', busca: '' };
-  const visivel = row => (filtro.modo === 'todos' || row.dataset.s === filtro.modo) && (!filtro.busca || row.dataset.q.includes(filtro.busca));
+  const filtro = { modo: 'todos', busca: '', tipo: '', pagina: 1 }, POR_PAGINA = 20;
+  const tipoDe = nome => nome.startsWith('monta:') ? 'monta' : nome.startsWith('código copiado:') ? 'copiado' : 'comportamento';
+  const visivel = row => (filtro.modo === 'todos' || row.dataset.s === filtro.modo) && (!filtro.tipo || row.dataset.t === filtro.tipo) && (!filtro.busca || row.dataset.q.includes(filtro.busca));
   const pinta = () => {
     const ok = res.filter(r => r[1]).length, fail = res.length - ok, seg = Math.round((performance.now() - T0) / 100) / 10;
     $('#tp-ok').textContent = ok; $('#tp-fail').textContent = fail; $('#tp-total').textContent = res.length; $('#tp-time').textContent = seg.toLocaleString('pt-BR') + ' s'; $('#tp-f-count').textContent = fail;
     const v = Math.min(99, Math.round(res.length / prev * 100)); $('#tp-ring').style.setProperty('--v', v / 100); $('#tp-ring').setAttribute('aria-valuenow', v); $('#tp-pct').textContent = v + '%';
+    $('#tp-n-total').textContent = res.length;
+    $$('.tp-tipo').forEach(b => { const d = res.filter(r => tipoDe(r[0]) === b.dataset.tipo), f = d.filter(r => !r[1]).length; $('[data-n]', b).innerHTML = `${d.length}${f ? `<small>${f === 1 ? '1 falha' : f + ' falhas'}</small>` : ''}`; });
   };
-  const vazio = () => { $('#tp-vazio').hidden = !!$$('#saida tr').find(r => !r.hidden); };
+  // mostra só a página atual do que passa pelos filtros
+  const aplica = () => {
+    const rows = $$('#saida tr'), lista = rows.filter(visivel), paginas = Math.max(1, Math.ceil(lista.length / POR_PAGINA)); filtro.pagina = Math.min(filtro.pagina, paginas);
+    const ini = (filtro.pagina - 1) * POR_PAGINA, fim = Math.min(ini + POR_PAGINA, lista.length), aqui = new Set(lista.slice(ini, fim));
+    rows.forEach(r => { r.hidden = !aqui.has(r); });
+    $('#tp-vazio').hidden = lista.length > 0; $('#tp-pag').hidden = !lista.length; $('#tp-pag-txt').textContent = lista.length ? `Mostrando ${ini + 1}–${fim} de ${lista.length}` : '';
+    const nav = $('#tp-pager'); if (nav._pagination && (+nav.dataset.pages !== paginas || +nav.dataset.page !== filtro.pagina)) { nav.dataset.pages = paginas; nav._pagination.go(filtro.pagina); }
+  };
+  const refiltra = () => { filtro.pagina = 1; aplica(); };
   const registra = (nome, passou, detalhe, ms) => {
     const cat = (nome.match(/^([^:]{2,40}):/) || [])[1] || '';
-    const row = document.createElement('tr'); row.className = passou ? 'is-ok' : 'is-falha'; row.dataset.s = passou ? 'ok' : 'falha'; row.dataset.q = nome.toLowerCase();
+    const row = document.createElement('tr'); row.className = passou ? 'is-ok' : 'is-falha'; row.dataset.s = passou ? 'ok' : 'falha'; row.dataset.q = nome.toLowerCase(); row.dataset.t = tipoDe(nome);
     const status = `<td data-label="Resultado"><span class="ac-badge ${passou ? 'ac-badge--success' : 'ac-badge--danger'}">${passou ? 'Passou' : 'Falhou'}</span></td>`;
     row.innerHTML = `<td>${cat ? `<span class="ac-badge tp-cat">${escH(cat)}</span>${escH(nome.slice(cat.length + 1).trim())}` : escH(nome)}${!passou ? `<span class="tp-detail">${escH(detalhe)}</span>` : detalhe ? `<span class="tp-note">${escH(detalhe)}</span>` : ''}</td>` + status + `<td class="num" data-label="Tempo">${ms < 1 ? '<1' : Math.round(ms)} ms</td>`;
-    row.hidden = !visivel(row); $('#saida').appendChild(row); pinta(); vazio();
+    $('#saida').appendChild(row); pinta(); aplica();
   };
   const t = async (nome, fn) => { const e0 = erros.length, t1 = performance.now(); let item; try { const d = await fn(); if (erros.length > e0) throw new Error(erros.slice(e0).join('; ')); item = [nome, true, d || '']; } catch (e) { item = [nome, false, e.message]; } res.push(item); registra(item[0], item[1], item[2], performance.now() - t1); };
   // ambiente: navegador, tela, tema, movimento e foco (testes de foco dependem da janela estar em foco)
@@ -149,9 +186,12 @@
   const escuro = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
   $('#tp-env').innerHTML = [nav, `${innerWidth}×${innerHeight} px · ${Math.round((devicePixelRatio || 1) * 100) / 100}x`, 'Tema ' + (escuro ? 'escuro' : 'claro'), matchMedia('(prefers-reduced-motion: reduce)').matches ? 'Movimento reduzido' : 'Movimento normal', matchMedia('(pointer: coarse)').matches ? 'Toque' : 'Mouse'].map(x => `<span class="ac-badge">${escH(x)}</span>`).join('');
   $('#tp-focus').hidden = document.hasFocus();
-  Orthos.init($('.tp-tools')); Orthos.init($('.ac-table-wrap'));
-  $('#tp-filter').addEventListener('ac:change', () => { filtro.modo = $('#tp-filter [aria-pressed="true"]').value; $$('#saida tr').forEach(r => { r.hidden = !visivel(r); }); vazio(); });
-  $('#tp-search').addEventListener('input', e => { filtro.busca = e.target.value.trim().toLowerCase(); $$('#saida tr').forEach(r => { r.hidden = !visivel(r); }); vazio(); });
+  Orthos.init($('.tp-tools')); Orthos.init($('.ac-table-wrap')); Orthos.init($('#tp-pag'));
+  $('#tp-n-comp').textContent = DEMOS.length;
+  $('#tp-filter').addEventListener('ac:change', () => { filtro.modo = $('#tp-filter [aria-pressed="true"]').value; refiltra(); });
+  $('#tp-search').addEventListener('input', e => { filtro.busca = e.target.value.trim().toLowerCase(); refiltra(); });
+  $$('.tp-tipo').forEach(b => b.addEventListener('click', () => { filtro.tipo = filtro.tipo === b.dataset.tipo ? '' : b.dataset.tipo; $$('.tp-tipo').forEach(x => x.setAttribute('aria-pressed', x.dataset.tipo === filtro.tipo)); refiltra(); }));
+  $('#tp-pager').addEventListener('ac:change', e => { filtro.pagina = e.detail; aplica(); $('.tp-tools').scrollIntoView({ block: 'start' }); });
   $('#tp-again').onclick = () => location.reload();
   const ok = (c, m) => { if (!c) throw new Error(m); };
   const mount = id => { document.querySelectorAll('body > .ac-pop, body > .ac-tip').forEach(n => n.remove()); const d = DEMOS.find(x => x.id === id); palco.innerHTML = d.html; Orthos.init(palco); (DEMO_HOOKS[id] || (() => {}))(palco); return palco; };
@@ -684,7 +724,7 @@
   $('#resumo').textContent = `${passou} de ${res.length} testes passaram${passou === res.length ? '.' : '. Veja as falhas abaixo.'}`;
   $('#tp-sub').textContent = falhas.length ? `Terminou em ${seg} s. As falhas aparecem primeiro na lista, com o motivo.` : `Terminou em ${seg} s, sem nenhuma falha.`;
   // falhas sobem para o topo da lista
-  $$('#saida tr.is-falha').reverse().forEach(r => $('#saida').prepend(r));
+  $$('#saida tr.is-falha').reverse().forEach(r => $('#saida').prepend(r)); filtro.pagina = 1; aplica();
   if (falhas.length && document.hasFocus() === false) $('#tp-focus').hidden = false;
   $('#tp-again').disabled = false; const cp = $('#tp-copy'); cp.disabled = false;
   cp.onclick = async () => {
