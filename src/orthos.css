@@ -1517,6 +1517,10 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 /* player estreito: "Assistir no YouTube" fica só no ícone (o nome continua no texto, para leitores de tela) */
 @container (max-width: 440px) { .ac-video__pill:not(.ac-video__title) { flex: none; gap: 0; padding: 6px; font-size: 0; } }
 .ac-video > video { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* tela cheia: sem cantos nem borda, e o vídeo inteiro na tela. Com cover, o celular em pé cortava e ampliava a imagem mais de 2× */
+.ac-video:fullscreen { width: 100%; height: 100%; aspect-ratio: auto; border: 0; border-radius: 0; }
+.ac-video:fullscreen > video { object-fit: contain; }
+.ac-video:fullscreen::backdrop { background: #000; }
 .ac-video__ui { position: absolute; inset: 0; display: grid; grid-template-rows: auto 1fr auto; padding: 12px; background: linear-gradient(rgb(0 0 0 / .35), transparent 26%, transparent 62%, rgb(0 0 0 / .55)); transition: opacity .3s var(--ac-ease); }
 .ac-video.is-idle .ac-video__ui { opacity: 0; cursor: none; }
 .ac-video__top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }

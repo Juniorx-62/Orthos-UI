@@ -2068,7 +2068,13 @@
     ['play', 'pause', 'ended'].forEach(t => v.addEventListener(t, () => { paintPlay(); wake(); }));
     ['timeupdate', 'loadedmetadata', 'durationchange', 'progress', 'seeked'].forEach(t => v.addEventListener(t, paintTime));
     v.addEventListener('volumechange', paintVol);
-    document.addEventListener('fullscreenchange', () => { const on = document.fullscreenElement === el; const b = q('[data-v="full"]'); setIcon(b, on ? 'unfull' : 'full', on ? 'Sair da tela cheia' : 'Tela cheia'); });
+    // no celular, a tela cheia gira para deitado (onde o navegador permite): em pé o vídeo ficaria pequeno, entre faixas pretas
+    let rotated = false;
+    document.addEventListener('fullscreenchange', () => {
+      const on = document.fullscreenElement === el; const b = q('[data-v="full"]'); setIcon(b, on ? 'unfull' : 'full', on ? 'Sair da tela cheia' : 'Tela cheia');
+      if (on && touchOnly()) { rotated = true; screen.orientation?.lock?.('landscape').catch(() => {}); }
+      else if (!on && rotated) { rotated = false; screen.orientation?.unlock?.(); }
+    });
     el.addEventListener('pointermove', wake); el.addEventListener('focusin', wake);
     paintPlay(); paintTime(); paintVol();
   };
