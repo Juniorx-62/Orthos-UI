@@ -180,19 +180,56 @@
     return { code: `(function (global) {\n${body.join('\n')}\n})(window);`, api: used.map(k => k.key), globals };
   }
 
+  /* ---------- script da demonstração (DEMO_HOOKS) como texto ---------- */
+  // target: expressão do elemento em que a demo roda. noDevice: o HTML veio sem a moldura de aparelho do site,
+  // então H.device (que só mexe na moldura) sai do script; uma demo que só chamava H.device fica sem script.
+  // o código-fonte da função, sem o recuo que ela tinha dentro do arquivo (a 1ª linha já vem sem)
+  const fnSrc = f => {
+    const lines = String(f).replace(/\r\n?/g, '\n').split('\n'), rest = lines.slice(1).filter(l => l.trim());
+    const pad = rest.length ? Math.min(...rest.map(l => l.match(/^ */)[0].length)) : 0;
+    return [lines[0], ...lines.slice(1).map(l => l.slice(Math.min(pad, l.match(/^ */)[0].length)))].join('\n');
+  };
+  function demoScript(d, hooks, target, opts = {}) {
+    const h = hooks[d.id]; if (!h) return '';
+    const strip = s => opts.noDevice ? s.replace(/^[ \t]*H\.device\(root\);[ \t]*\n/gm, '').replace(/H\.device\(root\);\s*/g, '') : s;
+    const hook = strip(fnSrc(h));
+    if (opts.noDevice && /^root\s*=>\s*H\.device\(root\);?$/.test(hook.trim())) return '';
+    // demo que embrulha outra (H.x = (prev => …)(H.x)) guarda a anterior em .prev
+    const prev = h.prev ? `const prev = ${strip(fnSrc(h.prev))};` : '';
+    // scripts de demo que chamam outros (H.device(root)) levam junto os que chamam
+    const deps = [], seen = new Set([d.id, ...(opts.noDevice ? ['device'] : [])]);
+    (function dig(src) { for (const m of src.matchAll(/\bH(?:\.([\w$]+)|\['([\w-]+)'\])/g)) { const k = m[1] || m[2]; if (seen.has(k) || !hooks[k]) continue; seen.add(k); const s = strip(fnSrc(hooks[k])); dig(s); deps.push(`H['${k}'] = ${s};`); } })(hook + prev);
+    const all = [prev, ...deps, hook].join('\n');
+    // ready: espera o DOMContentLoaded, quando o orthos.js (no <head>) já montou os componentes que o script procura
+    const call = opts.ready ? `const run = () => (${hook})(${target});\nif (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();` : `(${hook})(${target});`;
+    return [/\bO\(\)/.test(all) ? 'const O = () => window.Orthos;' : '', deps.length ? 'const H = {};' : '', ...deps, prev, call].filter(Boolean).join('\n');
+  }
+
+  /* ---------- o código da aba "Código" ---------- */
+  // o HTML que funciona colado numa página com orthos.css e orthos.js: sem a moldura de aparelho do site
+  // e, quando a demo tem comportamento extra, com o script dela num <script> no fim
+  function unframe(html) {
+    const m = /^\s*<div class="device-demo">[\s\S]*?<div class="device-frame"[^>]*>\n?([\s\S]*?)\n?\s*<\/div>\s*<\/div>\s*$/.exec(html);
+    if (!m) return html;
+    const lines = m[1].split('\n'), pad = Math.min(...lines.filter(l => l.trim()).map(l => l.match(/^ */)[0].length));
+    return lines.map(l => l.slice(pad)).join('\n').trim();
+  }
+  function codeFor(d, hooks) {
+    const html = unframe(d.html), framed = html !== d.html;
+    const script = demoScript(d, hooks, 'document', { noDevice: framed, ready: true });
+    return { html, script, full: script ? `${html}\n\n<!-- Só da demonstração: simula o que a sua aplicação faria. Rode depois do orthos.js. -->\n<script>\n${script}\n</script>` : html };
+  }
+
   /* ---------- o markdown ---------- */
   const cell = s => String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ');
   const fence = '```';
   const SITE_BASE = new Set(['body', 'a', 'code', 'pre code', ':focus-visible']);
   function build(d, o) {
     const g = (o.guia || {})[d.id] || {}, li = a => (a || []).map(x => `- ${x}`).join('\n');
-    const fn = f => String(f).replace(/\r\n?/g, '\n'); // o código-fonte das funções vem com as quebras de linha do arquivo
+    const fn = fnSrc; // o código-fonte das funções vem com as quebras de linha do arquivo
     const hooks = o.hooks || {}, hook = hooks[d.id] ? fn(hooks[d.id]) : '';
     // demo que embrulha outra (H.x = (prev => …)(H.x)) guarda a anterior em .prev
     const hookPrev = hooks[d.id] && hooks[d.id].prev ? `const prev = ${fn(hooks[d.id].prev)};` : '';
-    // scripts de demo que chamam outros (H.device(root)) levam junto os que chamam
-    const hookDeps = [], seen = new Set([d.id]);
-    (function dig(src) { for (const m of src.matchAll(/\bH(?:\.([\w$]+)|\['([\w-]+)'\])/g)) { const k = m[1] || m[2]; if (seen.has(k) || !hooks[k]) continue; seen.add(k); dig(fn(hooks[k])); hookDeps.push(`H['${k}'] = ${fn(hooks[k])};`); } })(hook);
     const html = d.html;
     const behaviors = new Set([...html.matchAll(/data-ac="([^"]+)"/g)].flatMap(m => m[1].split(/\s+/)));
     const api = new Set([...(html + '\n' + hook + '\n' + hookPrev).matchAll(/\b(?:Orthos|O\(\))\.([\w$]+)/g)].map(m => m[1]));
@@ -246,7 +283,7 @@
         : '4. **JS:** não precisa. O componente é só CSS; o bloco **Comportamento** traz apenas o `Orthos.init` e pode ficar de fora.',
       '5. **Vários componentes:** cada markdown traz um recorte da mesma biblioteca, e os recortes não foram feitos para conviver. Para usar dois ou mais na mesma página, inclua `orthos.css` e `orthos.js` inteiros (seção **Com a biblioteca inteira**). Juntar recortes repetiria os ouvintes globais, e o segundo substituiria o `Orthos` do primeiro; o JS avisa no console quando isso acontece.'];
     const jsWhat = [behaviors.size ? `comportamento ${list([...behaviors].map(b => 'data-ac="' + b + '"'))}` : '', js.globals.length ? `os atributos ${list(js.globals)}` : '', js.api.length > 1 ? `a API ${list(js.api.filter(k => k !== 'init').map(k => 'Orthos.' + k))}` : ''].filter(Boolean);
-    const demoScript = ['const O = () => window.Orthos, H = {};', ...hookDeps, hookPrev, `(${hook})(document.getElementById('demo'));`].filter(Boolean).join('\n');
+    const demoJs = demoScript(d, hooks, "document.getElementById('demo')");
     return [`# ${d.nome}`, '', ...(d.aka ? [`Em inglês: ${d.aka}`, ''] : []), d.desc, '', `Grupo: ${d.grupo}${d.ref && d.ref.nome ? ` · Referência estudada: ${d.ref.url ? `[${d.ref.nome}](${d.ref.url})` : d.ref.nome}` : ''}`, '',
       g.usar ? `## Quando usar\n\n${li(g.usar)}\n` : '', g.evitar ? `## Quando evitar\n\n${li(g.evitar)}\n` : '', g.dicas ? `## Boas práticas\n\n${li(g.dicas)}\n` : '',
       '## Usar no seu projeto', '', 'Sem instalar nada: os blocos **Estrutura**, **Estilos** e **Comportamento** abaixo trazem o HTML, o CSS e o JS deste componente, recortados de `orthos.css` e `orthos.js`. Não dependem de servidor nem de outras bibliotecas.', '', ...steps, '',
@@ -258,7 +295,7 @@
       '## Comportamento (JS)', '', needsJs ? `Recorte de \`orthos.js\` com ${jsWhat.join('; ')}. Ativa sozinho ao carregar; para HTML inserido depois, chame \`Orthos.init(elemento)\`.` : 'Opcional: este componente é só CSS, e o script abaixo traz apenas o `Orthos.init`.', '', fence + 'js', js.code, fence, '',
       '## Com a biblioteca inteira', '', 'Para usar vários componentes, inclua a biblioteca toda no lugar dos blocos **Estilos** e **Comportamento**. A **Estrutura** continua a mesma.', '', fence + 'html', '<link rel="stylesheet" href="orthos.css">', '<script src="orthos.js" defer></script>', fence, '',
       '## Reproduzir a demonstração do site (opcional)', '', 'Nada desta seção é necessário no seu projeto. Ela serve para montar uma página igual à do site e comparar.', '',
-      hook ? `### Script da demonstração\n\nComportamento extra da demo, fora da biblioteca: ${demoAttrs.length ? `faz os ${list(demoAttrs)} funcionarem e ` : ''}simula o que a sua aplicação faria (envio, retorno, avisos). Rode depois do **Comportamento**.\n\n${fence}js\n${demoScript}\n${fence}\n` : '',
+      hook ? `### Script da demonstração\n\nComportamento extra da demo, fora da biblioteca: ${demoAttrs.length ? `faz os ${list(demoAttrs)} funcionarem e ` : ''}simula o que a sua aplicação faria (envio, retorno, avisos). Rode depois do **Comportamento**.\n\n${fence}js\n${demoJs}\n${fence}\n` : '',
       '### Moldura da demonstração', '', `No site, a demo fica numa área centralizada (\`.canvas\`${d.wide ? ', larga' : ''}). Estas regras do site reproduzem esse enquadramento e a fonte da página, mas também estilizam \`body\`, \`a\`, \`code\` e \`:focus-visible\`: não leve para o seu projeto.`, '', fence + 'css', frame, fence, '',
       assets.length ? `### Recursos\n\nArquivos usados pela demo, com caminho a partir da raiz do projeto Orthos UI: ${list(assets)}. Se a página ficar numa subpasta, ajuste o caminho (ex.: \`../assets/…\`).\n` : '',
       '### Montagem', '', fence + 'html', page, fence, '',
@@ -279,7 +316,8 @@
     cache = { cssTree: parseCss(css), js: parseJs(js), siteTree: site ? parseCss(site) : null };
     return cache;
   }
-  const api = { build, parseCss, parseJs };
+  const api = { build, parseCss, parseJs, demoScript, codeFor };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-  else root.orthosMarkdown = async d => build(d, { ...(await sources()), guia: root.GUIA, hooks: root.DEMO_HOOKS || {}, symbol: id => { const s = document.getElementById(id); return s && s.closest('svg') ? s.outerHTML : null; } });
+  else root.orthosCode = d => codeFor(d, root.DEMO_HOOKS || {});
+  if (!(typeof module !== 'undefined' && module.exports)) root.orthosMarkdown = async d => build(d, { ...(await sources()), guia: root.GUIA, hooks: root.DEMO_HOOKS || {}, symbol: id => { const s = document.getElementById(id); return s && s.closest('svg') ? s.outerHTML : null; } });
 })(typeof window !== 'undefined' ? window : globalThis);

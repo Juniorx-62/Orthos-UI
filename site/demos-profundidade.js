@@ -110,7 +110,7 @@
       ${tile('3', 'Revisar', 'Só as diferenças chegam para você aprovar.')}
     </div>
     <img data-ac="reveal" data-reveal="scale" src="${F}lago-montanha.jpg" alt="Lago calmo diante de uma montanha com neve" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:var(--ac-r-lg)">
-    <div data-ac="reveal" data-reveal="left" class="ac-alert ac-alert--info" role="note"><div><b>Dica</b><p style="margin:2px 0 0">Feche o mês até o dia 5 para os relatórios saírem completos.</p></div></div>
+    <div data-ac="reveal" data-reveal="left" class="ac-alert" role="note"><div><b>Dica</b><p style="margin:2px 0 0">Feche o mês até o dia 5 para os relatórios saírem completos.</p></div></div>
     <div data-ac="reveal" data-reveal="right">${tile('4', 'Fechar', 'Gera DRE, fluxo de caixa e o resumo para o contador.')}</div>
     <img data-ac="reveal" src="${F}campo-por-do-sol.jpg" alt="Campo de grama verde com árvores ao pôr do sol" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:var(--ac-r-lg)">
     <p class="ac-card__desc" style="margin:0 0 120px">Fim. A barra no topo mostra quanto falta.</p>

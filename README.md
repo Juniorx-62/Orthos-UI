@@ -20,7 +20,7 @@ orthos-ui/
 │   └── markdown.js     ← "Ver como Markdown": documentação + CSS e JS recortados do componente (recria sem a biblioteca)
 ├── tests/
 │   └── componentes.html ← testes automáticos (abra no navegador; também publicado em /tests/componentes.html)
-├── docs/
+├── docs/               ← registros internos: ficam no git, não vão para o site
 │   ├── pesquisa-referencias.md ← pesquisa em 28 sites
 │   ├── mudancas-2026-10-27.md  ← atualização de 27/10
 │   ├── mudancas-2026-10-28.md  ← navegadores, correções, estrutura e componentes de referência
@@ -29,7 +29,7 @@ orthos-ui/
 ├── brand/              ← logo e símbolo (SVG)
 ├── assets/fotos/       ← fotos das demos (Unsplash, licença conferida; créditos em CREDITOS.md)
 ├── assets/video/       ← vídeo da demo do player (Pexels, licença conferida; créditos em CREDITOS.md)
-├── biblioteca-ui/      ← app separado: biblioteca de referências UI/UX (255 referências + 50 telas do 4squad)
+├── biblioteca-ui/      ← app separado: biblioteca de referências UI/UX (255 referências + 50 telas do 4squad); só uso local, não vai para o site
 ├── index.html          ← site de documentação
 ├── build.py            ← gera dist/ (python build.py --check avisa se dist/ ficou para trás)
 ├── .vercelignore       ← o que não vai para o site publicado
@@ -39,7 +39,7 @@ orthos-ui/
     └── orthos.js
 ```
 
-A pasta `work/` (extração do `mvp-validacao.html` e rascunhos) foi apagada em 29/10/2026; está no histórico do git (`git checkout 7401fa1 -- work`).
+A pasta `work/` é local: rascunhos, capturas e validações pontuais ficam nela e não vão para o git nem para o site. O conteúdo antigo dela (extração do `mvp-validacao.html`) está no histórico do git (`git checkout 7401fa1 -- work`).
 
 ## Ver o site
 
@@ -92,7 +92,7 @@ As peças de 28/10/2026 foram reimplementadas em HTML/CSS/JS puro a partir de pa
 
 ## Testes
 
-A suíte roda no Chrome e no Safari (WebKit) com 191 testes; a mesma página publicada em https://orthos-ui.vercel.app/tests/componentes.html serve para conferir no Firefox e em aparelhos reais.
+A suíte roda no Chrome e no Safari (WebKit) com 276 testes, entre eles um por componente que abre uma página em branco só com `orthos.css`, `orthos.js` e o que o botão Copiar da aba Código leva, e confere que tudo inicia sem erro; a mesma página publicada em https://orthos-ui.vercel.app/tests/componentes.html serve para conferir no Firefox e em aparelhos reais.
 
 Sirva a pasta (`python -m http.server`) e abra `/tests/componentes.html`. A página monta todos os componentes, confere a
 documentação de cada um e testa o teclado dos componentes interativos; o resultado aparece na tela e em `window.RESULTADO`.

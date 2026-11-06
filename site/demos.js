@@ -428,7 +428,16 @@
       if (e.target.closest('[data-demo-saved]')) Orthos.toast({ type: 'success', title: 'Perfil atualizado' });
       if (e.target.closest('[data-demo-deleted]')) Orthos.toast({ title: 'Projeto excluído' });
     }),
-    command: root => { const b = root.querySelector('#cmd-demo'); b && b.addEventListener('click', () => window.openSiteCommand && window.openSiteCommand()); },
+    // a demo abre uma paleta própria, com ações de exemplo, para o código copiado funcionar fora do site
+    command: root => { const b = root.querySelector('#cmd-demo'); b && b.addEventListener('click', () => Orthos.command({
+      placeholder: 'Buscar ações…',
+      items: [
+        { label: 'Novo projeto', group: 'Criar', keywords: 'criar adicionar', run: () => Orthos.toast({ type: 'success', title: 'Projeto criado' }) },
+        { label: 'Convidar pessoa', group: 'Criar', keywords: 'equipe membro', run: () => Orthos.toast({ title: 'Convite enviado' }) },
+        { label: 'Abrir configurações', group: 'Ir para', keywords: 'preferências conta', run: () => Orthos.toast({ title: 'Abrindo configurações' }) },
+        { label: 'Ver relatórios', group: 'Ir para', keywords: 'números vendas', run: () => Orthos.toast({ title: 'Abrindo relatórios' }) }
+      ]
+    })); },
     palette: root => { const p = root.querySelector('#pal-demo'), o = root.querySelector('#pal-out'); p && p.addEventListener('ac:change', e => { o.innerHTML = `Selecionada: <b style="color:var(--ac-text)">${e.detail.name}</b> <code>${e.detail.color}</code>`; }); },
     progress: root => { const b = root.querySelector('#pg-run'), bar = root.querySelector('#pg-bar'), v = root.querySelector('#pg-v'); b && b.addEventListener('click', () => { let x = 0; b.disabled = true; const t = setInterval(() => { x = Math.min(100, x + 4 + Math.random() * 9); bar.style.setProperty('--v', x + '%'); bar.setAttribute('aria-valuenow', Math.round(x)); v.textContent = Math.round(x) + '%'; if (x >= 100) { clearInterval(t); b.disabled = false; Orthos.toast({ type: 'success', title: '1.284 contatos importados' }); } }, 160); }); },
     skeleton: root => {

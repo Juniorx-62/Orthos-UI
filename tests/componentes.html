@@ -114,6 +114,7 @@
 <script src="../site/demos-modelos.js"></script>
 <script src="../site/demos-kobra.js"></script>
 <script src="../site/guia.js"></script>
+<script src="../site/markdown.js"></script>
 <script>
 /* Abra no navegador (python -m http.server na raiz e /tests/componentes.html). O resultado também fica em window.RESULTADO. */
 (async () => {
@@ -156,6 +157,23 @@
   const mount = id => { document.querySelectorAll('body > .ac-pop, body > .ac-tip').forEach(n => n.remove()); const d = DEMOS.find(x => x.id === id); palco.innerHTML = d.html; Orthos.init(palco); (DEMO_HOOKS[id] || (() => {}))(palco); return palco; };
 
   // 1. todo componente monta sem erro e tem documentação completa
+  // 1b. o código da aba "Código" funciona sozinho: página em branco só com orthos.css, orthos.js e o que o Copiar leva
+  const sozinho = d => new Promise(res => {
+    const c = orthosCode(d), fr = document.createElement('iframe'); fr.style.cssText = 'position:fixed;left:-5000px;top:0;width:1100px;height:800px';
+    fr.srcdoc = `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../src/orthos.css"><script>window.__e=[];addEventListener('error',e=>__e.push(String(e.message)));const ce=console.error;console.error=(...a)=>{__e.push(a.map(String).join(' '));ce(...a)};<\/script><script src="../src/orthos.js"><\/script></head><body class="ac">${c.full}</body></html>`;
+    fr.onload = () => setTimeout(() => { const w2 = fr.contentWindow, doc = fr.contentDocument; const r = { c, e: w2.__e.slice(), w: w2, doc }; res(r); fr.remove(); }, 120);
+    document.body.appendChild(fr);
+  });
+  for (const d of DEMOS) await t(`código copiado: ${d.id}`, async () => {
+    const { c, e, w: w2, doc } = await sozinho(d);
+    ok(!e.length, 'erro: ' + e.join('; '));
+    const naoIniciou = [...doc.querySelectorAll('[data-ac]')].flatMap(el => el.dataset.ac.split(/\s+/).filter(n => w2.Orthos.components[n] && !el.dataset['acInit' + n.replace(/-./g, m => m[1].toUpperCase())]));
+    ok(!naoIniciou.length, 'não iniciou: ' + naoIniciou.join(', '));
+    ok(!doc.querySelector('.device-demo, .device-frame'), 'levou a moldura do site');
+    ok(!/<use[^>]+href="#/.test(c.full), 'usa símbolo que só existe no site');
+    ok(!/openSiteCommand/.test(c.full), 'chama função do site');
+  });
+
   for (const d of DEMOS) await t(`monta: ${d.id}`, async () => { mount(d.id); await w(30); ok(palco.children.length, 'demo vazia'); ok(d.api && d.api.length, 'sem API'); ok(d.a11y && d.a11y.length, 'sem notas de acessibilidade'); ok(GUIA[d.id] && GUIA[d.id].usar && GUIA[d.id].evitar && GUIA[d.id].dicas, 'sem guia de uso'); });
 
   // 2. comportamentos

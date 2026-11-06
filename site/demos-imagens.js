@@ -61,7 +61,7 @@
       ref: { nome: '', url: '' },
       wide: true,
       html: `<section class="ac-hero" data-ac="hero" data-interval="6000" aria-label="Destaques" style="--h:min(620px,78vh)">
-  <a class="ac-hero__brand" href="#/"><svg width="28" height="28" aria-hidden="true"><use href="#orthos-mark"/></svg>Orthos</a>
+  <a class="ac-hero__brand" href="#/"><svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0b0b0c"/><rect x="15.25" y="15.25" width="13.5" height="13.5" rx="2.25" fill="none" stroke="#fafafa" stroke-width="2.5"/><rect x="34" y="14" width="16" height="16" rx="3.5" fill="#fafafa"/><rect x="15.25" y="35.25" width="13.5" height="13.5" rx="2.25" fill="none" stroke="#fafafa" stroke-width="2.5"/><rect x="35.25" y="35.25" width="13.5" height="13.5" rx="2.25" fill="none" stroke="#fafafa" stroke-width="2.5"/></svg>Orthos</a>
   ${[['casa-lago', 'Sua equipe organiza enquanto você', 'descansa.', 'Rotina', 'Tarefas, prazos e lembretes no lugar certo.'],
      ['baloes', 'Cada projeto decola no', 'tempo certo.', 'Planejamento', 'Cronogramas que se ajustam quando algo muda.'],
      ['canyon-estrelas', 'Os números trabalham', 'de madrugada.', 'Relatórios', 'Tudo pronto no seu e-mail às 7h.'],

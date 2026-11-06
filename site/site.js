@@ -88,7 +88,10 @@
   };
   function renderDoc(d) {
     const i = D.indexOf(d), prev = D[i - 1], next = D[i + 1];
-    const code = tidy(d.html);
+    // o mesmo código que o Copiar leva (sem a moldura do site e com o script da demo, se houver); na tela, ícones e fotos resumidos
+    const src = window.orthosCode ? window.orthosCode(d) : { html: d.html, script: '', full: d.html };
+    const code = tidy(src.html) + (src.script ? src.full.slice(src.html.length) : '');
+    const short = code !== src.full;
     main.innerHTML = `<div class="doc">
       <section class="stage" aria-label="Demonstração">
         <div class="stage__bar"><span class="stage__nav">${arrow(prev, -1)}${arrow(next, 1)}</span><span class="stage__crumb">${esc(d.grupo)} / <b>${esc(d.nome)}</b></span>
@@ -98,7 +101,7 @@
           <div class="canvas__tools"><button class="ac-btn ac-btn--secondary ac-btn--icon ac-btn--sm" type="button" id="replay" aria-label="Reiniciar demonstração" data-tip="Reiniciar">${replayIco}</button></div>
           <div class="canvas__inner" id="demo"></div>
         </div>
-        <div class="code" ${mode === 'preview' ? 'hidden' : ''}><div class="code__bar"><span>${esc(d.id)}.html</span><button class="ac-btn ac-btn--ghost ac-btn--sm" type="button" id="copy-code">${copyIco}Copiar</button></div><pre><code>${highlight(code)}</code></pre></div>
+        <div class="code" ${mode === 'preview' ? 'hidden' : ''}><div class="code__bar"><span>${esc(d.id)}.html</span>${short ? '<small class="code__note">Ícones e fotos resumidos na tela; o Copiar leva o código completo</small>' : ''}<button class="ac-btn ac-btn--ghost ac-btn--sm" type="button" id="copy-code">${copyIco}Copiar</button></div><pre><code>${highlight(code)}</code></pre></div>
       </section>
       <aside class="panel" aria-label="Documentação">
         <h1>${esc(d.nome)}</h1>
@@ -123,7 +126,7 @@
     $('#mode').addEventListener('ac:change', e => { mode = e.detail; $('.canvas').hidden = mode !== 'preview'; $('.code').hidden = mode !== 'code'; });
     $('#replay').onclick = mount;
     $('#md-open').onclick = () => showMarkdown(d);
-    $('#copy-code').onclick = async () => { try { await navigator.clipboard.writeText(d.html); A.toast({ type: 'success', title: 'Código copiado' }); } catch (_) { A.toast({ type: 'danger', title: 'Não foi possível copiar' }); } };
+    $('#copy-code').onclick = async () => { try { await navigator.clipboard.writeText(src.full); A.toast({ type: 'success', title: 'Código copiado', desc: 'Cole numa página com orthos.css e orthos.js.' }); } catch (_) { A.toast({ type: 'danger', title: 'Não foi possível copiar' }); } };
   }
 
   // remove flutuantes órfãos da página anterior (pops, dicas e diálogos movidos para o <body>)

@@ -269,7 +269,7 @@
   H.chat = root => {
     const c = root.querySelector('[data-ac="chat"]'); if (!c) return;
     const log = c.querySelector('.ac-chat__log');
-    c.addEventListener('ac:send', e => { const m = document.createElement('div'); m.className = 'ac-msg ac-msg--out'; m.dataset.author = 'Você'; m.dataset.time = 'Agora'; m.innerHTML = `<div class="ac-msg__bubble">${esc(e.detail.text).replace(/\n/g, '<br>')}</div>`; log.appendChild(m); });
+    c.addEventListener('ac:send', e => { const m = document.createElement('div'); m.className = 'ac-msg ac-msg--out'; m.dataset.author = 'Você'; m.dataset.time = 'Agora'; const b = document.createElement('div'); b.className = 'ac-msg__bubble'; e.detail.text.split('\n').forEach((l, i) => { if (i) b.append(document.createElement('br')); b.append(l); }); m.append(b); log.appendChild(m); });
     c.addEventListener('ac:retry', e => { const m = e.detail.message; m.classList.remove('ac-msg--error'); m.querySelector('.ac-msg__retry')?.remove(); O().toast({ type: 'success', title: 'Mensagem enviada' }); });
   };
   H.banners = root => root.addEventListener('click', e => { const a = e.target.closest('.ac-banners__action'); if (a) O().toast({ title: a.textContent.trim(), desc: 'Na sua aplicação, este botão leva à tela certa.' }); });

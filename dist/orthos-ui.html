@@ -1781,6 +1781,8 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 .canvas__tools .ac-btn { background: var(--ac-surface); }
 .code { flex: 1; min-height: 520px; display: flex; flex-direction: column; border: 1px solid var(--ac-border); border-radius: 20px; background: var(--ac-surface); overflow: hidden; }
 .code__bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px 10px 16px; border-bottom: 1px solid var(--ac-border); font: var(--ac-fs-sm) var(--ac-mono); color: var(--ac-text-3); }
+.code__note { flex: 1; min-width: 0; margin: 0 12px; font: var(--ac-fs-xs, 12px) var(--ac-font); color: var(--ac-text-3); text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 640px) { .code__note { display: none; } }
 .code pre { flex: 1; margin: 0; padding: 18px 20px; overflow-y: auto; overflow-x: hidden; font: var(--ac-fs-sm)/1.75 var(--ac-mono); color: var(--ac-text-2); tab-size: 2; counter-reset: ln; white-space: pre-wrap; overflow-wrap: anywhere; }
 /* linha longa quebra dentro do contêiner; o recuo pendente mantém a continuação alinhada depois do número */
 .code pre .ln { display: block; padding-left: 3.8em; text-indent: -3.8em; }
@@ -5047,7 +5049,16 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       if (e.target.closest('[data-demo-saved]')) Orthos.toast({ type: 'success', title: 'Perfil atualizado' });
       if (e.target.closest('[data-demo-deleted]')) Orthos.toast({ title: 'Projeto excluído' });
     }),
-    command: root => { const b = root.querySelector('#cmd-demo'); b && b.addEventListener('click', () => window.openSiteCommand && window.openSiteCommand()); },
+    // a demo abre uma paleta própria, com ações de exemplo, para o código copiado funcionar fora do site
+    command: root => { const b = root.querySelector('#cmd-demo'); b && b.addEventListener('click', () => Orthos.command({
+      placeholder: 'Buscar ações…',
+      items: [
+        { label: 'Novo projeto', group: 'Criar', keywords: 'criar adicionar', run: () => Orthos.toast({ type: 'success', title: 'Projeto criado' }) },
+        { label: 'Convidar pessoa', group: 'Criar', keywords: 'equipe membro', run: () => Orthos.toast({ title: 'Convite enviado' }) },
+        { label: 'Abrir configurações', group: 'Ir para', keywords: 'preferências conta', run: () => Orthos.toast({ title: 'Abrindo configurações' }) },
+        { label: 'Ver relatórios', group: 'Ir para', keywords: 'números vendas', run: () => Orthos.toast({ title: 'Abrindo relatórios' }) }
+      ]
+    })); },
     palette: root => { const p = root.querySelector('#pal-demo'), o = root.querySelector('#pal-out'); p && p.addEventListener('ac:change', e => { o.innerHTML = `Selecionada: <b style="color:var(--ac-text)">${e.detail.name}</b> <code>${e.detail.color}</code>`; }); },
     progress: root => { const b = root.querySelector('#pg-run'), bar = root.querySelector('#pg-bar'), v = root.querySelector('#pg-v'); b && b.addEventListener('click', () => { let x = 0; b.disabled = true; const t = setInterval(() => { x = Math.min(100, x + 4 + Math.random() * 9); bar.style.setProperty('--v', x + '%'); bar.setAttribute('aria-valuenow', Math.round(x)); v.textContent = Math.round(x) + '%'; if (x >= 100) { clearInterval(t); b.disabled = false; Orthos.toast({ type: 'success', title: '1.284 contatos importados' }); } }, 160); }); },
     skeleton: root => {
@@ -5627,7 +5638,7 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
   H.chat = root => {
     const c = root.querySelector('[data-ac="chat"]'); if (!c) return;
     const log = c.querySelector('.ac-chat__log');
-    c.addEventListener('ac:send', e => { const m = document.createElement('div'); m.className = 'ac-msg ac-msg--out'; m.dataset.author = 'Você'; m.dataset.time = 'Agora'; m.innerHTML = `<div class="ac-msg__bubble">${esc(e.detail.text).replace(/\n/g, '<br>')}</div>`; log.appendChild(m); });
+    c.addEventListener('ac:send', e => { const m = document.createElement('div'); m.className = 'ac-msg ac-msg--out'; m.dataset.author = 'Você'; m.dataset.time = 'Agora'; const b = document.createElement('div'); b.className = 'ac-msg__bubble'; e.detail.text.split('\n').forEach((l, i) => { if (i) b.append(document.createElement('br')); b.append(l); }); m.append(b); log.appendChild(m); });
     c.addEventListener('ac:retry', e => { const m = e.detail.message; m.classList.remove('ac-msg--error'); m.querySelector('.ac-msg__retry')?.remove(); O().toast({ type: 'success', title: 'Mensagem enviada' }); });
   };
   H.banners = root => root.addEventListener('click', e => { const a = e.target.closest('.ac-banners__action'); if (a) O().toast({ title: a.textContent.trim(), desc: 'Na sua aplicação, este botão leva à tela certa.' }); });
@@ -5711,7 +5722,7 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       ref: { nome: '', url: '' },
       wide: true,
       html: `<section class="ac-hero" data-ac="hero" data-interval="6000" aria-label="Destaques" style="--h:min(620px,78vh)">
-  <a class="ac-hero__brand" href="#/"><svg width="28" height="28" aria-hidden="true"><use href="#orthos-mark"/></svg>Orthos</a>
+  <a class="ac-hero__brand" href="#/"><svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0b0b0c"/><rect x="15.25" y="15.25" width="13.5" height="13.5" rx="2.25" fill="none" stroke="#fafafa" stroke-width="2.5"/><rect x="34" y="14" width="16" height="16" rx="3.5" fill="#fafafa"/><rect x="15.25" y="35.25" width="13.5" height="13.5" rx="2.25" fill="none" stroke="#fafafa" stroke-width="2.5"/><rect x="35.25" y="35.25" width="13.5" height="13.5" rx="2.25" fill="none" stroke="#fafafa" stroke-width="2.5"/></svg>Orthos</a>
   ${[['casa-lago', 'Sua equipe organiza enquanto você', 'descansa.', 'Rotina', 'Tarefas, prazos e lembretes no lugar certo.'],
      ['baloes', 'Cada projeto decola no', 'tempo certo.', 'Planejamento', 'Cronogramas que se ajustam quando algo muda.'],
      ['canyon-estrelas', 'Os números trabalham', 'de madrugada.', 'Relatórios', 'Tudo pronto no seu e-mail às 7h.'],
@@ -5850,7 +5861,7 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       ${tile('3', 'Revisar', 'Só as diferenças chegam para você aprovar.')}
     </div>
     <img data-ac="reveal" data-reveal="scale" src="${F}lago-montanha.jpg" alt="Lago calmo diante de uma montanha com neve" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:var(--ac-r-lg)">
-    <div data-ac="reveal" data-reveal="left" class="ac-alert ac-alert--info" role="note"><div><b>Dica</b><p style="margin:2px 0 0">Feche o mês até o dia 5 para os relatórios saírem completos.</p></div></div>
+    <div data-ac="reveal" data-reveal="left" class="ac-alert" role="note"><div><b>Dica</b><p style="margin:2px 0 0">Feche o mês até o dia 5 para os relatórios saírem completos.</p></div></div>
     <div data-ac="reveal" data-reveal="right">${tile('4', 'Fechar', 'Gera DRE, fluxo de caixa e o resumo para o contador.')}</div>
     <img data-ac="reveal" src="${F}campo-por-do-sol.jpg" alt="Campo de grama verde com árvores ao pôr do sol" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:var(--ac-r-lg)">
     <p class="ac-card__desc" style="margin:0 0 120px">Fim. A barra no topo mostra quanto falta.</p>
@@ -6470,19 +6481,56 @@ window.PADROES = `
     return { code: `(function (global) {\n${body.join('\n')}\n})(window);`, api: used.map(k => k.key), globals };
   }
 
+  /* ---------- script da demonstração (DEMO_HOOKS) como texto ---------- */
+  // target: expressão do elemento em que a demo roda. noDevice: o HTML veio sem a moldura de aparelho do site,
+  // então H.device (que só mexe na moldura) sai do script; uma demo que só chamava H.device fica sem script.
+  // o código-fonte da função, sem o recuo que ela tinha dentro do arquivo (a 1ª linha já vem sem)
+  const fnSrc = f => {
+    const lines = String(f).replace(/\r\n?/g, '\n').split('\n'), rest = lines.slice(1).filter(l => l.trim());
+    const pad = rest.length ? Math.min(...rest.map(l => l.match(/^ */)[0].length)) : 0;
+    return [lines[0], ...lines.slice(1).map(l => l.slice(Math.min(pad, l.match(/^ */)[0].length)))].join('\n');
+  };
+  function demoScript(d, hooks, target, opts = {}) {
+    const h = hooks[d.id]; if (!h) return '';
+    const strip = s => opts.noDevice ? s.replace(/^[ \t]*H\.device\(root\);[ \t]*\n/gm, '').replace(/H\.device\(root\);\s*/g, '') : s;
+    const hook = strip(fnSrc(h));
+    if (opts.noDevice && /^root\s*=>\s*H\.device\(root\);?$/.test(hook.trim())) return '';
+    // demo que embrulha outra (H.x = (prev => …)(H.x)) guarda a anterior em .prev
+    const prev = h.prev ? `const prev = ${strip(fnSrc(h.prev))};` : '';
+    // scripts de demo que chamam outros (H.device(root)) levam junto os que chamam
+    const deps = [], seen = new Set([d.id, ...(opts.noDevice ? ['device'] : [])]);
+    (function dig(src) { for (const m of src.matchAll(/\bH(?:\.([\w$]+)|\['([\w-]+)'\])/g)) { const k = m[1] || m[2]; if (seen.has(k) || !hooks[k]) continue; seen.add(k); const s = strip(fnSrc(hooks[k])); dig(s); deps.push(`H['${k}'] = ${s};`); } })(hook + prev);
+    const all = [prev, ...deps, hook].join('\n');
+    // ready: espera o DOMContentLoaded, quando o orthos.js (no <head>) já montou os componentes que o script procura
+    const call = opts.ready ? `const run = () => (${hook})(${target});\nif (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();` : `(${hook})(${target});`;
+    return [/\bO\(\)/.test(all) ? 'const O = () => window.Orthos;' : '', deps.length ? 'const H = {};' : '', ...deps, prev, call].filter(Boolean).join('\n');
+  }
+
+  /* ---------- o código da aba "Código" ---------- */
+  // o HTML que funciona colado numa página com orthos.css e orthos.js: sem a moldura de aparelho do site
+  // e, quando a demo tem comportamento extra, com o script dela num <script> no fim
+  function unframe(html) {
+    const m = /^\s*<div class="device-demo">[\s\S]*?<div class="device-frame"[^>]*>\n?([\s\S]*?)\n?\s*<\/div>\s*<\/div>\s*$/.exec(html);
+    if (!m) return html;
+    const lines = m[1].split('\n'), pad = Math.min(...lines.filter(l => l.trim()).map(l => l.match(/^ */)[0].length));
+    return lines.map(l => l.slice(pad)).join('\n').trim();
+  }
+  function codeFor(d, hooks) {
+    const html = unframe(d.html), framed = html !== d.html;
+    const script = demoScript(d, hooks, 'document', { noDevice: framed, ready: true });
+    return { html, script, full: script ? `${html}\n\n<!-- Só da demonstração: simula o que a sua aplicação faria. Rode depois do orthos.js. -->\n<script>\n${script}\n<\/script>` : html };
+  }
+
   /* ---------- o markdown ---------- */
   const cell = s => String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ');
   const fence = '```';
   const SITE_BASE = new Set(['body', 'a', 'code', 'pre code', ':focus-visible']);
   function build(d, o) {
     const g = (o.guia || {})[d.id] || {}, li = a => (a || []).map(x => `- ${x}`).join('\n');
-    const fn = f => String(f).replace(/\r\n?/g, '\n'); // o código-fonte das funções vem com as quebras de linha do arquivo
+    const fn = fnSrc; // o código-fonte das funções vem com as quebras de linha do arquivo
     const hooks = o.hooks || {}, hook = hooks[d.id] ? fn(hooks[d.id]) : '';
     // demo que embrulha outra (H.x = (prev => …)(H.x)) guarda a anterior em .prev
     const hookPrev = hooks[d.id] && hooks[d.id].prev ? `const prev = ${fn(hooks[d.id].prev)};` : '';
-    // scripts de demo que chamam outros (H.device(root)) levam junto os que chamam
-    const hookDeps = [], seen = new Set([d.id]);
-    (function dig(src) { for (const m of src.matchAll(/\bH(?:\.([\w$]+)|\['([\w-]+)'\])/g)) { const k = m[1] || m[2]; if (seen.has(k) || !hooks[k]) continue; seen.add(k); dig(fn(hooks[k])); hookDeps.push(`H['${k}'] = ${fn(hooks[k])};`); } })(hook);
     const html = d.html;
     const behaviors = new Set([...html.matchAll(/data-ac="([^"]+)"/g)].flatMap(m => m[1].split(/\s+/)));
     const api = new Set([...(html + '\n' + hook + '\n' + hookPrev).matchAll(/\b(?:Orthos|O\(\))\.([\w$]+)/g)].map(m => m[1]));
@@ -6536,7 +6584,7 @@ window.PADROES = `
         : '4. **JS:** não precisa. O componente é só CSS; o bloco **Comportamento** traz apenas o `Orthos.init` e pode ficar de fora.',
       '5. **Vários componentes:** cada markdown traz um recorte da mesma biblioteca, e os recortes não foram feitos para conviver. Para usar dois ou mais na mesma página, inclua `orthos.css` e `orthos.js` inteiros (seção **Com a biblioteca inteira**). Juntar recortes repetiria os ouvintes globais, e o segundo substituiria o `Orthos` do primeiro; o JS avisa no console quando isso acontece.'];
     const jsWhat = [behaviors.size ? `comportamento ${list([...behaviors].map(b => 'data-ac="' + b + '"'))}` : '', js.globals.length ? `os atributos ${list(js.globals)}` : '', js.api.length > 1 ? `a API ${list(js.api.filter(k => k !== 'init').map(k => 'Orthos.' + k))}` : ''].filter(Boolean);
-    const demoScript = ['const O = () => window.Orthos, H = {};', ...hookDeps, hookPrev, `(${hook})(document.getElementById('demo'));`].filter(Boolean).join('\n');
+    const demoJs = demoScript(d, hooks, "document.getElementById('demo')");
     return [`# ${d.nome}`, '', ...(d.aka ? [`Em inglês: ${d.aka}`, ''] : []), d.desc, '', `Grupo: ${d.grupo}${d.ref && d.ref.nome ? ` · Referência estudada: ${d.ref.url ? `[${d.ref.nome}](${d.ref.url})` : d.ref.nome}` : ''}`, '',
       g.usar ? `## Quando usar\n\n${li(g.usar)}\n` : '', g.evitar ? `## Quando evitar\n\n${li(g.evitar)}\n` : '', g.dicas ? `## Boas práticas\n\n${li(g.dicas)}\n` : '',
       '## Usar no seu projeto', '', 'Sem instalar nada: os blocos **Estrutura**, **Estilos** e **Comportamento** abaixo trazem o HTML, o CSS e o JS deste componente, recortados de `orthos.css` e `orthos.js`. Não dependem de servidor nem de outras bibliotecas.', '', ...steps, '',
@@ -6548,7 +6596,7 @@ window.PADROES = `
       '## Comportamento (JS)', '', needsJs ? `Recorte de \`orthos.js\` com ${jsWhat.join('; ')}. Ativa sozinho ao carregar; para HTML inserido depois, chame \`Orthos.init(elemento)\`.` : 'Opcional: este componente é só CSS, e o script abaixo traz apenas o `Orthos.init`.', '', fence + 'js', js.code, fence, '',
       '## Com a biblioteca inteira', '', 'Para usar vários componentes, inclua a biblioteca toda no lugar dos blocos **Estilos** e **Comportamento**. A **Estrutura** continua a mesma.', '', fence + 'html', '<link rel="stylesheet" href="orthos.css">', '<script src="orthos.js" defer><\/script>', fence, '',
       '## Reproduzir a demonstração do site (opcional)', '', 'Nada desta seção é necessário no seu projeto. Ela serve para montar uma página igual à do site e comparar.', '',
-      hook ? `### Script da demonstração\n\nComportamento extra da demo, fora da biblioteca: ${demoAttrs.length ? `faz os ${list(demoAttrs)} funcionarem e ` : ''}simula o que a sua aplicação faria (envio, retorno, avisos). Rode depois do **Comportamento**.\n\n${fence}js\n${demoScript}\n${fence}\n` : '',
+      hook ? `### Script da demonstração\n\nComportamento extra da demo, fora da biblioteca: ${demoAttrs.length ? `faz os ${list(demoAttrs)} funcionarem e ` : ''}simula o que a sua aplicação faria (envio, retorno, avisos). Rode depois do **Comportamento**.\n\n${fence}js\n${demoJs}\n${fence}\n` : '',
       '### Moldura da demonstração', '', `No site, a demo fica numa área centralizada (\`.canvas\`${d.wide ? ', larga' : ''}). Estas regras do site reproduzem esse enquadramento e a fonte da página, mas também estilizam \`body\`, \`a\`, \`code\` e \`:focus-visible\`: não leve para o seu projeto.`, '', fence + 'css', frame, fence, '',
       assets.length ? `### Recursos\n\nArquivos usados pela demo, com caminho a partir da raiz do projeto Orthos UI: ${list(assets)}. Se a página ficar numa subpasta, ajuste o caminho (ex.: \`../assets/…\`).\n` : '',
       '### Montagem', '', fence + 'html', page, fence, '',
@@ -6569,9 +6617,10 @@ window.PADROES = `
     cache = { cssTree: parseCss(css), js: parseJs(js), siteTree: site ? parseCss(site) : null };
     return cache;
   }
-  const api = { build, parseCss, parseJs };
+  const api = { build, parseCss, parseJs, demoScript, codeFor };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-  else root.orthosMarkdown = async d => build(d, { ...(await sources()), guia: root.GUIA, hooks: root.DEMO_HOOKS || {}, symbol: id => { const s = document.getElementById(id); return s && s.closest('svg') ? s.outerHTML : null; } });
+  else root.orthosCode = d => codeFor(d, root.DEMO_HOOKS || {});
+  if (!(typeof module !== 'undefined' && module.exports)) root.orthosMarkdown = async d => build(d, { ...(await sources()), guia: root.GUIA, hooks: root.DEMO_HOOKS || {}, symbol: id => { const s = document.getElementById(id); return s && s.closest('svg') ? s.outerHTML : null; } });
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -6666,7 +6715,10 @@ window.PADROES = `
   };
   function renderDoc(d) {
     const i = D.indexOf(d), prev = D[i - 1], next = D[i + 1];
-    const code = tidy(d.html);
+    // o mesmo código que o Copiar leva (sem a moldura do site e com o script da demo, se houver); na tela, ícones e fotos resumidos
+    const src = window.orthosCode ? window.orthosCode(d) : { html: d.html, script: '', full: d.html };
+    const code = tidy(src.html) + (src.script ? src.full.slice(src.html.length) : '');
+    const short = code !== src.full;
     main.innerHTML = `<div class="doc">
       <section class="stage" aria-label="Demonstração">
         <div class="stage__bar"><span class="stage__nav">${arrow(prev, -1)}${arrow(next, 1)}</span><span class="stage__crumb">${esc(d.grupo)} / <b>${esc(d.nome)}</b></span>
@@ -6676,7 +6728,7 @@ window.PADROES = `
           <div class="canvas__tools"><button class="ac-btn ac-btn--secondary ac-btn--icon ac-btn--sm" type="button" id="replay" aria-label="Reiniciar demonstração" data-tip="Reiniciar">${replayIco}</button></div>
           <div class="canvas__inner" id="demo"></div>
         </div>
-        <div class="code" ${mode === 'preview' ? 'hidden' : ''}><div class="code__bar"><span>${esc(d.id)}.html</span><button class="ac-btn ac-btn--ghost ac-btn--sm" type="button" id="copy-code">${copyIco}Copiar</button></div><pre><code>${highlight(code)}</code></pre></div>
+        <div class="code" ${mode === 'preview' ? 'hidden' : ''}><div class="code__bar"><span>${esc(d.id)}.html</span>${short ? '<small class="code__note">Ícones e fotos resumidos na tela; o Copiar leva o código completo</small>' : ''}<button class="ac-btn ac-btn--ghost ac-btn--sm" type="button" id="copy-code">${copyIco}Copiar</button></div><pre><code>${highlight(code)}</code></pre></div>
       </section>
       <aside class="panel" aria-label="Documentação">
         <h1>${esc(d.nome)}</h1>
@@ -6701,7 +6753,7 @@ window.PADROES = `
     $('#mode').addEventListener('ac:change', e => { mode = e.detail; $('.canvas').hidden = mode !== 'preview'; $('.code').hidden = mode !== 'code'; });
     $('#replay').onclick = mount;
     $('#md-open').onclick = () => showMarkdown(d);
-    $('#copy-code').onclick = async () => { try { await navigator.clipboard.writeText(d.html); A.toast({ type: 'success', title: 'Código copiado' }); } catch (_) { A.toast({ type: 'danger', title: 'Não foi possível copiar' }); } };
+    $('#copy-code').onclick = async () => { try { await navigator.clipboard.writeText(src.full); A.toast({ type: 'success', title: 'Código copiado', desc: 'Cole numa página com orthos.css e orthos.js.' }); } catch (_) { A.toast({ type: 'danger', title: 'Não foi possível copiar' }); } };
   }
 
   // remove flutuantes órfãos da página anterior (pops, dicas e diálogos movidos para o <body>)
