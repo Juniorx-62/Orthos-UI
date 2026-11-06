@@ -463,6 +463,9 @@
     segs[2].click(); ok(sl[2].classList.contains('is-active') && segs[2].getAttribute('aria-current') === 'true' && segs[1].classList.contains('is-done') && !sl[2].inert, 'barrinha');
     const was = pb.dataset.paused; pb.click(); ok(pb.dataset.paused !== was && el.dataset.paused === 'true', 'pausa');
     key(segs[2], 'ArrowRight'); ok(sl[3].classList.contains('is-active'), 'seta');
+    const im = $$('picture > img', el); await Promise.all(im.map(i => i.decode()));
+    const cs = getComputedStyle(im[0]);
+    ok(im.length === 4 && im.every(i => i.naturalWidth >= 1280) && cs.position === 'absolute' && cs.objectFit === 'cover' && im[0].offsetHeight === el.offsetHeight, 'foto em picture cobre o destaque');
   });
   // profundidade e movimento
   await t('inclinação 3D: camadas com profundidade; o mouse inclina e o brilho acompanha; sair volta ao plano', async () => {
@@ -511,6 +514,7 @@
     key(el, 'm'); await w(30); ok(v.muted && $('[data-v="vol"]', el).getAttribute('aria-label') === 'Ligar o som', 'mudo'); key(el, 'm');
     const seg = $('[data-video-glass]', palco); $('button[value="blur"]', seg).click();
     ok($$('.ac-video', palco).length === 1 && el.classList.contains('ac-video--blur') && !el.classList.contains('ac-video--liquid'), 'seletor troca para blur');
+    ok((await fetch(v.getAttribute('src').split('#')[0], { method: 'HEAD' })).ok, 'arquivo do vídeo existe');
   });
   await t('halftone: canvas com descrição e abas que trocam a imagem', async () => {
     mount('halftone'); await w(400); const el = $('.ac-halftone', palco), cv = $('canvas', el), tabs = $$('.ac-halftone__tabs button', el);

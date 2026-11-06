@@ -1287,8 +1287,9 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-hero__brand { position: absolute; top: var(--pad); left: var(--pad); z-index: 2; display: flex; align-items: center; gap: 10px; font: 700 var(--ac-fs-xl) var(--ac-font); letter-spacing: -.02em; color: #fff; text-decoration: none; }
 .ac-hero__slide { position: absolute; inset: 0; z-index: 0; display: flex; flex-direction: column; justify-content: flex-end; margin: 0; padding: var(--pad) var(--pad) calc(var(--pad) + 52px); opacity: 0; transition: opacity .9s var(--ac-ease); }
 .ac-hero__slide.is-active { z-index: 1; opacity: 1; }
-.ac-hero__slide > img { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); transition: transform calc(var(--t) + 900ms) linear; }
-.ac-hero__slide.is-active > img { transform: scale(1); }
+/* a foto pode vir em <picture>, para o celular receber um recorte em retrato sem esticar a imagem larga */
+.ac-hero__slide > img, .ac-hero__slide > picture > img { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); transition: transform calc(var(--t) + 900ms) linear; }
+.ac-hero__slide.is-active > img, .ac-hero__slide.is-active > picture > img { transform: scale(1); }
 /* sombra embaixo (texto) e em cima (logo): o texto branco fica legível sobre qualquer foto */
 .ac-hero__slide::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgb(0 0 0 / .82) 0%, rgb(0 0 0 / .35) 38%, transparent 62%), linear-gradient(to bottom, rgb(0 0 0 / .45), transparent 22%); }
 .ac-hero__text { display: grid; gap: 12px; max-width: 34rem; transform: translateY(14px); opacity: 0; transition: transform .7s var(--ac-ease) .25s, opacity .7s var(--ac-ease) .25s; }
@@ -1311,7 +1312,7 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-hero__pause .ac-icon { width: 15px; height: 15px; }
 .ac-hero__pause[data-paused="false"] .ac-icon:last-child, .ac-hero__pause[data-paused="true"] .ac-icon:first-child { display: none; }
 @keyframes ac-hero-fill { to { transform: none; } }
-@media (prefers-reduced-motion: reduce) { .ac-hero__slide, .ac-hero__slide > img, .ac-hero__text { transition: none; } .ac-hero__slide > img { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ac-hero__slide, .ac-hero__slide > img, .ac-hero__slide > picture > img, .ac-hero__text { transition: none; } .ac-hero__slide > img, .ac-hero__slide > picture > img { transform: none; } }
 
 /* ======================= Profundidade e movimento (pesquisa de 28/10/2026: CSS 3D, scroll-driven, View Transitions) ======================= */
 

@@ -2,7 +2,7 @@
 
 Todas da [Unsplash](https://unsplash.com), sob a [Licença da Unsplash](https://unsplash.com/license) (conferida em 28/10/2026): uso gratuito, comercial ou não, sem pedir permissão e sem atribuição obrigatória. Não é permitido vender as fotos sem modificação significativa nem juntá-las para montar um serviço parecido com a Unsplash. Nenhuma é Unsplash+.
 
-Arquivos: `nome.jpg` (1400 × 933, lightbox e carrossel), `nome-p.jpg` (480 × 320, miniatura), `nome-v.jpg` (600 × 800, retrato para o coverflow e o mosaico). Recortes e compressão feitos pelo próprio serviço de imagens da Unsplash.
+Arquivos: `nome.jpg` (1400 × 933, lightbox e carrossel), `nome-p.jpg` (480 × 320, miniatura), `nome-v.jpg` (600 × 800, retrato para o coverflow e o mosaico). As quatro fotos do Destaque (`casa-lago`, `baloes`, `canyon-estrelas` e `montanha-raios`) têm também `nome-g.jpg` (2400 × 1600, telas largas) e `nome-r.jpg` (1280 × 1920, recorte central em retrato para o celular), com qualidade 80. Recortes e compressão feitos pelo próprio serviço de imagens da Unsplash.
 
 | Arquivo | Foto | Fotógrafo |
 |---|---|---|

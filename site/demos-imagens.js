@@ -22,6 +22,8 @@
   };
   const T = n => FOTOS[n][0], alt = n => FOTOS[n][1], cap = n => `${FOTOS[n][0]}. Foto: ${FOTOS[n][2]} / Unsplash`;
   const big = n => F + n + '.jpg', thumb = n => F + n + '-p.jpg', tall = n => F + n + '-v.jpg';
+  // foto de tela inteira: 2400 px para telas largas e recorte em retrato para o celular, que senão esticaria a foto larga
+  const full = n => `<picture><source media="(max-width: 640px) and (orientation: portrait)" srcset="${F}${n}-r.jpg"><img src="${F}${n}-g.jpg" alt=""></picture>`;
   const item = (n, src = thumb(n)) => `<a href="${big(n)}" data-caption="${cap(n)}"><img src="${src}" alt="${alt(n)}" loading="lazy"><span class="ac-gallery__cap">${T(n)}</span></a>`;
   const masonry = ['casa-lago', 'lago-montanha', 'montanha-raios', 'arvore-lago', 'canyon-estrelas', 'baloes', 'yosemite', 'atitlan', 'montanhas-neve', 'floresta-luz']
     .map((n, i) => item(n, [0, 2, 4, 6, 8].includes(i) ? tall(n) : thumb(n))).join('\n    ');
@@ -66,9 +68,9 @@
      ['baloes', 'Cada projeto decola no', 'tempo certo.', 'Planejamento', 'Cronogramas que se ajustam quando algo muda.'],
      ['canyon-estrelas', 'Os números trabalham', 'de madrugada.', 'Relatórios', 'Tudo pronto no seu e-mail às 7h.'],
      ['montanha-raios', 'Do rascunho à entrega em', 'um só lugar.', 'Colaboração', 'Comentários, aprovações e versões juntos.']]
-    .map(([n, a, b, tag, sub]) => `<article class="ac-hero__slide"><img src="${big(n)}" alt=""><div class="ac-hero__text"><h2 class="ac-hero__title">${a} <em>${b}</em></h2><p class="ac-hero__sub"><span class="ac-hero__tag">${tag}</span>${sub}</p></div></article>`).join('\n  ')}
+    .map(([n, a, b, tag, sub]) => `<article class="ac-hero__slide">${full(n)}<div class="ac-hero__text"><h2 class="ac-hero__title">${a} <em>${b}</em></h2><p class="ac-hero__sub"><span class="ac-hero__tag">${tag}</span>${sub}</p></div></article>`).join('\n  ')}
 </section>`,
-      api: [['data-ac="hero"', 'section', '—', 'Cada .ac-hero__slide (foto + .ac-hero__text) vira um destaque'], ['data-interval', 'ms', '6000', 'Tempo de cada destaque'], ['data-start', 'número', '0', 'Destaque inicial'], ['.ac-hero__title em', 'HTML', '—', 'Palavra em destaque na cor --accent'], ['.ac-hero__tag', 'span', '—', 'Etiqueta antes do subtítulo'], ['.ac-hero__brand', 'a', '—', 'Logo no canto de cima'], ['--accent / --h', 'CSS', '#2dd4bf / 560px', 'Cor de destaque e altura'], ['ac:change', 'evento', '—', 'detail: { index, total }'], ['el._hero', 'objeto', '—', 'go(i), pause(), play()']],
+      api: [['data-ac="hero"', 'section', '—', 'Cada .ac-hero__slide (foto + .ac-hero__text) vira um destaque'], ['<img> ou <picture>', 'HTML', '—', 'A foto do slide. Com <picture>, o celular em pé recebe um recorte em retrato e a foto não estica'], ['data-interval', 'ms', '6000', 'Tempo de cada destaque'], ['data-start', 'número', '0', 'Destaque inicial'], ['.ac-hero__title em', 'HTML', '—', 'Palavra em destaque na cor --accent'], ['.ac-hero__tag', 'span', '—', 'Etiqueta antes do subtítulo'], ['.ac-hero__brand', 'a', '—', 'Logo no canto de cima'], ['--accent / --h', 'CSS', '#2dd4bf / 560px', 'Cor de destaque e altura'], ['ac:change', 'evento', '—', 'detail: { index, total }'], ['el._hero', 'objeto', '—', 'go(i), pause(), play()']],
       a11y: ['Região “carrossel” com slides “2 de 4”; os de fora ficam inert e aria-hidden.', 'As barrinhas são botões “Destaque 2 de 4” com aria-current; ← → trocam com o foco nelas.', 'Botão de pausa sempre visível; também pausa no hover e com o foco dentro (WCAG 2.2.2).', 'Com movimento reduzido começa pausado, sem zoom nem fade.', 'Foto decorativa (alt vazio): a mensagem está no título; sombra no rodapé garante contraste do texto branco.'] },
 
     { id: 'coverflow', grupo: 'Dados', nome: 'Coverflow 3D', novo: '2026-10-28',

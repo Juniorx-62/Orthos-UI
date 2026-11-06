@@ -1302,8 +1302,9 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-hero__brand { position: absolute; top: var(--pad); left: var(--pad); z-index: 2; display: flex; align-items: center; gap: 10px; font: 700 var(--ac-fs-xl) var(--ac-font); letter-spacing: -.02em; color: #fff; text-decoration: none; }
 .ac-hero__slide { position: absolute; inset: 0; z-index: 0; display: flex; flex-direction: column; justify-content: flex-end; margin: 0; padding: var(--pad) var(--pad) calc(var(--pad) + 52px); opacity: 0; transition: opacity .9s var(--ac-ease); }
 .ac-hero__slide.is-active { z-index: 1; opacity: 1; }
-.ac-hero__slide > img { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); transition: transform calc(var(--t) + 900ms) linear; }
-.ac-hero__slide.is-active > img { transform: scale(1); }
+/* a foto pode vir em <picture>, para o celular receber um recorte em retrato sem esticar a imagem larga */
+.ac-hero__slide > img, .ac-hero__slide > picture > img { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); transition: transform calc(var(--t) + 900ms) linear; }
+.ac-hero__slide.is-active > img, .ac-hero__slide.is-active > picture > img { transform: scale(1); }
 /* sombra embaixo (texto) e em cima (logo): o texto branco fica legível sobre qualquer foto */
 .ac-hero__slide::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgb(0 0 0 / .82) 0%, rgb(0 0 0 / .35) 38%, transparent 62%), linear-gradient(to bottom, rgb(0 0 0 / .45), transparent 22%); }
 .ac-hero__text { display: grid; gap: 12px; max-width: 34rem; transform: translateY(14px); opacity: 0; transition: transform .7s var(--ac-ease) .25s, opacity .7s var(--ac-ease) .25s; }
@@ -1326,7 +1327,7 @@ th[aria-sort="descending"] .ac-sort .ac-icon { transform: rotate(180deg); }
 .ac-hero__pause .ac-icon { width: 15px; height: 15px; }
 .ac-hero__pause[data-paused="false"] .ac-icon:last-child, .ac-hero__pause[data-paused="true"] .ac-icon:first-child { display: none; }
 @keyframes ac-hero-fill { to { transform: none; } }
-@media (prefers-reduced-motion: reduce) { .ac-hero__slide, .ac-hero__slide > img, .ac-hero__text { transition: none; } .ac-hero__slide > img { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ac-hero__slide, .ac-hero__slide > img, .ac-hero__slide > picture > img, .ac-hero__text { transition: none; } .ac-hero__slide > img, .ac-hero__slide > picture > img { transform: none; } }
 
 /* ======================= Profundidade e movimento (pesquisa de 28/10/2026: CSS 3D, scroll-driven, View Transitions) ======================= */
 
@@ -5708,6 +5709,8 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
   };
   const T = n => FOTOS[n][0], alt = n => FOTOS[n][1], cap = n => `${FOTOS[n][0]}. Foto: ${FOTOS[n][2]} / Unsplash`;
   const big = n => F + n + '.jpg', thumb = n => F + n + '-p.jpg', tall = n => F + n + '-v.jpg';
+  // foto de tela inteira: 2400 px para telas largas e recorte em retrato para o celular, que senão esticaria a foto larga
+  const full = n => `<picture><source media="(max-width: 640px) and (orientation: portrait)" srcset="${F}${n}-r.jpg"><img src="${F}${n}-g.jpg" alt=""></picture>`;
   const item = (n, src = thumb(n)) => `<a href="${big(n)}" data-caption="${cap(n)}"><img src="${src}" alt="${alt(n)}" loading="lazy"><span class="ac-gallery__cap">${T(n)}</span></a>`;
   const masonry = ['casa-lago', 'lago-montanha', 'montanha-raios', 'arvore-lago', 'canyon-estrelas', 'baloes', 'yosemite', 'atitlan', 'montanhas-neve', 'floresta-luz']
     .map((n, i) => item(n, [0, 2, 4, 6, 8].includes(i) ? tall(n) : thumb(n))).join('\n    ');
@@ -5752,9 +5755,9 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
      ['baloes', 'Cada projeto decola no', 'tempo certo.', 'Planejamento', 'Cronogramas que se ajustam quando algo muda.'],
      ['canyon-estrelas', 'Os números trabalham', 'de madrugada.', 'Relatórios', 'Tudo pronto no seu e-mail às 7h.'],
      ['montanha-raios', 'Do rascunho à entrega em', 'um só lugar.', 'Colaboração', 'Comentários, aprovações e versões juntos.']]
-    .map(([n, a, b, tag, sub]) => `<article class="ac-hero__slide"><img src="${big(n)}" alt=""><div class="ac-hero__text"><h2 class="ac-hero__title">${a} <em>${b}</em></h2><p class="ac-hero__sub"><span class="ac-hero__tag">${tag}</span>${sub}</p></div></article>`).join('\n  ')}
+    .map(([n, a, b, tag, sub]) => `<article class="ac-hero__slide">${full(n)}<div class="ac-hero__text"><h2 class="ac-hero__title">${a} <em>${b}</em></h2><p class="ac-hero__sub"><span class="ac-hero__tag">${tag}</span>${sub}</p></div></article>`).join('\n  ')}
 </section>`,
-      api: [['data-ac="hero"', 'section', '—', 'Cada .ac-hero__slide (foto + .ac-hero__text) vira um destaque'], ['data-interval', 'ms', '6000', 'Tempo de cada destaque'], ['data-start', 'número', '0', 'Destaque inicial'], ['.ac-hero__title em', 'HTML', '—', 'Palavra em destaque na cor --accent'], ['.ac-hero__tag', 'span', '—', 'Etiqueta antes do subtítulo'], ['.ac-hero__brand', 'a', '—', 'Logo no canto de cima'], ['--accent / --h', 'CSS', '#2dd4bf / 560px', 'Cor de destaque e altura'], ['ac:change', 'evento', '—', 'detail: { index, total }'], ['el._hero', 'objeto', '—', 'go(i), pause(), play()']],
+      api: [['data-ac="hero"', 'section', '—', 'Cada .ac-hero__slide (foto + .ac-hero__text) vira um destaque'], ['<img> ou <picture>', 'HTML', '—', 'A foto do slide. Com <picture>, o celular em pé recebe um recorte em retrato e a foto não estica'], ['data-interval', 'ms', '6000', 'Tempo de cada destaque'], ['data-start', 'número', '0', 'Destaque inicial'], ['.ac-hero__title em', 'HTML', '—', 'Palavra em destaque na cor --accent'], ['.ac-hero__tag', 'span', '—', 'Etiqueta antes do subtítulo'], ['.ac-hero__brand', 'a', '—', 'Logo no canto de cima'], ['--accent / --h', 'CSS', '#2dd4bf / 560px', 'Cor de destaque e altura'], ['ac:change', 'evento', '—', 'detail: { index, total }'], ['el._hero', 'objeto', '—', 'go(i), pause(), play()']],
       a11y: ['Região “carrossel” com slides “2 de 4”; os de fora ficam inert e aria-hidden.', 'As barrinhas são botões “Destaque 2 de 4” com aria-current; ← → trocam com o foco nelas.', 'Botão de pausa sempre visível; também pausa no hover e com o foco dentro (WCAG 2.2.2).', 'Com movimento reduzido começa pausado, sem zoom nem fade.', 'Foto decorativa (alt vazio): a mensagem está no título; sombra no rodapé garante contraste do texto branco.'] },
 
     { id: 'coverflow', grupo: 'Dados', nome: 'Coverflow 3D', novo: '2026-10-28',
@@ -6179,7 +6182,7 @@ ${inner}
       html: `<div style="display:grid;gap:14px;justify-items:center;width:min(820px,100%);margin:0 auto">
   <div class="ac-segmented" data-ac="segmented" aria-label="Estilo do vidro" data-video-glass><button type="button" value="liquid" aria-pressed="true">Vidro líquido</button><button type="button" value="blur">Vidro com blur</button></div>
   <div data-ac="video" data-title="Recife de coral visto do alto" data-youtube="https://www.youtube.com/" data-glass="liquid" style="width:100%">
-    <video src="${F}video/oceano-recife.mp4#t=0.1" preload="metadata" playsinline></video>
+    <video src="${F}video/recife-de-coral.mp4#t=0.1" preload="metadata" playsinline></video>
   </div>
 </div>`,
       api: [['data-ac="video"', 'div', '—', 'Envolve um <video>; os controles nativos saem e entram os do Orthos'], ['data-title', 'texto', '—', 'Rótulo no canto de cima'], ['data-youtube', 'URL', '—', 'Mostra o botão “Assistir no YouTube”; em player com até 440 px de largura, fica só o ícone'], ['data-glass', 'texto', 'liquid', 'liquid ou blur (vira a classe .ac-video--liquid ou --blur)'], ['largura', 'comportamento', '—', 'Segue a largura do contêiner (max-width: 100%); os controles não alargam o player'], ['<track kind="captions">', 'HTML', '—', 'Liga o botão de legendas'], ['velocidade', 'botão', '1×', 'Alterna 1×, 1,25×, 1,5×, 2× e 0,5×'], ['picture-in-picture', 'botão', '—', 'Só aparece se o navegador suporta'], ['teclado', '—', '—', 'Espaço/K tocar, J/L 10 s, ← → 5 s, ↑ ↓ volume, M som, F tela cheia, C legendas; duplo clique também abre a tela cheia']],
