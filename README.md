@@ -25,6 +25,7 @@ orthos-ui/
 │   ├── mudancas-2026-10-27.md  ← atualização de 27/10
 │   ├── mudancas-2026-10-28.md  ← navegadores, correções, estrutura e componentes de referência
 │   ├── mudancas-2026-10-30.md  ← ajustes pedidos depois do teste no celular
+│   ├── mudancas-2026-11-06.md  ← confirmação ao copiar o Markdown e avisos por cima de diálogos
 │   └── prototipos/color-picker.html ← protótipo que deu origem ao Color palette 3D
 ├── brand/              ← logo e símbolo (SVG)
 ├── assets/fotos/       ← fotos das demos (Unsplash, licença conferida; créditos em CREDITOS.md)
@@ -59,7 +60,7 @@ Atalho de busca: `Ctrl K`.
 - Conteúdo inserido depois do carregamento: `Orthos.init(elemento)`.
 - APIs: `Orthos.toast()` (com `.update()`), `Orthos.toast.promise(promessa, mensagens)`, `Orthos.command()`, `Orthos.skeleton(el, on, { animation, cascade, delay })`, `Orthos.open(dialog)`, `Orthos.close(dialog)`, `Orthos.results` (textos das páginas de erro), `Orthos.logo.load(el, arquivo)`, `Orthos.logo.replay(el)`, `Orthos.loading({ logo, text })` (tela de carregamento), `Orthos.tour(passos)`, `Orthos.dirty.baseline(form)`, `Orthos.lightbox(itens, início)`, `Orthos.transition(fn)` (View Transitions), `Orthos.confirm(opções)` e `Orthos.alert(mensagem)` (devolvem Promise; com `onConfirm` assíncrono o botão fica carregando e o erro aparece dentro da janela).
 - Atalho global: `Alt+T` leva o foco aos avisos.
-- Avisos: `Orthos.toast({ title, desc, type, position: 'top', swatch: '#6a4fd0' })`; `position: 'top'` usa uma pilha centralizada no alto da tela e `swatch` mostra uma amostra de cor no lugar do ícone e `variant: 'pill'` faz uma cápsula de uma linha (confirmações rápidas, como "Copiado: Lima #a7d92e"). A Paleta de cores 3D com `data-copy` copia o código da cor ao clicar. O Campo copiável mostra um aviso no topo ao copiar (`data-toast="mensagem"`, ou `"false"` para desligar).
+- Avisos: `Orthos.toast({ title, desc, type, position: 'top', swatch: '#6a4fd0' })`; `position: 'top'` usa uma pilha centralizada no alto da tela e `swatch` mostra uma amostra de cor no lugar do ícone e `variant: 'pill'` faz uma cápsula de uma linha (confirmações rápidas, como "Copiado: Lima #a7d92e"). A Paleta de cores 3D com `data-copy` copia o código da cor ao clicar. O Campo copiável mostra um aviso no topo ao copiar (`data-toast="mensagem"`, ou `"false"` para desligar). Com um diálogo aberto, os avisos aparecem por cima dele e voltam para a página ao fechar; no celular, prefira `position: 'top'`, porque o canto de baixo fica sobre os botões do painel.
 - Busca: `Orthos.command({ items, groups: { 'Formulários': { icon, color } }, limit })` mostra o título de cada grupo com ícone e cor; cada item aceita `aliases` (nomes alternativos, como o termo em inglês) e, com texto digitado, os resultados vêm por relevância. Páginas de erro: `data-ac="result"` com `data-code` (404, 403, 401, 500, error, 503, offline, success), `data-audience` (visitante, usuário, equipe), `data-support`, `data-error-id`, `data-retry-at` e o evento cancelável `ac:action`.
 - Escala de texto: `--ac-fs-xs` 12px · `sm` 13 · `base` 14 · `md` 15 · `lg` 17 · `xl` 20 · `2xl` 22 · `3xl` 28 · `touch` 16 (campos em telas de toque, para o Safari do iPhone não dar zoom). 12px é o mínimo; a suíte de testes falha se alguma demo tiver texto menor. Dicas (`.ac-hint`), erros (`.ac-error`) e cabeçalhos de tabela usam 14px. O site de documentação usa `--site-read` (16px) no texto corrido e no menu, e `--site-small` (14px) nos rótulos.
 - Borda de campo: `--ac-border-input` (3:1 contra o fundo, WCAG 1.4.11) em input, textarea, select, checkbox, switch, number field, pessoas e tags, telefone, chat e campo copiável; as demais bordas continuam suaves (`--ac-border`, `--ac-border-strong`).
@@ -91,7 +92,7 @@ As peças de 28/10/2026 foram reimplementadas em HTML/CSS/JS puro a partir de pa
 
 ## Testes
 
-A suíte roda no Chrome e no Safari (WebKit) com 276 testes, entre eles um por componente que abre uma página em branco só com `orthos.css`, `orthos.js` e o que o botão Copiar da aba Código leva, e confere que tudo inicia sem erro; a mesma página publicada em https://orthos-ui.vercel.app/tests/componentes.html serve para conferir no Firefox e em aparelhos reais.
+A suíte roda no Chrome e no Safari (WebKit) com 277 testes, entre eles um por componente que abre uma página em branco só com `orthos.css`, `orthos.js` e o que o botão Copiar da aba Código leva, e confere que tudo inicia sem erro; a mesma página publicada em https://orthos-ui.vercel.app/tests/componentes.html serve para conferir no Firefox e em aparelhos reais.
 
 Sirva a pasta (`python -m http.server`) e abra `/tests/componentes.html`. A página monta todos os componentes, confere a
 documentação de cada um e testa o teclado dos componentes interativos; o resultado aparece na tela e em `window.RESULTADO`.

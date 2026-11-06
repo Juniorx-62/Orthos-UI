@@ -391,7 +391,8 @@
 .ac-tip { position: fixed; z-index: 1001; padding: 6px 10px; border-radius: 8px; background: var(--ac-text); color: var(--ac-bg); font: 500 var(--ac-fs-sm) var(--ac-font); pointer-events: none; animation: ac-pop-sm .15s var(--ac-ease); max-width: 260px; }
 
 /* ---------- Toast ---------- */
-.ac-toaster { position: fixed; z-index: 2000; right: 20px; bottom: 20px; display: grid; gap: 8px; width: min(360px, calc(100vw - 40px)); outline: none; }
+/* inset, margin, padding, border, background e overflow zeram o padrão de [popover]: com um modal aberto a região vira popover */
+.ac-toaster { position: fixed; z-index: 2000; inset: auto 20px 20px auto; display: grid; gap: 8px; width: min(360px, calc(100vw - 40px)); height: auto; margin: 0; padding: 0; border: 0; background: none; color: inherit; overflow: visible; outline: none; }
 .ac-toaster:empty { pointer-events: none; }
 /* avisos no topo: toast({ position: 'top' }), centralizados; a pilha cresce para baixo */
 .ac-toaster--top { top: 16px; right: auto; bottom: auto; left: 50%; translate: -50% 0; width: min(380px, calc(100vw - 32px)); }
@@ -407,6 +408,7 @@
 .ac-toast { --k: 0; position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 2px 10px; align-items: start; padding: 14px 14px 14px 16px; border-radius: var(--ac-r); border: 1px solid var(--ac-border); background: var(--ac-surface); color: var(--ac-text); box-shadow: var(--ac-shadow-lg); font: var(--ac-fs-base)/1.45 var(--ac-font); animation: ac-toast-in .45s var(--ac-ease-spring); transition: transform var(--ac-dur-overlay) var(--ac-ease-out), opacity var(--ac-dur-overlay) var(--ac-ease-out); touch-action: pan-y; user-select: none; }
 .ac-toast:focus-visible { outline: none; box-shadow: var(--ac-shadow-lg), 0 0 0 3px var(--ac-ring); }
 .ac-toast.is-leaving { animation: ac-toast-out .25s var(--ac-ease) forwards; }
+.ac-toaster .ac-toast.is-moved:not(.is-leaving) { animation: none; }
 .ac-toast.is-swiping { transition: none; }
 .ac-toast > .ac-icon, .ac-toast > .ac-spinner { margin-top: 2px; }
 .ac-toast > .ac-spinner { width: 16px; height: 16px; border-width: 2px; }
@@ -1911,6 +1913,12 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
 .a11y.is-no li::before { background: var(--ac-danger-bg); box-shadow: inset 0 0 0 4px var(--ac-danger-bg), inset 0 0 0 10px var(--ac-danger); }
 .a11y.is-tip li::before { background: var(--ac-surface-3); box-shadow: inset 0 0 0 4px var(--ac-surface-3), inset 0 0 0 10px var(--ac-text-2); }
 .md-dlg { width: min(760px, calc(100vw - 32px)); }
+/* Copiar → Copiado: os dois rótulos ocupam o mesmo lugar (o botão não muda de largura) e trocam como no Campo copiável */
+.md-copy { display: inline-grid; place-items: center; }
+.md-copy > span { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 6px; transition: transform var(--ac-dur-base) var(--ac-ease-out), opacity var(--ac-dur-base), filter var(--ac-dur-base); }
+.md-copy > span:last-child, .md-copy[data-state="copied"] > span:first-child { opacity: 0; transform: scale(.9); filter: blur(4px); }
+.md-copy[data-state="copied"] > span:last-child { opacity: 1; transform: none; filter: none; }
+@media (prefers-reduced-motion: reduce) { .md-copy > span { transition: none; } }
 .md-pre { margin: 0; max-height: 60vh; overflow: auto; padding: 14px 16px; border: 1px solid var(--ac-border); border-radius: 12px; background: var(--ac-surface-2); font: var(--site-small)/1.6 var(--ac-mono); white-space: pre-wrap; color: var(--ac-text-2); }
 .prose h1 { margin: 0 0 10px; font: 650 34px/1.15 var(--ac-font); letter-spacing: -.03em; }
 .prose h2 { margin: 36px 0 12px; font: 600 var(--ac-fs-lg) var(--ac-font); }
@@ -2062,15 +2070,15 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
   function open(dlg) {
     if (typeof dlg === 'string') dlg = $(dlg); if (!dlg) return;
     if (dlg._closing) { dlg._closing(); return; } // reabriu durante a animação de saída: cancela o fechamento
-    if (dlg.open) return; dlg.showModal();
+    if (dlg.open) return; dlg.showModal(); toastHome();
   }
   // aria-busy="true" segura o diálogo aberto (Esc, clique fora e data-ac-close) enquanto uma ação está em andamento
   function close(dlg, value) {
     if (typeof dlg === 'string') dlg = $(dlg); if (!dlg || !dlg.open || dlg._closing || dlg.getAttribute('aria-busy') === 'true') return;
-    if (reduce()) { dlg.close(value); return; }
+    if (reduce()) { dlg.close(value); toastHome(); return; }
     dlg.classList.add('is-closing');
     let t;
-    const done = keep => { clearTimeout(t); dlg.removeEventListener('animationend', end); dlg._closing = null; dlg.classList.remove('is-closing'); if (keep !== true) dlg.close(value); };
+    const done = keep => { clearTimeout(t); dlg.removeEventListener('animationend', end); dlg._closing = null; dlg.classList.remove('is-closing'); if (keep !== true) { dlg.close(value); toastHome(); } };
     const end = e => { if (e.target === dlg) done(); };
     dlg._closing = () => done(true);
     dlg.addEventListener('animationend', end);
@@ -2096,8 +2104,24 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       host.setAttribute('aria-label', 'Notificações (Alt+T)'); host.setAttribute('aria-live', 'polite'); host.setAttribute('aria-relevant', 'additions text');
       document.body.appendChild(host);
     }
+    toastHome();
     return host;
   }
+  // um modal aberto fica na camada de cima do navegador e deixa o resto da página inerte: fora dele, o aviso nasce escondido
+  // atrás do diálogo e o leitor de tela não anuncia. Por isso a região de avisos entra no modal (já na abertura, para a região
+  // viva existir antes do aviso) e volta ao fechar. Lá dentro ela vira popover: fica por cima do diálogo e não acompanha as
+  // animações dele; is-moved evita repetir a entrada de quem já estava na tela.
+  function toastHome() {
+    const home = $$('dialog[open]').filter(d => d.matches(':modal')).pop() || document.body;
+    $$('.ac-toaster').forEach(h => {
+      if (h.parentElement !== home) { $$('.ac-toast', h).forEach(t => t.classList.add('is-moved')); home.appendChild(h); }
+      if (!h.showPopover) return;
+      if (home === document.body) h.removeAttribute('popover');
+      else { h.popover = 'manual'; if (!h.matches(':popover-open')) h.showPopover(); }
+    });
+  }
+  // Orthos.close já devolve na hora; isto cobre dialog.close() direto. Na captura: antes de quem remove o diálogo ao fechar
+  document.addEventListener('close', toastHome, true);
   const restack = host => { const ts = $$('.ac-toast:not(.is-leaving)', host); ts.forEach((t, i) => t.style.setProperty('--k', ts.length - 1 - i)); };
   let toastReturn = null;
   document.addEventListener('keydown', e => {
@@ -2153,7 +2177,8 @@ pre code { font-size: inherit; } /* nos blocos o tamanho vem do <pre>; .92em de 
       err => t.update({ type: 'danger', title: typeof msg.error === 'function' ? msg.error(err) : (msg.error || 'Algo deu errado'), desc: msg.errorDesc }));
     return p;
   };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', toaster); else toaster();
+  const toasters = () => { toaster(); toaster('top'); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', toasters); else toasters();
 
   /* ---------------- componentes ---------------- */
   const C = {};
@@ -6775,9 +6800,16 @@ window.PADROES = `
     if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'md-dlg'; dlg.className = 'ac ac-dialog md-dlg'; dlg.setAttribute('aria-labelledby', 'md-t'); document.body.appendChild(dlg); }
     let md;
     try { md = await window.orthosMarkdown(d); } catch (_) { A.toast({ type: 'danger', title: 'Não foi possível montar o Markdown', desc: 'Abra o site por um servidor ou use dist/orthos-ui.html.' }); return; }
-    dlg.innerHTML = `<div class="ac-dialog__in"><h2 class="ac-dialog__title" id="md-t">${esc(d.nome)}.md</h2><pre class="md-pre" tabindex="0">${esc(md)}</pre><div class="ac-dialog__actions"><button class="ac-btn ac-btn--ghost" type="button" data-ac-close>Fechar</button><button class="ac-btn ac-btn--secondary" type="button" id="md-dl">Baixar .md</button><button class="ac-btn" type="button" id="md-copy">Copiar</button></div></div>`;
+    dlg.innerHTML = `<div class="ac-dialog__in"><h2 class="ac-dialog__title" id="md-t">${esc(d.nome)}.md</h2><pre class="md-pre" tabindex="0">${esc(md)}</pre><div class="ac-dialog__actions"><button class="ac-btn ac-btn--ghost" type="button" data-ac-close>Fechar</button><button class="ac-btn ac-btn--secondary" type="button" id="md-dl">Baixar .md</button><button class="ac-btn md-copy" type="button" id="md-copy" aria-label="Copiar"><span aria-hidden="true">${A.icon('copy')}Copiar</span><span aria-hidden="true">${A.icon('check')}Copiado</span></button></div></div>`;
     A.open(dlg);
-    $('#md-copy').onclick = async () => { try { await navigator.clipboard.writeText(md); A.toast({ type: 'success', title: 'Markdown copiado' }); } catch (_) { A.toast({ type: 'danger', title: 'Não foi possível copiar' }); } };
+    // confirma em dois lugares: no próprio botão, onde a pessoa está olhando, e na pílula do topo (que o leitor de tela anuncia)
+    const cp = $('#md-copy'); let back = 0;
+    cp.onclick = async () => {
+      try { await navigator.clipboard.writeText(md); } catch (_) { A.toast({ type: 'danger', variant: 'pill', position: 'top', title: 'Não foi possível copiar' }); return; }
+      if (!cp.dataset.state) A.toast({ type: 'success', variant: 'pill', position: 'top', title: 'Markdown copiado', duration: 2400 });
+      cp.dataset.state = 'copied'; cp.setAttribute('aria-label', 'Copiado'); clearTimeout(back);
+      back = setTimeout(() => { delete cp.dataset.state; cp.setAttribute('aria-label', 'Copiar'); }, 2000);
+    };
     $('#md-dl').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([md], { type: 'text/markdown' })); a.download = d.id + '.md'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
   }
 

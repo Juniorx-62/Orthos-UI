@@ -148,9 +148,16 @@
     if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'md-dlg'; dlg.className = 'ac ac-dialog md-dlg'; dlg.setAttribute('aria-labelledby', 'md-t'); document.body.appendChild(dlg); }
     let md;
     try { md = await window.orthosMarkdown(d); } catch (_) { A.toast({ type: 'danger', title: 'Não foi possível montar o Markdown', desc: 'Abra o site por um servidor ou use dist/orthos-ui.html.' }); return; }
-    dlg.innerHTML = `<div class="ac-dialog__in"><h2 class="ac-dialog__title" id="md-t">${esc(d.nome)}.md</h2><pre class="md-pre" tabindex="0">${esc(md)}</pre><div class="ac-dialog__actions"><button class="ac-btn ac-btn--ghost" type="button" data-ac-close>Fechar</button><button class="ac-btn ac-btn--secondary" type="button" id="md-dl">Baixar .md</button><button class="ac-btn" type="button" id="md-copy">Copiar</button></div></div>`;
+    dlg.innerHTML = `<div class="ac-dialog__in"><h2 class="ac-dialog__title" id="md-t">${esc(d.nome)}.md</h2><pre class="md-pre" tabindex="0">${esc(md)}</pre><div class="ac-dialog__actions"><button class="ac-btn ac-btn--ghost" type="button" data-ac-close>Fechar</button><button class="ac-btn ac-btn--secondary" type="button" id="md-dl">Baixar .md</button><button class="ac-btn md-copy" type="button" id="md-copy" aria-label="Copiar"><span aria-hidden="true">${A.icon('copy')}Copiar</span><span aria-hidden="true">${A.icon('check')}Copiado</span></button></div></div>`;
     A.open(dlg);
-    $('#md-copy').onclick = async () => { try { await navigator.clipboard.writeText(md); A.toast({ type: 'success', title: 'Markdown copiado' }); } catch (_) { A.toast({ type: 'danger', title: 'Não foi possível copiar' }); } };
+    // confirma em dois lugares: no próprio botão, onde a pessoa está olhando, e na pílula do topo (que o leitor de tela anuncia)
+    const cp = $('#md-copy'); let back = 0;
+    cp.onclick = async () => {
+      try { await navigator.clipboard.writeText(md); } catch (_) { A.toast({ type: 'danger', variant: 'pill', position: 'top', title: 'Não foi possível copiar' }); return; }
+      if (!cp.dataset.state) A.toast({ type: 'success', variant: 'pill', position: 'top', title: 'Markdown copiado', duration: 2400 });
+      cp.dataset.state = 'copied'; cp.setAttribute('aria-label', 'Copiado'); clearTimeout(back);
+      back = setTimeout(() => { delete cp.dataset.state; cp.setAttribute('aria-label', 'Copiar'); }, 2000);
+    };
     $('#md-dl').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([md], { type: 'text/markdown' })); a.download = d.id + '.md'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
   }
 

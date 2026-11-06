@@ -105,15 +105,15 @@
   function open(dlg) {
     if (typeof dlg === 'string') dlg = $(dlg); if (!dlg) return;
     if (dlg._closing) { dlg._closing(); return; } // reabriu durante a animação de saída: cancela o fechamento
-    if (dlg.open) return; dlg.showModal();
+    if (dlg.open) return; dlg.showModal(); toastHome();
   }
   // aria-busy="true" segura o diálogo aberto (Esc, clique fora e data-ac-close) enquanto uma ação está em andamento
   function close(dlg, value) {
     if (typeof dlg === 'string') dlg = $(dlg); if (!dlg || !dlg.open || dlg._closing || dlg.getAttribute('aria-busy') === 'true') return;
-    if (reduce()) { dlg.close(value); return; }
+    if (reduce()) { dlg.close(value); toastHome(); return; }
     dlg.classList.add('is-closing');
     let t;
-    const done = keep => { clearTimeout(t); dlg.removeEventListener('animationend', end); dlg._closing = null; dlg.classList.remove('is-closing'); if (keep !== true) dlg.close(value); };
+    const done = keep => { clearTimeout(t); dlg.removeEventListener('animationend', end); dlg._closing = null; dlg.classList.remove('is-closing'); if (keep !== true) { dlg.close(value); toastHome(); } };
     const end = e => { if (e.target === dlg) done(); };
     dlg._closing = () => done(true);
     dlg.addEventListener('animationend', end);
@@ -139,8 +139,24 @@
       host.setAttribute('aria-label', 'Notificações (Alt+T)'); host.setAttribute('aria-live', 'polite'); host.setAttribute('aria-relevant', 'additions text');
       document.body.appendChild(host);
     }
+    toastHome();
     return host;
   }
+  // um modal aberto fica na camada de cima do navegador e deixa o resto da página inerte: fora dele, o aviso nasce escondido
+  // atrás do diálogo e o leitor de tela não anuncia. Por isso a região de avisos entra no modal (já na abertura, para a região
+  // viva existir antes do aviso) e volta ao fechar. Lá dentro ela vira popover: fica por cima do diálogo e não acompanha as
+  // animações dele; is-moved evita repetir a entrada de quem já estava na tela.
+  function toastHome() {
+    const home = $$('dialog[open]').filter(d => d.matches(':modal')).pop() || document.body;
+    $$('.ac-toaster').forEach(h => {
+      if (h.parentElement !== home) { $$('.ac-toast', h).forEach(t => t.classList.add('is-moved')); home.appendChild(h); }
+      if (!h.showPopover) return;
+      if (home === document.body) h.removeAttribute('popover');
+      else { h.popover = 'manual'; if (!h.matches(':popover-open')) h.showPopover(); }
+    });
+  }
+  // Orthos.close já devolve na hora; isto cobre dialog.close() direto. Na captura: antes de quem remove o diálogo ao fechar
+  document.addEventListener('close', toastHome, true);
   const restack = host => { const ts = $$('.ac-toast:not(.is-leaving)', host); ts.forEach((t, i) => t.style.setProperty('--k', ts.length - 1 - i)); };
   let toastReturn = null;
   document.addEventListener('keydown', e => {
@@ -196,7 +212,8 @@
       err => t.update({ type: 'danger', title: typeof msg.error === 'function' ? msg.error(err) : (msg.error || 'Algo deu errado'), desc: msg.errorDesc }));
     return p;
   };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', toaster); else toaster();
+  const toasters = () => { toaster(); toaster('top'); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', toasters); else toasters();
 
   /* ---------------- componentes ---------------- */
   const C = {};
